@@ -54,8 +54,13 @@ var render_notation = function(score, target, width, height) {
     //Add annotation (lyrics)
     var mei_syl2vex_annot = function(mei_note) {
         var syl = $(mei_note).find('mei\\:syl'); 
+        var full_syl = '';
+        $(syl).each(function(i,s){ 
+            var dash = ($(s).attr('wordpos')=='i' || $(s).attr('wordpos')=='m') ? '-' : '';
+            full_syl += (i>0 ? '\n' : '')+$(s).text()+dash;
+        });
         var dash = (syl.attr('wordpos')=='i' || syl.attr('wordpos')=='m') ? '-' : '';
-        return syl.text()+dash; 
+        return full_syl; 
     }
     
     //Add annotation (above directions) TODO: generalize for bottom
