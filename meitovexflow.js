@@ -44,6 +44,9 @@ var render_notation = function(score, target, width, height) {
     var rendering_method;
     //remove unwanted text
     $('mei\\:rend').hide();
+    $('mei\\:dir').hide();
+    $('mei\\:dynam').hide();
+    $('mei\\:label').hide();
 
     var mei_note2vex_key = function(mei_note) {
 	mei_note = (typeof mei_note === 'number' && arguments.length === 2 && typeof arguments[1] === 'object') ? arguments[1] : mei_note;
@@ -63,17 +66,35 @@ var render_notation = function(score, target, width, height) {
         return full_syl; 
     }
     
-    //Add annotation (above directions) TODO: generalize for bottom
+    //Add annotation (directions)
     var mei_dir2vex_annot = function(parent_measure, mei_note) {
-        var dir = $(parent_measure).find('mei\\:dir');
+        var dir = $(parent_measure).find('mei\\:dir')
         var dir_text = '';
+        var pos = '';
         $(dir).each(function(){
             if ($(this).attr('startid') == $(mei_note).attr('xml:id')){
                 dir_text += $(this).text().trim();
+                pos = $(this).attr('place');
             }
         });
-        return dir_text;
+        return [dir_text, pos];
     }
+    
+    //Add annotation (dynamics)
+    var mei_dyn2vex_annot = function(parent_measure, mei_note) {
+        var dyn = $(parent_measure).find('mei\\:dynam')
+        var dyn_text = '';
+        var pos = '';
+        $(dyn).each(function(){
+            if ($(this).attr('startid') == $(mei_note).attr('xml:id')){
+                dyn_text += $(this).text().trim();
+                pos = $(this).attr('place');
+            }
+        });
+        console.log(dyn_text);
+        return [dyn_text, pos];
+    }
+
 
     var vex_key_cmp = function(key1, key2) {
 	key1 = {pitch: key1.split('/')[0][0], octave: Number(key1.split('/')[1])};
@@ -265,6 +286,7 @@ var render_notation = function(score, target, width, height) {
 	$.each(beams, function(i, beam) { beam.setContext(context).draw(); });
 	//do ties now!
 	$(score).find('mei\\:tie').each(make_ties);
+	$(score).find('mei\\:slur').each(make_ties);
     };
 
     var make_ties = function(i, tie){
@@ -343,7 +365,11 @@ var render_notation = function(score, target, width, height) {
 					       duration: mei_note2vex_dur(element),
 					       stem_direction: mei_note_stem_dir(element, parent_staff_element)});	
 	    note.addAnnotation(2, newAnnotationBottom(mei_syl2vex_annot(element)));
-	    note.addAnnotation(2, newAnnotationAbove(mei_dir2vex_annot(parent_measure, element)));
+	    var annot = mei_dir2vex_annot(parent_measure, element);
+	    note.addAnnotation(2, annot[1] == 'below' ? newAnnotationBottom(annot[0]) : newAnnotationAbove(annot[0]));
+	    var dyn = mei_dyn2vex_annot(parent_measure, element);
+	    note.addAnnotation(2, dyn[1] == 'below' ? newAnnotationBottom(dyn[0]) : newAnnotationAbove(dyn[0]));
+	    //TODO in VexFlow: support for 2 (multiple?) dots
 	    if ($(element).attr('dots') === '1') {
 		note.addDotToAll();
 	    }
@@ -366,10 +392,21 @@ var render_notation = function(score, target, width, height) {
     };
 
     var make_rest = function(element, parent_layer, parent_staff_element, parent_measure) {
+    // Support for annotations (lyrics, directions, etc.)
+    function newAnnotationBottom(text) {
+    return (new Vex.Flow.Annotation(text)).setFont("Times").setBottom(true); }
+    function newAnnotationAbove(text) {
+    return (new Vex.Flow.Annotation(text)).setFont("Times"); }
+
 	try {
 	    var rest = new Vex.Flow.StaveNote({keys: ['c/5'], duration: mei_note2vex_dur(element, false) + 'r'});
+	    var annot = mei_dir2vex_annot(parent_measure, element);
+	    rest.addAnnotation(2, annot[1] == 'below' ? newAnnotationBottom(annot[0]) : newAnnotationAbove(annot[0]));
+	    var dyn = mei_dyn2vex_annot(parent_measure, element);
+	    rest.addAnnotation(2, dyn[1] == 'below' ? newAnnotationBottom(dyn[0]) : newAnnotationAbove(dyn[0]));
+	    //rest.addAnnotation(2, newAnnotationAbove(mei_dir2vex_annot(parent_measure, element)));
 	    if ($(element).attr('dots') === '1') {
-		rest.addDotToAll();
+		note.addDotToAll();
 	    }
 	    return rest;
 	} catch (x) {
@@ -379,9 +416,19 @@ var render_notation = function(score, target, width, height) {
     };
 
     var make_mrest = function(element, parent_layer, parent_staff_element, parent_measure) {
+    // Support for annotations (lyrics, directions, etc.)
+    function newAnnotationBottom(text) {
+    return (new Vex.Flow.Annotation(text)).setFont("Times").setBottom(true); }
+    function newAnnotationAbove(text) {
+    return (new Vex.Flow.Annotation(text)).setFont("Times"); }
     
 	try {
 	    var mrest = new Vex.Flow.StaveNote({keys: ['c/5'], duration: 'wr'});
+	    annot = mei_dir2vex_annot(parent_measure, element);
+	    mrest.addAnnotation(2, annot[1] == 'below' ? newAnnotationBottom(annot[0]) : newAnnotationAbove(annot[0]));
+	    var dyn = mei_dyn2vex_annot(parent_measure, element);
+	    mrest.addAnnotation(2, dyn[1] == 'below' ? newAnnotationBottom(dyn[0]) : newAnnotationAbove(dyn[0]));
+	    //mrest.addAnnotation(2, newAnnotationAbove(mei_dir2vex_annot(parent_measure, element)));
 	    return mrest;
 	} catch (x) {
 	    throw new Vex.RuntimeError('BadArguments',
