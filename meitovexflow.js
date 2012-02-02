@@ -32,7 +32,7 @@ Array.prototype.any = function(test) {
     return false;
 };
 
-var render_notation = function(score, target, width, height) {
+    var render_notation = function(score, target, width, height) {
     width = width || 800;
     height = height || 350;
 
@@ -47,7 +47,6 @@ var render_notation = function(score, target, width, height) {
     $('mei\\:dir').hide();
     $('mei\\:dynam').hide();
     $('mei\\:label').hide();
-
     var mei_note2vex_key = function(mei_note) {
 	mei_note = (typeof mei_note === 'number' && arguments.length === 2 && typeof arguments[1] === 'object') ? arguments[1] : mei_note;
 
@@ -91,7 +90,6 @@ var render_notation = function(score, target, width, height) {
                 pos = $(this).attr('place');
             }
         });
-        console.log(dyn_text);
         return [dyn_text, pos];
     }
 
@@ -369,9 +367,13 @@ var render_notation = function(score, target, width, height) {
 	    note.addAnnotation(2, annot[1] == 'below' ? newAnnotationBottom(annot[0]) : newAnnotationAbove(annot[0]));
 	    var dyn = mei_dyn2vex_annot(parent_measure, element);
 	    note.addAnnotation(2, dyn[1] == 'below' ? newAnnotationBottom(dyn[0]) : newAnnotationAbove(dyn[0]));
-	    //TODO in VexFlow: support for 2 (multiple?) dots
-	    if ($(element).attr('dots') === '1') {
-		note.addDotToAll();
+	    try {
+	       for (i=0;i<parseInt($(element).attr('dots'));i++){
+	           note.addDotToAll();
+	       }
+	    } catch (x){
+	       throw new Vex.RuntimeError('BadArguments',
+				       'A problem occurred processing the dots of <mei:note>: ' + JSON.stringify(element.attrs()) + '. \"' + x.message + '"');
 	    }
 	    if ($(element).attr('accid')) {
 		note.addAccidental(0, new Vex.Flow.Accidental(mei_note2vex_accid(element)));
