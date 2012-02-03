@@ -378,7 +378,9 @@ Array.prototype.any = function(test) {
 	    if ($(element).attr('accid')) {
 		note.addAccidental(0, new Vex.Flow.Accidental(mei_note2vex_accid(element)));
 	    }
-
+	    $.each($(element).find('mei\\:artic'), function(i, ar){
+	       note.addArticulation(0, new Vex.Flow.Articulation(mei2vexflowTables.articulations[$(ar).attr('artic')]).setPosition(mei2vexflowTables.positions[$(ar).attr('place')]));
+	    });
 	    // FIXME For now, we'll remove any child nodes of <mei:note>
 	    $.each($(element).children(), function(i, child) { $(child).remove(); });
         //Build a note object that keeps the xml:id
