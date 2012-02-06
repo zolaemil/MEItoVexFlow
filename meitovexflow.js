@@ -285,6 +285,7 @@ Array.prototype.any = function(test) {
 	//do ties now!
 	$(score).find('mei\\:tie').each(make_ties);
 	$(score).find('mei\\:slur').each(make_ties);
+	$(score).find('mei\\:hairpin').each(make_hairpins);
     };
 
     var make_ties = function(i, tie){
@@ -301,6 +302,24 @@ Array.prototype.any = function(test) {
             first_indices: [0],
             last_indices: [0]
         }).setContext(context).draw();
+    }
+    
+    var make_hairpins = function(i, hp){
+        //find first and last note
+        f_note = null;
+        l_note = null;
+        $(notes).each(function(i, note) {
+            if (note.id==$(hp).attr('startid')){f_note=note.vexNote;}
+            else if (note.id==$(hp).attr('endid')){l_note=note.vexNote;}
+        });
+        place = mei2vexflowTables.positions[$(hp).attr('place')];
+        type = mei2vexflowTables.hairpins[$(hp).attr('form')];
+        hairpin_options = {height: 10, vo:20, left_ho:0, right_ho:0};
+        new Vex.Flow.StaveHairpin({
+            first_note: f_note,
+            last_note: l_note,
+        }, type).setContext(context).setRenderOptions(hairpin_options).setPosition(place).draw();
+        
     }
 
     var extract_staves = function(i, measure) {
