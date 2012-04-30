@@ -285,6 +285,7 @@ Array.prototype.any = function(test) {
 	//do ties now!
 	$(score).find('mei\\:tie').each(make_ties);
 	$(score).find('mei\\:slur').each(make_ties);
+	//Problem: need a formatter to know pixels per tick, but there is a formatter for *every* voice in *every* staff. Too late to get them at this point?
 	$(score).find('mei\\:hairpin').each(make_hairpins);
     };
 
@@ -310,11 +311,33 @@ Array.prototype.any = function(test) {
         l_note = null;
         $(notes).each(function(i, note) {
             if (note.id==$(hp).attr('startid')){f_note=note.vexNote;}
-            else if (note.id==$(hp).attr('endid')){l_note=note.vexNote;}
+            if (note.id==$(hp).attr('endid')){l_note=note.vexNote;}
         });
         place = mei2vexflowTables.positions[$(hp).attr('place')];
         type = mei2vexflowTables.hairpins[$(hp).attr('form')];
-        hairpin_options = {height: 10, vo:20, left_ho:0, right_ho:0};
+        
+        l_ho = 0;
+        r_ho = 0;
+        // Convert dur to ticks. Find x from proportion: dur / (beats+1) = x / Vex.Flow.RESOLUTION 
+        //FIXME need to find preceding::staffDef[1] 
+        dur_ticks = (parseFloat($(hp).attr('dur')) * Vex.Flow.RESOLUTION) / (parseFloat($($.find('mei\\:staffDef')[0]).attr('meter.count')) + 1);
+        //FIXME: the ticks of the current note are not enough. You need the ticks of all the preceding notes as well :s
+        // Two options:
+        // 1: get all preceding XML notes's IDs and find note objects and sum up all the ticks.
+        // 2: keep looking for options in tickable.js, note.js, staveNote.js
+        r_TS_diff = l_note.ticks - dur_ticks;
+        
+        /*console.log('x= '+l_note.getAbsoluteX());
+        console.log('t= '+l_note.ticks);
+        console.log(' ');*/
+        /*console.log(dur_ticks);*/
+        
+        hairpin_options = {height: 10, y_shift:0, left_shift_px:l_ho, r_shift_px:r_ho};
+        /*Vex.Flow.StaveHairpin.FormatByTicksAndDraw(ctx, formatter,{
+                    first_note: notesBar1[1],
+                    last_note: notesBar2[2]
+                }, Vex.Flow.StaveHairpin.type.CRESC, Vex.Flow.Modifier.Position.ABOVE, hairpin_options) */ 
+                
         new Vex.Flow.StaveHairpin({
             first_note: f_note,
             last_note: l_note,
@@ -340,12 +363,30 @@ Array.prototype.any = function(test) {
 	    if ($(staff_element).parent().get(0).attrs().n === '1') {
 		left = 0
 		top = (Number(staff_element.attrs().n) - 1) * 100;
-		staff = initialise_staff(null, $(score).find('mei\\:staffDef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30);
+		/* Determine if there's a new staff definition, or take default */
+		/* TODO: deal with non-general changes. NB if there is no @n in staffdef it applies to all staves */
+        if ($(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
+            scoredef = $(parent_measure).prev().get(0);
+            // with_clef, with_keysig, with_timesig
+            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30);
+        }
+        else {
+	      staff = initialise_staff(null, $(score).find('mei\\:staffDef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30);
+	    }  
 	    } else {
 		var previous_measure = measures[measures.length-1][0];
 		left = previous_measure.x + previous_measure.width;
 		top = (Number(staff_element.attrs().n) - 1) * 100;
-		staff = initialise_staff(null, $(score).find('mei\\:staffDef[n=' + staff_element.attrs().n + ']')[0], false, false, false, left, top, measure_width);
+		/* Determine if there's a new staff definition, or take default */
+		/* TODO: deal with non-general changes. NB if there is no @n in staffdef it applies to all staves */
+        if ($(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
+            scoredef = $(parent_measure).prev().get(0);
+            // with_clef, with_keysig, with_timesig
+            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30);
+        }
+        else {
+		    staff = initialise_staff(null, $(score).find('mei\\:staffDef[n=' + staff_element.attrs().n + ']')[0], false, false, false, left, top, measure_width);
+	    }
 	    }
 
         var layer_events = $(staff_element).find('mei\\:layer').map(function(i, layer) { return extract_events(i, layer, staff_element, parent_measure); }).get();
@@ -356,7 +397,7 @@ Array.prototype.any = function(test) {
         
 	    var voices = $.map(vex_layer_events, function(events) { return make_voice(null, events.events); });
 	    var formatter = new Vex.Flow.Formatter().joinVoices(voices).format(voices, measure_width).formatToStave(voices, staff);
-	    $.each(voices, function(i, voice) { voice.draw(context, staff);});
+	    $.each(voices, function(i, voice) {/*console.log(voice.getTicksUsed()); */voice.draw(context, staff);});
 	    return staff;
 	};
     };
@@ -406,7 +447,7 @@ Array.prototype.any = function(test) {
         // Sanity check
         if (!$(element).attr('xml:id')) throw new Vex.RuntimeError("BadArguments", "mei:note must have a xml:id attribute.");
         var note_object = {vexNote: note, id: $(element).attr('xml:id')};
-        notes.push(note_object);
+        notes.push(note_object);  
 	    return note_object;
 	} catch (x) {
 	    throw new Vex.RuntimeError('BadArguments',
