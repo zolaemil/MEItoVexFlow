@@ -48,5 +48,5 @@ mei2vexflowTables.articulations = {
   'lhpizz': 'a+',
   'dot': 'a.',
   'stroke': 'a|'
-}
+};
 
