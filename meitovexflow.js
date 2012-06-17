@@ -213,7 +213,7 @@ Array.prototype.any = function(test) {
     };
 
     var staff_clef = function(staff_n) {
-	var staffdef = $(score).find('mei\\:staffDef[n=' + staff_n + ']')[0];
+	var staffdef = $(score).find('mei\\:staffdef[n=' + staff_n + ']')[0];
 	return mei_staffdef2vex_clef(staffdef);
     };
 
@@ -228,7 +228,7 @@ Array.prototype.any = function(test) {
 	context = renderer.getContext();
     };
 
-    var initialise_staff = function(i, staffdef, with_clef, with_keysig, with_timesig, left, top, width) {
+    var initialise_staff = function(i, staffdef, with_clef, with_keysig, with_timesig, left, top, width, begbar, endbar) {
 	var staff = new Vex.Flow.Stave(left, top, width);
 	if (with_clef === true) {
 	    staff.addClef(mei_staffdef2vex_clef(staffdef));
@@ -243,6 +243,12 @@ Array.prototype.any = function(test) {
 		staff.addTimeSignature(mei_staffdef2vex_timespec(staffdef));
 	    }
 	}
+	if (begbar !== false) {
+	    staff.setBegBarType(mei2vexflowTables.barlines[begbar]);
+	}
+	if (endbar !== false) {
+	    staff.setEndBarType(mei2vexflowTables.barlines[endbar]);
+	}
 	staff.setContext(context).draw();
 	return staff;
     };
@@ -250,7 +256,7 @@ Array.prototype.any = function(test) {
     var render_staff_wise = function() {
 	rendering_method = 'staff-wise';
 
-	$(score).find('mei\\:staffDef').each(function(i, staffdef) { staves[(Number($(staffdef).attr('n')))] = initialise_staff(i, staffdef, true, true, true, 0, i * 100, width); });
+	$(score).find('mei\\:staffdef').each(function(i, staffdef) { staves[(Number($(staffdef).attr('n')))] = initialise_staff(i, staffdef, true, true, true, 0, i * 100, width, false, false); });
 
 	var i;
 	for (staff_n in staves) {
@@ -319,8 +325,8 @@ Array.prototype.any = function(test) {
         l_ho = 0;
         r_ho = 0;
         // Convert dur to ticks. Find x from proportion: dur / (beats+1) = x / Vex.Flow.RESOLUTION 
-        //FIXME need to find preceding::staffDef[1] 
-        dur_ticks = (parseFloat($(hp).attr('dur')) * Vex.Flow.RESOLUTION) / (parseFloat($($.find('mei\\:staffDef')[0]).attr('meter.count')) + 1);
+        //FIXME need to find preceding::staffdef[1] 
+        dur_ticks = (parseFloat($(hp).attr('dur')) * Vex.Flow.RESOLUTION) / (parseFloat($($.find('mei\\:staffdef')[0]).attr('meter.count')) + 1);
         //FIXME: the ticks of the current note are not enough. You need the ticks of all the preceding notes as well :s
         // Two options:
         // 1: get all preceding XML notes's IDs and find note objects and sum up all the ticks.
@@ -359,19 +365,21 @@ Array.prototype.any = function(test) {
 	} else if (rendering_method === 'measure-wise') {
 	    var n_measures = $(score).find('mei\\:measure').get().length;
 	    var measure_width = Math.round(width / n_measures);
+	    var begbar = $(parent_measure).get(0).attrs().left !== undefined ? $(parent_measure).get(0).attrs().left : false
+	    var endbar = $(parent_measure).get(0).attrs().right !== undefined ? $(parent_measure).get(0).attrs().right : false
 	    var staff, left, top;
 	    if ($(staff_element).parent().get(0).attrs().n === '1') {
 		left = 0
 		top = (Number(staff_element.attrs().n) - 1) * 100;
 		/* Determine if there's a new staff definition, or take default */
 		/* TODO: deal with non-general changes. NB if there is no @n in staffdef it applies to all staves */
-        if ($(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
-            scoredef = $(parent_measure).prev().get(0);
+        if ($(parent_measure).prev().get(0)!==undefined && $(parent_measure).prev().get(0).tagName == 'MEI:STAFFDEF' && !$(parent_measure).prev().get(0).attrs().n) {
+            staffdef = $(parent_measure).prev().get(0);
             // with_clef, with_keysig, with_timesig
-            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30);
+            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar);
         }
         else {
-	      staff = initialise_staff(null, $(score).find('mei\\:staffDef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30);
+	      staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30, begbar, endbar);
 	    }  
 	    } else {
 		var previous_measure = measures[measures.length-1][0];
@@ -379,13 +387,13 @@ Array.prototype.any = function(test) {
 		top = (Number(staff_element.attrs().n) - 1) * 100;
 		/* Determine if there's a new staff definition, or take default */
 		/* TODO: deal with non-general changes. NB if there is no @n in staffdef it applies to all staves */
-        if ($(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
+       if ($(parent_measure).prev().get(0)!==undefined && $(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
             scoredef = $(parent_measure).prev().get(0);
             // with_clef, with_keysig, with_timesig
-            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30);
+            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar);
         }
         else {
-		    staff = initialise_staff(null, $(score).find('mei\\:staffDef[n=' + staff_element.attrs().n + ']')[0], false, false, false, left, top, measure_width);
+		    staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], false, false, false, left, top, measure_width, begbar, endbar);
 	    }
 	    }
 
@@ -555,8 +563,8 @@ Array.prototype.any = function(test) {
     var make_voice = function(i, voice_contents) {
 	if (!$.isArray(voice_contents)) { throw new Vex.RuntimeError('BadArguments', 'make_voice() voice_contents argument must be an array.');  }
 
-	var voice = new Vex.Flow.Voice({num_beats: Number($(score).find('mei\\:staffDef').attr('meter.count')),
-					beat_value: Number($(score).find('mei\\:staffDef').attr('meter.unit')),
+	var voice = new Vex.Flow.Voice({num_beats: Number($(score).find('mei\\:staffdef').attr('meter.count')),
+					beat_value: Number($(score).find('mei\\:staffdef').attr('meter.unit')),
 					resolution: Vex.Flow.RESOLUTION});
 
 	voice.setStrict(false);
