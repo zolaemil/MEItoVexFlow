@@ -42,11 +42,8 @@ Array.prototype.any = function(test) {
     var beams = [];
     var notes = [];
     var rendering_method;
-    //remove unwanted text
-    $('mei\\:rend').hide();
-    $('mei\\:dir').hide();
-    $('mei\\:dynam').hide();
-    $('mei\\:label').hide();
+    //hide score to avoid extra, unwanted text
+    $('mei\\:score').hide();
     var mei_note2vex_key = function(mei_note) {
 	mei_note = (typeof mei_note === 'number' && arguments.length === 2 && typeof arguments[1] === 'object') ? arguments[1] : mei_note;
 
@@ -228,7 +225,7 @@ Array.prototype.any = function(test) {
 	context = renderer.getContext();
     };
 
-    var initialise_staff = function(i, staffdef, with_clef, with_keysig, with_timesig, left, top, width, begbar, endbar) {
+    var initialise_staff = function(i, staffdef, with_clef, with_keysig, with_timesig, left, top, width, begbar, endbar, volta, m_num) {
 	var staff = new Vex.Flow.Stave(left, top, width);
 	if (with_clef === true) {
 	    staff.addClef(mei_staffdef2vex_clef(staffdef));
@@ -249,6 +246,13 @@ Array.prototype.any = function(test) {
 	if (endbar !== false) {
 	    staff.setEndBarType(mei2vexflowTables.barlines[endbar]);
 	}
+	if (volta !== false) {
+	    //better way to determine height? 
+	    staff.setVoltaType(volta[1], volta[0]+'.', 28);
+	}
+	if (m_num !== false) {
+	    staff.setMeasure(m_num);
+	}
 	staff.setContext(context).draw();
 	return staff;
     };
@@ -256,7 +260,7 @@ Array.prototype.any = function(test) {
     var render_staff_wise = function() {
 	rendering_method = 'staff-wise';
 
-	$(score).find('mei\\:staffdef').each(function(i, staffdef) { staves[(Number($(staffdef).attr('n')))] = initialise_staff(i, staffdef, true, true, true, 0, i * 100, width, false, false); });
+	$(score).find('mei\\:staffdef').each(function(i, staffdef) { staves[(Number($(staffdef).attr('n')))] = initialise_staff(i, staffdef, true, true, true, 0, i * 100, width, false, false, false, false); });
 
 	var i;
 	for (staff_n in staves) {
@@ -285,7 +289,7 @@ Array.prototype.any = function(test) {
 
     var render_measure_wise = function() {
 	rendering_method = 'measure-wise';
-
+    
 	$(score).find('mei\\:measure').each(extract_staves);
 	$.each(beams, function(i, beam) { beam.setContext(context).draw(); });
 	//do ties now!
@@ -364,11 +368,20 @@ Array.prototype.any = function(test) {
 	    return $(staff_element).find('mei\\:layer').map(function(i, layer) { return extract_events(i, layer, staff_element, parent_measure); }).get();
 	} else if (rendering_method === 'measure-wise') {
 	    var n_measures = $(score).find('mei\\:measure').get().length;
+	    // First measure in section?
+	    var first_sec_m = true; 
+	    $(parent_measure).prevAll().each(function(){if($(this).get(0).tagName==='MEI:MEASURE'){first_sec_m=false}});
+	    // Last measure in section?
+	    var last_sec_m = true;
+	    $(parent_measure).nextAll().each(function(){if($(this).get(0).tagName==='MEI:MEASURE'){last_sec_m=false}});
 	    var measure_width = Math.round(width / n_measures);
-	    var begbar = $(parent_measure).get(0).attrs().left !== undefined ? $(parent_measure).get(0).attrs().left : false
-	    var endbar = $(parent_measure).get(0).attrs().right !== undefined ? $(parent_measure).get(0).attrs().right : false
+	    var m_num = $(parent_measure).get(0).attrs().n;
+	    var begbar = $(parent_measure).get(0).attrs().left !== undefined ? $(parent_measure).get(0).attrs().left : false;
+	    var endbar = $(parent_measure).get(0).attrs().right !== undefined ? $(parent_measure).get(0).attrs().right : false;
+	    var volta = $(parent_measure).parent().get(0).tagName == 'MEI:ENDING' && $(staff_element)[0]===$(parent_measure).find('mei\\:staff')[0] ? [$(parent_measure).parent().get(0).attrs().n.substring(0,1), first_sec_m ? Vex.Flow.Volta.type.BEGIN : last_sec_m ? Vex.Flow.Volta.type.END : Vex.Flow.Volta.type.MID ] : false;
 	    var staff, left, top;
-	    if ($(staff_element).parent().get(0).attrs().n === '1') {
+	    //if first measure in document...
+	    if ($(staff_element).parent()[0]===$(score).find('mei\\:measure')[0]) {
 		left = 0
 		top = (Number(staff_element.attrs().n) - 1) * 100;
 		/* Determine if there's a new staff definition, or take default */
@@ -376,10 +389,10 @@ Array.prototype.any = function(test) {
         if ($(parent_measure).prev().get(0)!==undefined && $(parent_measure).prev().get(0).tagName == 'MEI:STAFFDEF' && !$(parent_measure).prev().get(0).attrs().n) {
             staffdef = $(parent_measure).prev().get(0);
             // with_clef, with_keysig, with_timesig
-            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar);
+            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar, volta, false);
         }
         else {
-	      staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30, begbar, endbar);
+	      staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30, begbar, endbar, volta, false);
 	    }  
 	    } else {
 		var previous_measure = measures[measures.length-1][0];
@@ -390,10 +403,10 @@ Array.prototype.any = function(test) {
        if ($(parent_measure).prev().get(0)!==undefined && $(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
             scoredef = $(parent_measure).prev().get(0);
             // with_clef, with_keysig, with_timesig
-            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar);
+            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar, volta, false);
         }
         else {
-		    staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], false, false, false, left, top, measure_width, begbar, endbar);
+		    staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], false, false, false, left, top, measure_width, begbar, endbar, volta, false);
 	    }
 	    }
 
@@ -430,11 +443,11 @@ Array.prototype.any = function(test) {
 					       clef: staff_clef($(parent_staff_element).attr('n')),
 					       duration: mei_note2vex_dur(element),
 					       stem_direction: mei_note_stem_dir(element, parent_staff_element)});	
-	    note.addAnnotation(2, newAnnotationBottom(mei_syl2vex_annot(element)));
+	    note.addAnnotation(0, newAnnotationBottom(mei_syl2vex_annot(element)));
 	    var annot = mei_dir2vex_annot(parent_measure, element);
-	    note.addAnnotation(2, annot[1] == 'below' ? newAnnotationBottom(annot[0]) : newAnnotationAbove(annot[0]));
+	    note.addAnnotation(0, annot[1] == 'below' ? newAnnotationBottom(annot[0]) : newAnnotationAbove(annot[0]));
 	    var dyn = mei_dyn2vex_annot(parent_measure, element);
-	    note.addAnnotation(2, dyn[1] == 'below' ? newAnnotationBottom(dyn[0]) : newAnnotationAbove(dyn[0]));
+	    note.addAnnotation(0, dyn[1] == 'below' ? newAnnotationBottom(dyn[0]) : newAnnotationAbove(dyn[0]));
 	    try {
 	       for (i=0;i<parseInt($(element).attr('dots'));i++){
 	           note.addDotToAll();
