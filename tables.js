@@ -52,6 +52,7 @@ mei2vexflowTables.articulations = {
 
 mei2vexflowTables.barlines = {
   'rptstart': Vex.Flow.Barline.type.REPEAT_BEGIN,
-  'rptend': Vex.Flow.Barline.type.REPEAT_END
+  'rptend': Vex.Flow.Barline.type.REPEAT_END,
+  'end': Vex.Flow.Barline.type.END
 };
 
