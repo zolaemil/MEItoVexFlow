@@ -335,7 +335,7 @@ Array.prototype.any = function(test) {
         // Two options:
         // 1: get all preceding XML notes's IDs and find note objects and sum up all the ticks.
         // 2: keep looking for options in tickable.js, note.js, staveNote.js
-        r_TS_diff = l_note.ticks - dur_ticks;
+        //r_TS_diff = l_note.ticks - dur_ticks;
         
         /*console.log('x= '+l_note.getAbsoluteX());
         console.log('t= '+l_note.ticks);
