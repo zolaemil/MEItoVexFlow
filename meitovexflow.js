@@ -110,7 +110,7 @@ Array.prototype.any = function(test) {
     var mei_dur2vex_dur = function(mei_dur) {
 	mei_dur = String(mei_dur);
 	//if (mei_dur === 'long') return ;
-	if (mei_dur === 'breve') return 'dw';
+	if (mei_dur === 'breve') return 'd';
 	if (mei_dur === '1') return 'w';
 	if (mei_dur === '2') return 'h';
 	if (mei_dur === '4') return 'q';
