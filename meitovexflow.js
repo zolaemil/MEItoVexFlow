@@ -3,6 +3,10 @@
    found at https://github.com/raffazizzi/vexflow/tree/experimental
 */
 
+/*
+   Requires jQuery 1.8.0 or higher
+*/
+
 Node.prototype.attrs = function() {
     var i;
     var attrs = {};
@@ -381,28 +385,19 @@ Array.prototype.any = function(test) {
 	    var volta = $(parent_measure).parent().get(0).tagName == 'MEI:ENDING' && $(staff_element)[0]===$(parent_measure).find('mei\\:staff')[0] ? [$(parent_measure).parent().get(0).attrs().n.substring(0,1), first_sec_m ? Vex.Flow.Volta.type.BEGIN : last_sec_m ? Vex.Flow.Volta.type.END : Vex.Flow.Volta.type.MID ] : false;
 	    var staff, left, top;
 	    //if first measure in document...
-	    if ($(staff_element).parent()[0]===$(score).find('mei\\:measure')[0]) {
+	    if (parent_measure===$(score).find('mei\\:measure')[0]) {
 		left = 0
 		top = (Number(staff_element.attrs().n) - 1) * 100;
-		/* Determine if there's a new staff definition, or take default */
-		/* TODO: deal with non-general changes. NB if there is no @n in staffdef it applies to all staves */
-        if ($(parent_measure).prev().get(0)!==undefined && $(parent_measure).prev().get(0).tagName == 'MEI:STAFFDEF' && !$(parent_measure).prev().get(0).attrs().n) {
-            staffdef = $(parent_measure).prev().get(0);
-            // with_clef, with_keysig, with_timesig
-            staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar, volta, false);
-        }
-        else {
-	      staff = initialise_staff(null, $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0], true, true, true, left, top, measure_width + 30, begbar, endbar, volta, false);
-	    }  
+	    staffdef = $(score).find('mei\\:staffdef[n=' + staff_element.attrs().n + ']')[0]
+	    staff = initialise_staff(null, staffdef, true, true, true, left, top, measure_width + 30, begbar, endbar, volta, false);
 	    } else {
 		var previous_measure = measures[measures.length-1][0];
 		left = previous_measure.x + previous_measure.width;
 		top = (Number(staff_element.attrs().n) - 1) * 100;
 		/* Determine if there's a new staff definition, or take default */
-		/* TODO: deal with non-general changes. NB if there is no @n in staffdef it applies to all staves */
-       if ($(parent_measure).prev().get(0)!==undefined && $(parent_measure).prev().get(0).tagName == 'MEI:SCOREDEF' && !$(parent_measure).prev().get(0).attrs().n) {
-            scoredef = $(parent_measure).prev().get(0);
-            // with_clef, with_keysig, with_timesig
+		/* TODO: deal with non-general changes. i.e. look at staffdefs when scoredef not present. */
+		if ($(parent_measure).prevAll().length > 0 && $(parent_measure).prevAll('mei\\:measure').length == 0) {
+            scoredef = $(parent_measure).prevAll('mei\\:scoredef:first').get(0);
             staff = initialise_staff(null, scoredef, false, false, $(scoredef).attr('meter.count') ? true : false, left, top, measure_width + 30, begbar, endbar, volta, false);
         }
         else {
