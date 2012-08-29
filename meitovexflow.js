@@ -373,16 +373,14 @@ Array.prototype.any = function(test) {
 	} else if (rendering_method === 'measure-wise') {
 	    var n_measures = $(score).find('mei\\:measure').get().length;
 	    // First measure in section?
-	    var first_sec_m = true; 
-	    $(parent_measure).prevAll().each(function(){if($(this).get(0).tagName==='MEI:MEASURE'){first_sec_m=false}});
+	    var first_sec_m = $(parent_measure).prevAll('mei\\:measure').length == 0;
 	    // Last measure in section?
-	    var last_sec_m = true;
-	    $(parent_measure).nextAll().each(function(){if($(this).get(0).tagName==='MEI:MEASURE'){last_sec_m=false}});
+	    var last_sec_m = $(parent_measure).nextAll('mei\\:measure').length == 0;
 	    var measure_width = Math.round(width / n_measures);
-	    var m_num = $(parent_measure).get(0).attrs().n;
-	    var begbar = $(parent_measure).get(0).attrs().left !== undefined ? $(parent_measure).get(0).attrs().left : false;
-	    var endbar = $(parent_measure).get(0).attrs().right !== undefined ? $(parent_measure).get(0).attrs().right : false;
-	    var volta = $(parent_measure).parent().get(0).tagName == 'MEI:ENDING' && $(staff_element)[0]===$(parent_measure).find('mei\\:staff')[0] ? [$(parent_measure).parent().get(0).attrs().n.substring(0,1), first_sec_m ? Vex.Flow.Volta.type.BEGIN : last_sec_m ? Vex.Flow.Volta.type.END : Vex.Flow.Volta.type.MID ] : false;
+	    var m_num = $(parent_measure).attr('n');
+	    var begbar = $(parent_measure).attr('left') !== undefined ? $(parent_measure).attr('left') : false;
+	    var endbar = $(parent_measure).attr('right') !== undefined ? $(parent_measure).attr('right') : false;
+	    var volta = $(parent_measure).parent('mei\\:ending').length > 0 && $(staff_element)[0]===$(parent_measure).find('mei\\:staff')[0] ? [$(parent_measure).parent().attr('n').substring(0,1), first_sec_m ? Vex.Flow.Volta.type.BEGIN : last_sec_m ? Vex.Flow.Volta.type.END : Vex.Flow.Volta.type.MID ] : false;
 	    var staff, left, top;
 	    //if first measure in document...
 	    if (parent_measure===$(score).find('mei\\:measure')[0]) {
