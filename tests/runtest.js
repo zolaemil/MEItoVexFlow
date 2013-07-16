@@ -5,6 +5,8 @@ MEI2VF.RunTest = function(test_case, canvas, titleElem){
 
   //load the xml file...
   Vex.LogInfo("Running Test Case Title: '" + test_case.title + "' MEI-XML:" + (test_case.mei_xml_file?"'"+test_case.mei_xml_file+"'":'embedded'));
+
+//  Vex.LogInfo(test_case.mei_xml_string);
   
   if (test_case.mei_xml_file) {
     xmlDoc=loadXMLDoc(test_case.mei_xml_file);
@@ -13,7 +15,7 @@ MEI2VF.RunTest = function(test_case, canvas, titleElem){
     if (window.DOMParser)
       {
       parser=new DOMParser();
-      xmlDoc=parser.parseFromString(test_case.mei_xml_string,"text/xml");
+      xmlDoc=parser.parseFromString(test_case.mei_xml_string,"application/xml");
       }
     else // Internet Explorer
       {
