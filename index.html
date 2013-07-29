@@ -11,6 +11,15 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="http://vexflow.com/vextab/support/vexflow-min.js"></script>
+    <script type="text/JavaScript" src="javascripts/meitovexflow.js"></script>  
+    <style>
+      pre {
+        width: 500px;
+        height: 300px;
+      }
+    </style>
   </head>
   <body>
     <div class="wrapper">
@@ -20,7 +29,6 @@
 
         <p class="view"><a href="https://github.com/TEI-Music-SIG/MEItoVexFlow">View the Project on GitHub <small>TEI-Music-SIG/MEItoVexFlow</small></a></p>
 
-
         <ul>
           <li><a href="https://github.com/TEI-Music-SIG/MEItoVexFlow/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/TEI-Music-SIG/MEItoVexFlow/tarball/master">Download <strong>TAR Ball</strong></a></li>
@@ -29,16 +37,75 @@
       </header>
       <section>
         <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>What is MEI to VexFlow?</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>MEI to VexFlow is a JavaScript library to render MEI encoded-music notation using VexFlow.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p><a href="music-encoding.org">MEI</a> is a community-developed format for music notation targeted at the academic community for research, teaching, and preservation.</p>
+
+<p><a href="vexflow.com">VexFlow</a> is an open-source online music notation rendering API. It is written completely in JavaScript and supports HTML5 Canvas and SVG.</p>
+
+<p>Here's an example of MEI encoding (snippet) and its rendition via MEI to VexFlow:</p>
+
+<div id="MEI2VFexample">
+  <canvas width="500" style='border: none'></canvas>
+</div>
+<script>
+  var src = '<?xml version="1.0" encoding="UTF-8"?> <mei xmlns="http://www.music-encoding.org/ns/mei" xmlns:xlink="http://www.w3.org/1999/xlink" meiversion="2013"> <meiHead> <fileDesc> <titleStmt> <title>Auf dem Hügel sitz ich spähend</title> <respStmt> <persName role="composer">Ludwig van Beethoven</persName> </respStmt> </titleStmt> <pubStmt/> </fileDesc> </meiHead> <music> <body> <mdiv> <score> <scoreDef key.sig="3f" key.mode="major"> <staffGrp> <staffDef n="1" xml:id="P1" label="Voice" lines="5" meter.count="3" meter.unit="4" clef.line="2" clef.shape="G" key.sig="3f" key.mode="major"/> </staffGrp> </scoreDef> <section> <measure n="1" xml:id="d1e136"> <staff n="1"> <layer n="1"> <rest xml:id="d1e176" dur="4"/> <note xml:id="d1e184" pname="b" oct="4" dur="4" > <verse> <syl>Auf</syl> </verse> </note> <note xml:id="d1e205" pname="b" oct="4" dur="4" > <verse> <syl>dem</syl> </verse> </note> </layer> </staff> <dir startid="#d1e176" tstamp="1" place="above" staff="1"> Ziemlich langsam und mit Ausdruck </dir> </measure> <measure n="2" xml:id="d1e475"> <staff n="1"> <layer n="1"> <note xml:id="d1e477" pname="b" oct="4" dur="4" dots="1" > <verse> <syl wordpos="i">Hü</syl> </verse> </note> <note xml:id="d1e499" pname="c" oct="5" dur="8"> <verse> <syl wordpos="t">gel</syl> </verse> </note> <beam> <note xml:id="d1e518" pname="d" oct="5" dur="8"> <verse> <syl>sitz</syl> </verse> </note> <note xml:id="d1e539" pname="e" oct="5" dur="8" > <verse> <syl>ich</syl> </verse> </note> </beam> </layer> </staff> </measure> </section> </score> </mdiv> </body> </music> </mei>';
+  parser=new DOMParser();
+  xmlDoc=parser.parseFromString(src,"text/xml");
+  var MEI = xmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'score');
+  MEI2VF.render_notation(MEI, $("#MEI2VFexample canvas").get(0), 450, 200);
+</script>
+
+<pre><code>&lt;section&gt;
+  &lt;measure n="1" xml:id="d1e136"&gt;
+      &lt;staff n="1"&gt;
+          &lt;layer n="1"&gt;
+              &lt;rest xml:id="d1e176" dur="4"/&gt;
+              &lt;note xml:id="d1e184" pname="b" oct="4" dur="4"&gt;
+                  &lt;verse&gt;
+                      &lt;syl&gt;Auf&lt;/syl&gt;
+                  &lt;/verse&gt;
+              &lt;/note&gt;
+              &lt;note xml:id="d1e205" pname="b" oct="4" dur="4"&gt;
+                  &lt;verse&gt;
+                      &lt;syl&gt;dem&lt;/syl&gt;
+                  &lt;/verse&gt;
+              &lt;/note&gt;
+          &lt;/layer&gt;
+      &lt;/staff&gt;
+  &lt;/measure&gt;
+  &lt;measure n="2" xml:id="d1e475"&gt;
+      &lt;staff n="1"&gt;
+          &lt;layer n="1"&gt;
+              &lt;note pname="b" oct="4" dur="4" dots="1"&gt;
+                  &lt;verse&gt;
+                      &lt;syl wordpos="i"&gt;Hü&lt;/syl&gt;
+                  &lt;/verse&gt;
+              &lt;/note&gt;
+              &lt;note xml:id="d1e499" pname="c" oct="5" dur="8"&gt;
+                  &lt;verse&gt;
+                      &lt;syl wordpos="t"&gt;gel&lt;/syl&gt;
+                  &lt;/verse&gt;
+              &lt;/note&gt;
+              &lt;beam&gt;
+                  &lt;note xml:id="d1e518" pname="d" oct="5" dur="8"&gt;
+                      &lt;verse&gt;
+                          &lt;syl&gt;sitz&lt;/syl&gt;
+                      &lt;/verse&gt;
+                  &lt;/note&gt;
+                  &lt;note xml:id="d1e539" pname="e" oct="5" dur="8"&gt;
+                      &lt;verse&gt;
+                          &lt;syl&gt;ich&lt;/syl&gt;
+                      &lt;/verse&gt;
+                  &lt;/note&gt;
+              &lt;/beam&gt;
+          &lt;/layer&gt;
+      &lt;/staff&gt;
+  &lt;/measure&gt;
+&lt;/section&gt;
 </code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
 
 <h3>
 <a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
