@@ -165,6 +165,12 @@ section {
   padding-bottom:50px;
 }
 
+section.demo {
+  width:1000px;
+  float:center;
+  padding-bottom:50px;
+}
+
 small {
   font-size:11px;
 }
