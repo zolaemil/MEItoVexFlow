@@ -167,8 +167,8 @@ section {
 
 section.demo {
   width:1000px;
-  float:center;
-  padding-bottom:50px;
+  margin:0 auto;
+  padding-left:200px;
 }
 
 small {
