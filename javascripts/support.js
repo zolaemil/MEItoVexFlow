@@ -1,7 +1,8 @@
 
-MEI2VF.RunTest = function(test_case, canvas, titleElem){
+MEI2VF.RunTest = function(test_case, canvas, titleElem, codeElem, descElem){
 
   $(titleElem).html(test_case.title);
+  $(descElem).html(test_case.desc);
   var canvas_width = test_case.canvas_width ? test_case.canvas_width : 1031;
   var canvas_height = test_case.canvas_height ? test_case.canvas_height : 180;
   $(canvas).attr('width', canvas_width);
@@ -22,6 +23,14 @@ MEI2VF.RunTest = function(test_case, canvas, titleElem){
   var MEI = xmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'score');
   Vex.LogInfo('Rendering... ');
   MEI2VF.render_notation(MEI, canvas, score_width, score_height);
+  
+  var serializer = new XMLSerializer();
+  var strMEI = serializer.serializeToString($(MEI).get(0));
+  var strMEI_rplc1 = strMEI.replace(/</g, '&lt;');
+  var strMEI_rplc2 = strMEI_rplc1.replace(/>/g, '&gt;');
+  $(codeElem).html(strMEI_rplc2);
+  
+  
   Vex.LogInfo('Done (' + test_case.title + ')');
 	
 }
