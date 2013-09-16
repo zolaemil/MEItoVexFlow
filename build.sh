@@ -2,6 +2,9 @@
 
 temp_js=mei2vf-combined.js
 cat meilib.js           > $temp_js
+if [ ! -d build ]; then
+  mkdir build;
+fi
 cat tables.js           >> $temp_js
 cat meitovexflow.js     >> $temp_js
 cat EventLink.js        >> $temp_js
