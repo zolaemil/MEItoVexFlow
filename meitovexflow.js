@@ -307,9 +307,11 @@ MEI2VF.render_notation = function(score, target, width, height) {
       var clef = staff_clef($(parent_staff_element).attr('n'));
       if (clef === 'treble') {
         return (vex_key_cmp('a/5', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
+      } else if (clef === 'octave') {
+        return (vex_key_cmp('a/4', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
       } else if (clef === 'bass') {
         return (vex_key_cmp('c/3', mei_note2vex_key(mei_note)) === -1) ? Vex.Flow.StaveNote.STEM_DOWN : Vex.Flow.StaveNote.STEM_UP;
-      }
+      } 
     }
   };
 
