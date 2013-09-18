@@ -39,8 +39,10 @@ MeiLib.createPseudoUUID = function() {
   return ("0000" + (Math.random()*Math.pow(36,4) << 0).toString(36)).substr(-4)
 }
 
-/*
-* Enumerate over the children events of node (node is a layer or a beam)
+/**
+* Enumerate over the children events of node (node is a layer or a beam).
+* 
+* @param node an XML DOM object
 */
 MeiLib.EventEnumerator = function (node) {
   this.init(node);
@@ -103,8 +105,14 @@ MeiLib.EventEnumerator.prototype.step_ahead = function () {
 }
 
 
-/*
+/**
 * Calculate the duration of an event (number of beats) according to the given meter.
+* 
+* Event refers to musical event such as notes, rests, chords. The MEI element <space/> is also
+* considered an event.
+* 
+* @param evnt an XML DOM object
+* @param meter the time signature object { count, unit }
 */
 MeiLib.durationOf = function (evnt, meter) {
 
@@ -175,12 +183,12 @@ MeiLib.durationOf = function (evnt, meter) {
 
 
 /*
-* Find the event with the minimum distance from the location tstamp refers to.
+* Find the event with the minimum distance from of the given timestamp.
 * 
-* @param tstamp: timestamp to match against events in the given context. Local timestamp only (without measure part).
-* @param layer: a layer obejcts that contains all events in the given measure.
-* @param meter: effective time signature obejct { count, unit }.
-* @returns: the xml:id of the closest element, or undefined if 'layer' contains no events.
+* @param tstamp {String} the timestamp to match against events in the given context. Local timestamp only (without measure part).
+* @param layer {Obejct} an XML DOM object, contains all events in the given measure.
+* @param meter {Object} the effective time signature object { count, unit } in the measure containing layer.
+* @return {String} the xml:id of the closest element, or undefined if <code>layer</code> contains no events.
 */
 MeiLib.tstamp2id = function ( tstamp, layer, meter ) {
   var ts = Number(tstamp); 
@@ -228,13 +236,17 @@ MeiLib.XMLID = function(elem) {
 }
 
 /*
-* Calculates a timestamp value for an event in a given context.
+* Calculates a timestamp value for an event in a given context. (Event refers to musical events such 
+* as notes, rests and chords).
 * 
-* @param eventid: is the xml:id of the event
-* @param context: is an array of contextual objects {layer, meter}. Time signature is mandatory 
-*                  for the first one. Layers belong to a single logical layer.
-* @returns: the total duration (in beats - in relation to the meter of the target measure) of all events 
-*             that happened before the given event in the given context. 
+* @param eventid {String} the xml:id of the event
+* @param context {Array} of contextual objects {layer, meter}. Time signature is mandatory 
+*                        for the first one, but optional for the rest. All layers belong to a single 
+*                        logical layer. They are the layer elements from some consequtive measures.
+* @return {String} the MEI timestamp value (expressed in beats relative to the meter of the measure containing the event)
+*                  of all events that happened before the given event in the given context. If the event is not in the first 
+*                  measure (layer) the timestamp value contains a 'measure part', that is for example 2m+2 if the
+*                  event is at the second beat in the 3rd measure.
 */
 MeiLib.id2tstamp = function (eventid, context) {
   var meter;
@@ -254,10 +266,11 @@ MeiLib.id2tstamp = function (eventid, context) {
 
 
 /*
-* Convert absolute duration into relative duration (nuber of beats) according to time signature
+* Convert absolute duration into relative duration (nuber of beats) according to time signature.
 * 
-* @param dur: reciprocal value of absolute duration (e.g. 4->quarter note, 8->eighth note, etc.)
-* @param meter: time signature object { count, unit }
+* @param dur {Number} reciprocal value of absolute duration (e.g. 4->quarter note, 8->eighth note, etc.)
+* @param meter the time signature object { count, unit }
+* @return {Number}
 */
 MeiLib.dur2beats = function(dur, meter) {
   return (meter.unit/dur);
@@ -265,16 +278,23 @@ MeiLib.dur2beats = function(dur, meter) {
 
 /*
 * Convert relative duration (nuber of beats) into absolute duration (e.g. quarter note, 
-* eighth note, etc) according to time signature
+* eighth note, etc) according to time signature.
 * 
-* @param beats: duration in beats
-* @param meter: time signature object { count, unit }
-* @returns: reciprocal value of absolute duration (e.g. 4->quarter note, 8->eighth note, etc.)
+* @param beats {Number} duration in beats
+* @param meter time signature object { count, unit }
+* @return {Number} reciprocal value of absolute duration (e.g. 4 -> quarter note, 8 -> eighth note, etc.)
 */
 MeiLib.beats2dur = function(beats, meter) {
   return (meter.unit/beats);
 }
 
+/**
+ * Converts the <code>dots</code> attribute value into a duration multiplier. 
+ *
+ * @param node XML DOM object containing a node which may have <code>dots</code> attribute
+ * @return {Number} The result is 1 if no <code>dots</code> attribute is present. For <code>dots="1"</code> 
+ *                  the result is 1.5, for <code>dots="2"</code> the result is 1.75, etc.
+ */
 MeiLib.dotsMult = function(node) {
   var dots = $(node).attr('dots');
   dots = Number(dots || "0");
@@ -283,17 +303,20 @@ MeiLib.dotsMult = function(node) {
   return mult;
 }
 
-/*
+/**
+* For a given event (such as note, rest chord or space) calculates the combined legth of preceding events, 
+* or the combined lenght of all events if the given event isn't present.
 * 
-* @returns: an object { beats:number, found:boolean } where 
-*             1. 'found' is true and 'beats' is the total duration of the events that happened before the 
-*                 event 'eventid' within 'layer', or
-*             2. 'found' is false and 'beats is the total duration of the events in 'layer'.       
+* @param eventid {String} the value of the xml:id attribute of the event
+* @param layer {Object} an XML DOM object containing the MEI <Layer> element
+* @param meter the time signature object { count, unit }
+* @return an object { beats:number, found:boolean }.
+*          1. 'found' is true and 'beats' is the total duration of the events that happened before the 
+*               event 'eventid' within 'layer', or
+*          2. 'found' is false and 'beats is the total duration of the events in 'layer'.       
 */
 MeiLib.sumUpUntil = function(eventid, layer, meter) {
   
-  
-  //TODO: return { beats, found } ??? d
   var sumUpUntil_inNode = function(node_elem) {
     var node = $(node_elem);
     var node_name = node.prop('localName');
@@ -360,29 +383,64 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
   return sumUpUntil_inNode(layer);  
 }
 
-
+/**
+ * Represents an MEI <app> element. 
+ * 
+ * @param xmlID {String} the xml:id attribute value of the <app> element.
+ * @param parentID {String} the xml:id attribute value of the direct parent element of the <app> element.
+ */
 MeiLib.App = function(xmlID, parentID) {
   this.xmlID = xmlID;
   this.variants = [];
   this.parentID = parentID;
 }
 
+/**
+ * Represents a reference to a variant (<lem> or <rdg>) which is to be inserted in place of an <app>.
+ *
+ */
 MeiLib.AppReplacement = function(tagname, xmlID) {
   this.tagname = tagname;
   this.xmlID = xmlID;
 }
 
-
+/**
+ * Represents a <lem> or <rdg> element.
+ * 
+ * @param xmlID {String} the xml:id attribute value of the element.
+ * @param tagname {String} 'lem' for <lem> and 'rdg for <rdg> elements.
+ * @param source {String} space-separated list of the source IDs what the given variant belongs to.
+ */
 MeiLib.Variant = function(xmlID, tagname, source){
   this.xmlID = xmlID;
   this.tagname = tagname;
   this.source = source;
 }
 
+/**
+ * A variant-MEI is an MEI that contain one or more <app> elements.
+ * 
+ * The <code>VarianMei</code> class offers methods to access information regarding the available 
+ * variants in the score.
+ * 
+ * @param variant_mei is an XML document.
+ */
 MeiLib.VariantMei = function(variant_mei) {
   if (variant_mei) this.init(variant_mei);
 }
 
+
+/**
+ * Initializes a <code>MeiLib.VariantMei</code> object.
+ *
+ * The constructor extracts information about the variants and compiles them into JS objects. The obejcts are created and
+ * exposed:
+ *  1. <code>sourceList</code> is the list of sources as defined in MEI's header (meiHead).
+ *  2. <code>APPs</code> is an object which contains infromation about each <app> elements. It is indexed by the 
+ *     xml:id attribute value of th <app> elements.
+ *
+ * @param variant_mei is an XML document.
+ */
 MeiLib.VariantMei.prototype.init = function(variant_mei) {
   this.xmlDoc = variant_mei;
   this.head = variant_mei.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'meiHead');
@@ -403,6 +461,11 @@ MeiLib.VariantMei.prototype.getSourceList = function() {
   return this.sourceList;
 }
 
+/**
+ * Extracts information about the sources as defined in the MEI header.
+ * 
+ * @return {Object} is a container indexed by the xml:id attribute value of the <sourceDesc> element.
+ */
 MeiLib.VariantMei.prototype.parseSourceList = function() {
   var srcs = $(this.head).find('sourceDesc').children();
   this.sourceList = {};
@@ -416,6 +479,12 @@ MeiLib.VariantMei.prototype.parseSourceList = function() {
   return this.sourceList;
 }
 
+/**
+ * Extracts information about the <app> elements in the score. The method stores its result in 
+ * the <code>APPs</code> property.
+ * 
+ * <code>APPs</code> is a container of  MeiLib.App obejcts indexed by the xml:id attribute value of the <app> elements. 
+ */
 MeiLib.VariantMei.prototype.parseAPPs = function() {
   this.APPs = {};
   var apps = $(this.score).find('app');
@@ -436,6 +505,13 @@ MeiLib.VariantMei.prototype.parseAPPs = function() {
   }
 }
 
+/**
+ * Get a slice of the score.
+ *
+ * @param params {Obejct} contains the parameters for slicing. For more info see at documentation 
+ *               of MeiLib.SliceMEI
+ * @return a VariantMei object
+ */
 MeiLib.VariantMei.prototype.getSlice = function(params) {
   var slice = new MeiLib.VariantMei();
   slice.xmlDoc = this.xmlDoc;
@@ -446,19 +522,45 @@ MeiLib.VariantMei.prototype.getSlice = function(params) {
   return slice;
 }
 
-
+/**
+ * The MeiLib.SingleVariantPathScore class offers methods to transform a variant-MEI into a single-variant-path MEI, 
+ * and manipulate the single-variant-path score.
+ * 
+ * A single-variant-path score is an MEI which contains no <app> element. The term 'variant-path' refers to a combination of
+ * variants at different locations in the score. For instance, consider a score that has 2 different variants at measure 5 (let's call them 
+ * (variant A and variant B), and it contains three different variants at measure 10 (let's call those ones variants C, D and E)!
+ * In this case a variant path would contain two elements the first one is either A or B, the second one is C, D or E.
+ *
+ * The contructor takes a variant-MEI as an argument and transforms it into an MEI that contains no <app> elements any more, but 
+ * instead each <app> is replaced by the content of one its children <rdg> or <lem>.
+ *
+ * The class cretes a copy of the original MEI and performs the transformation 
+ * on the copy, hence the original MEI remains intact. The calss also stores a reference to the 
+ * original MEI so it can be accessed later.
+ * 
+ * The extracted information about all the <app> elements are stored in an array. Using this array the application
+ * can access information such as what variants are present in the score, what source a variant comes from, etc. 
+ * This array is exposed by te <code>APPs</code> property.
+ * 
+ * The constructor also records for each app element, the content of which childrend <rdg> or <lem> is included in 
+ * the transformed score. This information is stored in the <code>variantPath</code> property.
+ */
 MeiLib.SingleVariantPathScore = function(variantMEI, appReplacements){
   this.init(variantMEI, appReplacements);
 }
 
 /**
- * Create a single-variant-path score from a variant-MEI. A single-variant-path score contains no <app> element, 
- * and instead of each <app> element it contains the content of one its children <rdg> or <lem>. 
- * It's called a variant-path, because the <rdg> and <lem> whose contents are included, are not necessarily 
- * from a single source.
+ * Performs the initial transformation of the variant-MEI.
+ * 
+ * Create a single-variant-path score from a variant-MEI. A single-variant-path score is an MEI which 
+ * contains no <app> element. It is created from an MEI which does contain one or more <app> elements, (in 
+ * other words a variant-MEI). Each <app> element in the variant-MEI is replaced by the content of 
+ * one its children <rdg> or <lem>. The replacement is marked with processing instructions so it can be
+ * replaced again later.
  * 
  * @param variantMEI 
  * @param appReplacements an indexed container of { tagname, xmlID } objects
+ * @return an XML DOM object, the transformed score
  */
 MeiLib.SingleVariantPathScore.prototype.init = function(variantMEI, appReplacements) {
 
@@ -466,17 +568,18 @@ MeiLib.SingleVariantPathScore.prototype.init = function(variantMEI, appReplaceme
 
   this.variant_score = variantMEI.score[0];
   this.APPs = variantMEI.APPs;
+  // Make a copy of variant-mei. We don't want to remove nodes from the original object.
   this.score = this.variant_score.cloneNode(true);
   this.variantPath = {};
   
-  // Make a copy of variant-mei. We don't want to remove nodes from the original object.
   // Transform this.score into a single-variant-score:
-  //   1. replace every <app> with a single variant-instance
-  
-  // itereate through all <app> elements;
-  // if there's replacement defined for the app (by appReplacements[app.xmlID]),
-  // then apply that replacement, if there's nothing defined, make default selection:
-  // insert the content of first lem or first rdg!
+  //
+  //   * itereate through all <app> elements:
+  //     o if there's replacement defined for the app (by appReplacements[app.xmlID]),
+  //      - then apply that replacement, if there's nothing defined, make default selection:
+  //      - insert the content of first lem or first rdg! 
+  // When replacing an item, insert mark the location of replacement with XML 
+  // processing instructions.
   
   var apps = $(this.score).find('app');
   
@@ -490,17 +593,21 @@ MeiLib.SingleVariantPathScore.prototype.init = function(variantMEI, appReplaceme
     var app_xml_id = MeiLib.XMLID(app);
     var replacement = appReplacements[app_xml_id];
     if (replacement) {
+      // apply replacement, or...
       rdg_xml_id = replacement.xmlID;
       var tagname = replacement.tagname;
       var rdg_inst = $(this_score).find(tagname + '[xml\\:id="' + rdg_xml_id +'"]')[0];
       if (!rdg_inst) throw new MeiLib.RuntimeError('MeiLib.SingleVariantPathScore.prototype.init():E01', "Cannot find <lem> or <rdg> with @xml:id '" + rdg_xml_id + "'.");
       var_instance2insert = rdg_inst.childNodes;      
     } else {
+      // ...the default replacement is...
       var lem = $(app).find('lem')[0];
       if (lem) {
+        // ...the first lem, or...
         rdg_xml_id = MeiLib.XMLID(lem);
         var_instance2insert = lem.childNodes;
       } else {
+        // ...the first rdg.
         var rdg = $(app).find('rdg')[0];
         rdg_xml_id = MeiLib.XMLID(rdg);
         var_instance2insert = rdg.childNodes;
@@ -523,9 +630,14 @@ MeiLib.SingleVariantPathScore.prototype.init = function(variantMEI, appReplaceme
 }
 
 /**
- * @param variantPathUpdate {object} variantPathUpdate[appXmlID] = varInstXmlID is the xml:id of 
- *                                   the of the <rdg> or <lem> element to be inserted in place of the 
- *                                   original <app> element with xml:id=appXmlID.
+ * Updates the whole score by replacing one or more variant instance with another variant. 
+ * 
+ * @param variantPathUpdate {object} the list of changes. It is an container of xml:id attribute values of 
+ *                                   <rdg> or <lem> elements, indexed by the xml:id attribute values of the
+ *                                   corresponding <app> elements.
+ *                                   variantPathUpdate[appXmlID] = varInstXmlID is the xml:id attribute value of 
+ *                                   the <rdg> or <lem> element, which is to be inserted in place of the 
+ *                                   original <app xml:id=appXmlID>.
  */
 MeiLib.SingleVariantPathScore.prototype.updateVariantPath = function(variantPathUpdate) {
   for (appID in variantPathUpdate) {
@@ -594,6 +706,13 @@ MeiLib.SingleVariantPathScore.prototype.replaceVariantInstance = function(var_in
 
 
 
+/**
+ * Get a slice of the score.
+ *
+ * @param params {Obejct} contains the parameters for slicing. For more info see at documentation 
+ *               of MeiLib.SliceMEI
+ * @return an XML DOM object
+ */
 MeiLib.SingleVariantPathScore.prototype.getSlice = function(params) {
   return MeiLib.SliceMEI(this.score, params);
 }
@@ -601,9 +720,18 @@ MeiLib.SingleVariantPathScore.prototype.getSlice = function(params) {
 
 /**
  * Returns a slice of the MEI. The slice is specified by the number of the starting and ending measures.
- * @param params {obejct} like { start_n:NUMBER, end_n:NUMBER, noKey:BOOLEAN, noClef:BOOLEAN, noMeter:BOOLEAN, staves:[NUMBER] }; 
- *                             noKey, noClef and noMeter are optional. Staves is optional. If staves is set, it contains 
- *                             staff numbers that should be included in the result.
+ * @param params {obejct} like { 
+ *                               start_n:NUMBER, 
+ *                               end_n:NUMBER, 
+ *                               noKey:BOOLEAN, 
+ *                               noClef:BOOLEAN, 
+ *                               noMeter:BOOLEAN,
+ *                               noConnectors, 
+ *                               staves:[NUMBER] 
+ *                             },
+ *                        where <code>noKey</code>, <code>noClef</code> and <code>noMeter</code> and <code>noConnectors</code> 
+ *                        are optional. taves is optional. If staves is set, it is an array of staff numbers. Only the staves 
+ *                        specified in the list will be included in the resulting MEI.
  */
 MeiLib.SliceMEI = function(MEI, params) {
   
