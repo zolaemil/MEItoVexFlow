@@ -67,7 +67,7 @@
         
         <!-- children of layer can only be note, rest, space, mRest, chord or beam -->
         <classSpec ident="model.vexEventLike" mode="add" module="MEI.cmn" type="model">
-          <desc>groups event elements that occur in all notational repertoires.</desc>
+          <desc>groups event elements what MeiLib.js can accept when converting between timestamps and xml:id values</desc>
         </classSpec>
         <elementSpec ident="note" module="MEI.shared" mode="change">
           <classes mode="change">
