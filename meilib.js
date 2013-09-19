@@ -720,6 +720,15 @@ MeiLib.SingleVariantPathScore.prototype.getSlice = function(params) {
 
 /**
  * Returns a slice of the MEI. The slice is specified by the number of the starting and ending measures.
+ *
+ * About the <code>staves</code> parameter: it specifies a list of staff numbers. If it is defined, only the listed staves
+ * will be kept in the resulting slice. The following elements will be removed from:
+ *   1. <staffDef> elements (@staff value is matched against the specified list)
+ *   2. <staff> elements (@n value is matched against the specified list)
+ *   3. any other child element of measures that has @staff specified AND it is not listed.
+ * 
+ * Note that <staff> elements without @n will be removed.
+ * 
  * @param params {obejct} like { 
  *                               start_n:NUMBER, 
  *                               end_n:NUMBER, 
@@ -732,6 +741,7 @@ MeiLib.SingleVariantPathScore.prototype.getSlice = function(params) {
  *                        where <code>noKey</code>, <code>noClef</code> and <code>noMeter</code> and <code>noConnectors</code> 
  *                        are optional. taves is optional. If staves is set, it is an array of staff numbers. Only the staves 
  *                        specified in the list will be included in the resulting MEI.
+ * @return XML DOM object
  */
 MeiLib.SliceMEI = function(MEI, params) {
   
