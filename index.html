@@ -111,18 +111,31 @@
 
       <h3><a name="projects-history" class="anchor" href="#projects-history"><span class="octicon octicon-link"></span></a>Project's history</h3>
 
-      <p>This library was first created by <a href="https://github.com/ironchicken/MEItoVexFlow">Richard Lewis</a>, then expanded as part of the <a href="http://duchemin.haverford.edu/">Digital Du Chemin</a> project. Right now MEItoVexFlow is being improved on by <a href="https://github.com/zolaemil">Zoltán Kőmíves</a> thanks to sponsorship from Google Summer of Code awarded to the <a href="http://mith.umd.edu">Maryland Institute for Technology in the Humanities</a> (MITH).</p>
+      <p>This library was first created by <a href="https://github.com/ironchicken/MEItoVexFlow">Richard Lewis</a>, then expanded as part of the <a href="http://duchemin.haverford.edu/">Digital Du Chemin</a> project. Most recently MEItoVexFlow has been improved on by <a href="https://github.com/zolaemil">Zoltán Kőmíves</a> thanks to sponsorship from Google Summer of Code awarded to the <a href="http://mith.umd.edu">Maryland Institute for Technology in the Humanities</a> (MITH).</p>
 
       <h3><a name="why-mei" class="anchor" href="#why-mei"><span class="octicon octicon-link"></span></a>Why MEI?</h3>
 
       <p>The <a href="http://music-encoding.org">Music Encoding Initative</a> (MEI) maintains an XML-based format for representing music notation. This format stands out for its ability to model ambiguity in textual transcription, which is useful for encoding and digitally preserve manuscript notated music. MEI can also represent textual variants, which are crucial to critical editing and relevant to both musicological and performing musicians communities.</p>
 
-      <h3><a name="where-are-we" class="anchor" href="#where-are-we"><span class="octicon octicon-link"></span></a>Where are we?</h3>
+      <h3><a name="where-are-we" class="anchor" href="#where-are-we"><span class="octicon octicon-link"></span></a>Latest developments</h3>
 
-      <p>Visit our <a href="demo.html">demo page</a> to see what the library is capable of.</p>
+      <p>
+        MEI files can contain multiple variants for piece of music. Such variant readings may exists because some source materials, such as 
+        manuscripts or other documents that are considered 'authentic' supply us with different information. With our latest efforts we've tackled
+        the task to have MEItoVexFlow understand this sort of ambiguity and process information regarding variant readings in MEI files.
+      </p>
+      <p>
+        <a href="MEIVIEW_PAGE_URL/meiView.html">meiView</a> is sample application to showcase the abilities and potential of
+        MEItoVexFlow in displaying variant readings of musical texts. 
+        If you want more information about the sample application please visit the 
+        <a href="MEIVIEW_PAGE_URL/index.html"> meiView project page</a>!
+      </p>
+
+      <p>If you're interested to see all the different features MEItoVexFlow can display, checkout the <a href="demo.html">Feature Demo</a> page!</p>
 
       <p><h4>Recent developments in MEI-to-VexFlow are</h4>
         <ul>
+          <li>Support for the MEI Critical Apparatus module</li>
           <li>Ties and slurs can be encoded with attributes</li>
           <li>@tstamp and @tstamp2 attributes supported in tie, slur and hairpin elements</li>
           <li>System breaks</li>
