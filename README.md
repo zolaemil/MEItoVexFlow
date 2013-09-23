@@ -21,24 +21,41 @@ arguments:
 
  - `height` should be the height of the canvas (optional)
 
-The function has been tested using an MEI fragment embedded within an
-HTML document. See:
-http://igor.gold.ac.uk/~map01rl/pocac/prokofiev-op-36.html
+For sample function calls see the test cases in the 'tests' directory! 
+
+MeiLib.js
+--------- 
+
+A JavaScript library offering methods to manipulate MEI.
+
+As part of the MEI2VexFlow project, MeiLib.js has been created to offer a 
+set of VexFlow-independent methods, such as calculating timestamp
+value for a given musical event, or parsing information related to the 
+Critical Apparatus MEI module.
+
+For more information about the functions in MeiLib.js see the documentation 
+comments within the source file meilib.js
 
 Dependencies
 ------------
 
-Any browser in which this code is used must have the VexFlow and
-jQuery libraries loaded.
+ - Any browser in which this code is used must have the VexFlow and
+   jQuery libraries loaded.
+ - MEI2VexFlow uses MeiLib.js to convert timestamp values into xml:id values, 
+   therefore it cannot run without it, on the other hand,
+ - MeiLib.js can work independently from MEI2VexFlow. To use MeiLib.js on 
+   its own, simply download or reference the meilib.js file!
+
 
 Limitations
 -----------
 
 Only a small subset of MEI has so far been implemented. Many
-conventional aspects of common practice notation have been igonred
+conventional aspects of common practice notation have been ignored
 (such as repeat accidentals, stem directions). It's also important to
 remember that VexFlow is a moving target, it's in constant development
 and so this code could break at any time.
+
 
 Licence
 -------
