@@ -21,7 +21,7 @@
     </front>
     <body>
       <schemaSpec ident="mei" ns="http://www.music-encoding.org/ns/mei" start="mei meiHead meiCorpus
-        music">
+        music score">
         <moduleRef key="MEI"/>
         <moduleRef key="MEI.shared"/>
         <moduleRef key="MEI.header"/>
@@ -61,89 +61,115 @@
         <!-- (clef shape isn't important) -->
 
         <!-- TODO: meter change only between measures! -->
-        <!-- TODO: @dur of note, rest, space must be defined! -->
-        <!-- TODO: duration of chord should be well-defined! -->
-        <!-- TODO: children of beam can only be note, rest, space or chord -->
+
+        <!-- @dur of note, rest, space must be defined! -->
+        <classSpec ident="att.duration.musical.req" module="MEI.shared" type="atts" mode="add">
+          <desc>Required attributes that express duration in musical terms.</desc>
+          <attList>
+            <attDef ident="dur" usage="req">
+              <desc>records the duration of a feature using the relative durational values provided by
+                the data.DURATION datatype.</desc>
+              <datatype>
+                <rng:ref name="data.DURATION"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
         
-        <!-- children of layer can only be note, rest, space, mRest, chord or beam -->
-        <classSpec ident="model.vexEventLike" mode="add" module="MEI.cmn" type="model">
+        <classSpec ident="att.note.log" module="MEI.shared" type="atts" mode="change">
+          <classes mode="replace">
+            <memberOf key="att.event"/>
+            <memberOf key="att.accidental"/>
+            <memberOf key="att.articulation"/>
+            <memberOf key="att.augmentdots"/>
+            <memberOf key="att.duration.musical.req"/>
+            <memberOf key="att.fermatapresent"/>
+            <memberOf key="att.pitched"/>
+            <memberOf key="att.syltext"/>
+            <memberOf key="att.slurpresent"/>
+            <memberOf key="att.tiepresent"/>
+            <memberOf key="att.tupletpresent"/>
+            <memberOf key="att.note.log.cmn"/>
+            <memberOf key="att.note.log.mensural"/>
+          </classes>
+        </classSpec>
+
+        <classSpec ident="att.rest.log" module="MEI.shared" type="atts" mode="change">
+          <classes>
+            <memberOf key="att.augmentdots"/>
+            <memberOf key="att.event"/>
+            <memberOf key="att.duration.musical.req"/>
+            <memberOf key="att.fermatapresent"/>
+            <memberOf key="att.tupletpresent"/>
+            <memberOf key="att.rest.log.cmn"/>
+          </classes>
+        </classSpec>
+
+        <!-- TODO: duration of chord should be well-defined! -->
+        
+        <classSpec ident="model.meilibjs.eventLike" mode="add" module="MEI.cmn" type="model">
           <desc>groups event elements what MeiLib.js can accept when converting between timestamps and xml:id values</desc>
         </classSpec>
+        
+        <classSpec ident="model.meilibjs.simpleEventLike" mode="add" module="MEI.cmn" type="model">
+          <desc>groups event elements with atomic duration value</desc>
+          <classes>
+            <memberOf key="model.meilibjs.eventLike"/>
+          </classes>
+        </classSpec>
+        
         <elementSpec ident="note" module="MEI.shared" mode="change">
           <classes mode="change">
-            <memberOf key="att.common"/>
-            <memberOf key="att.facsimile"/>
-            <memberOf key="att.note.log"/>
-            <memberOf key="att.note.vis"/>
-            <memberOf key="att.note.ges"/>
-            <memberOf key="att.note.anl"/>
-            <memberOf key="model.eventLike"/>
-            <memberOf key="model.vexEventLike"/>
+            <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
         </elementSpec>
         <elementSpec ident="rest" module="MEI.shared" mode="change">
           <classes mode="change">
-            <memberOf key="att.common"/>
-            <memberOf key="att.facsimile"/>
-            <memberOf key="att.rest.log"/>
-            <memberOf key="att.rest.vis"/>
-            <memberOf key="att.rest.ges"/>
-            <memberOf key="att.rest.anl"/>
-            <memberOf key="model.eventLike"/>
-            <memberOf key="model.vexEventLike"/>
+            <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
         </elementSpec>
         <elementSpec ident="space" module="MEI.shared" mode="change">
           <classes mode="change">
-            <memberOf key="att.common"/>
-            <memberOf key="att.facsimile"/>
-            <memberOf key="att.space.log"/>
-            <memberOf key="att.space.vis"/>
-            <memberOf key="att.space.ges"/>
-            <memberOf key="att.space.anl"/>
-            <memberOf key="model.eventLike"/>
-            <memberOf key="model.vexEventLike"/>
+            <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
         </elementSpec>
         <elementSpec ident="mRest" module="MEI.cmn" mode="change">
           <classes mode="change">
-            <memberOf key="att.common"/>
-            <memberOf key="att.facsimile"/>
-            <memberOf key="att.mRest.log"/>
-            <memberOf key="att.mRest.vis"/>
-            <memberOf key="att.mRest.ges"/>
-            <memberOf key="att.mRest.anl"/>
-            <memberOf key="model.eventLike.measureFilling"/>
-            <memberOf key="model.vexEventLike"/>
+            <memberOf key="model.meilibjs.eventLike"/>
           </classes>
         </elementSpec>
         <elementSpec ident="chord" module="MEI.shared" mode="change">
           <classes mode="change">
-            <memberOf key="att.common"/>
-            <memberOf key="att.facsimile"/>
-            <memberOf key="att.chord.log"/>
-            <memberOf key="att.chord.vis"/>
-            <memberOf key="att.chord.ges"/>
-            <memberOf key="att.chord.anl"/>
-            <memberOf key="model.eventLike"/>
-            <memberOf key="model.vexEventLike"/>
+            <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
         </elementSpec>
+        
+        <!-- children of beam can only be note, rest, space or chord -->
         <elementSpec ident="beam" module="MEI.cmn" mode="change">
+          <desc>A container for a series of explicitly beamed events that begins and ends entirely
+            within a measure. In order to convert 
+            xml:id and timestamp values there and back, MeiLib can only accept certain elements under beam.
+            <!-- For beams that cross the bar line, use the beamSpan element.
+            Secondary beams may be broken explicitly using the breaksec attribute on the notes or chords
+            under the beam. Automated beaming, as opposed to explicitly marked beams, may be indicated
+            for an entire score, part or section by using the beam.group and beam.rests attributes on
+            these elements. --></desc>
           <classes mode="change">
-            <memberOf key="att.common"/>
-            <memberOf key="att.facsimile"/>
-            <memberOf key="att.beam.log"/>
-            <memberOf key="att.beam.vis"/>
-            <memberOf key="att.beam.ges"/>
-            <memberOf key="att.beam.anl"/>
-            <memberOf key="model.eventLike.cmn"/>
-            <memberOf key="model.vexEventLike"/>
+            <memberOf key="model.meilibjs.eventLike"/>
           </classes>
+          <content mode="replace">
+            <rng:zeroOrMore>
+              <rng:choice>
+                <rng:ref name="model.meilibjs.simpleEventLike"/>
+              </rng:choice>
+            </rng:zeroOrMore>
+          </content>
         </elementSpec>
+        
+        <!-- children of layer can only be note, rest, space, mRest, chord or beam -->
         <elementSpec ident="layer" module="MEI.shared" mode="change">
           <desc mode="change">An independent stream of events on a staff. In order to convert 
-            xml:ids into timestamp and back, MeiLib can only accept certain elements under layer.
+            xml:id and timestamp values there and back, MeiLib.js can only accept certain elements under layer.
             <!-- The term 'layer' is used instead of
             'voice' in order to avoid confusion between 'voice' and 'voice leading'. The def attribute
             may be used to create a connection with a layerDef element where logical and visual
@@ -153,7 +179,7 @@
             order of the layer definitions.--></desc>
           <content mode="replace">
             <rng:zeroOrMore>
-                <rng:ref name="model.vexEventLike"/>
+                <rng:ref name="model.meilibjs.eventLike"/>
             </rng:zeroOrMore>
           </content>
         </elementSpec>
