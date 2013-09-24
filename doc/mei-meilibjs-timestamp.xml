@@ -58,10 +58,34 @@
         <classSpec ident="model.layerPart.mensuralAndNeumes" module="MEI.shared" type="model"
           mode="delete"/>
         
-        <!-- (clef shape isn't important) -->
+        <!-- meter change only between measures! 
+          ==> 1. sub-layer meter changes: forbidden by the constraint 'children of layer can only 
+                 be note, rest, space, mRest, chord or beam'
+              2. super-layer meter changes (<layer n="1"/><staffDef/><layer n="1">): 
+                 ASSERT: if staffDef contains meter.count or meter.unit, then they should be the same than the closest 
+                         staffDef (with same @n) backwards in the tree.
+          TODO: test this rule!
+        -->
+        <elementSpec ident="staffDef" module="MEI.shared" mode="change">
+          <constraintSpec ident="meilibjs_meterChange" scheme="isoschematron" mode="change">
+            <constraint>
+              <sch:rule context="mei:staffDef[@meter.count][ancestor::mei:measure]">
+                <sch:let name="this_n" value="@n"/>
+                <sch:let name="this_meter_count" value="@meter.count"/>
+                <sch:let name="prev_meter_count" value="preceding::mei:scoreDef[@n=$this_n and @meter.count][1]/@meter.count"/>
+                <sch:assert test="$this_meter_count = $prev_meter_count">cannot change time signature within a measure.</sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:staffDef[@meter.unit][ancestor::mei:measure]"> 
+                <sch:let name="this_n" value="@n"/>
+                <sch:let name="this_meter_unit" value="@meter.unit"/>
+                <sch:let name="prev_meter_unit" value="preceding::mei:scoreDef[@n=$this_n and @meter.unit][1]/@meter.unit"/>
+                <sch:assert test="$this_meter_unit = $prev_meter_unit">cannot change time signature within a measure.</sch:assert>
+              </sch:rule>
+            </constraint>
+          </constraintSpec>
+        </elementSpec>
 
-        <!-- TODO: meter change only between measures! -->
-
+        
         <!-- @dur of note, rest, space must be defined! -->
         <classSpec ident="att.duration.musical.req" module="MEI.shared" type="atts" mode="add">
           <desc>Required attributes that express duration in musical terms.</desc>
@@ -104,8 +128,6 @@
             <memberOf key="att.rest.log.cmn"/>
           </classes>
         </classSpec>
-
-        <!-- TODO: duration of chord should be well-defined! -->
         
         <classSpec ident="model.meilibjs.eventLike" mode="add" module="MEI.cmn" type="model">
           <desc>groups event elements what MeiLib.js can accept when converting between timestamps and xml:id values</desc>
@@ -138,17 +160,68 @@
             <memberOf key="model.meilibjs.eventLike"/>
           </classes>
         </elementSpec>
+
         <elementSpec ident="chord" module="MEI.shared" mode="change">
           <classes mode="change">
             <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
+
+          <!-- duration of should should be well-defined! 
+               A) all child notes, as long as they belong to the current layer, must have the 
+                  same @dur value.
+               B) if @dur is defined, it should be the same value then all 
+                  child elements' @dur if any of them are defined.
+          -->    
+          <constraintSpec ident="meilibjs_chordDur" scheme="isoschematron" mode="change">
+            <constraint>
+              <sch:rule context="mei:chord[@dur][ancestor::layer[@n]]">
+                <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
+                <sch:assert test="*[not(@layer)]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:chord[@dur][ancestor::layer[not(@n)]]">
+                <sch:let name="this_layer" value="1"/>
+                <sch:assert test="*[not(@layer)]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:chord[not(@dur)][ancestor::layer[@n]]">
+                <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>                
+                <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
+                <sch:assert test="*[not(@layer)]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:chord[not(@dur)][ancestor::layer[not(@n)]]">
+                <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>
+                <sch:let name="this_layer" value="1"/>
+                <sch:assert test="*[not(@layer)]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+            </constraint>
+          </constraintSpec>
+          
         </elementSpec>
         
         <!-- children of beam can only be note, rest, space or chord -->
         <elementSpec ident="beam" module="MEI.cmn" mode="change">
           <desc>A container for a series of explicitly beamed events that begins and ends entirely
             within a measure. In order to convert 
-            xml:id and timestamp values there and back, MeiLib can only accept certain elements under beam.
+            xml:id and timestamp values there and back, MeiLib.js can only accept certain elements under beam.
             <!-- For beams that cross the bar line, use the beamSpan element.
             Secondary beams may be broken explicitly using the breaksec attribute on the notes or chords
             under the beam. Automated beaming, as opposed to explicitly marked beams, may be indicated
