@@ -106,6 +106,7 @@ MeiLibTest = function(){
 
   var variantPathUpdate = {};
   variantPathUpdate['app01.l1s1m2'] = 'B_xyz';
+  variantPathUpdate['app.m8-9'] = 'rdg.app.m9-10';
   single_path_score.updateVariantPath(variantPathUpdate);
   
   print_xml(single_path_score.score);

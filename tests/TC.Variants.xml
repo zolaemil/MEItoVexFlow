@@ -101,6 +101,12 @@
 								</layer>
 							</staff>
 						</mei:measure>
+						<app xml:id="app.m8-9">
+							<lem xml:id="lem.app.m9-10"/>
+							<rdg xml:id="rdg.app.m9-10" source="A">
+								<mei:measure/>
+							</rdg>
+						</app>
 						<mei:measure n="9">
 							<staff n="1">
 								<layer>
