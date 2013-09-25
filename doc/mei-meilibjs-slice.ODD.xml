@@ -91,11 +91,19 @@
           </constraintSpec>
         </elementSpec>
         
-        
-
-        <!-- TODO: <staff> must have @n if staves parameter are to be used! 
-        mandatory when applicable?
-        -->
+        <!-- <staff> must have @n if staves parameter are to be used -->
+        <elementSpec ident="staff" module="MEI.shared" mode="change">
+          <attList>
+            <attDef ident="n" usage="mwa" mode="replace">
+              <desc>provides a name or number designation for an element. While the value need not be
+                unique, it is required to be a single token. It is applicable, therefore mandatory, 
+                when the the 'staves' parameter is provided for the meilib.js slicing functions.</desc>
+              <datatype>
+                <rng:data type="NMTOKEN"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </elementSpec>
         
       </schemaSpec>
     </body>
