@@ -63,7 +63,7 @@
 								<layer>
 									<app xml:id="app02.l1s1m3">
 										<lem/>
-										<rdg xml:id="A" source="A">
+										<rdg xml:id="rdg.app02.l1s1m3" source="#A">
 											<rest dur="2"/>
 										</rdg>
 									</app>
