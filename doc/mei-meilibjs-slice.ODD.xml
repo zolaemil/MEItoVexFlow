@@ -60,7 +60,7 @@
         
         <!-- (clef shape isn't important) -->
         <!-- (time signature isn't important) -->
-        <!-- TODO: sub-measure variants only 
+        <!-- sub-measure variants only 
              * only one section AND 
              * children of section cannot be <app>
         -->
