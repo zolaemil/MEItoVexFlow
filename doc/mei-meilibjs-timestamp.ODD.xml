@@ -231,14 +231,6 @@
         
         <!-- children of beam can only be note, rest, space or chord -->
         <elementSpec ident="beam" module="MEI.cmn" mode="change">
-          <desc>A container for a series of explicitly beamed events that begins and ends entirely
-            within a measure. In order to convert 
-            xml:id and timestamp values there and back, MeiLib.js can only accept certain elements under beam.
-            <!-- For beams that cross the bar line, use the beamSpan element.
-            Secondary beams may be broken explicitly using the breaksec attribute on the notes or chords
-            under the beam. Automated beaming, as opposed to explicitly marked beams, may be indicated
-            for an entire score, part or section by using the beam.group and beam.rests attributes on
-            these elements. --></desc>
           <classes mode="change">
             <memberOf key="model.meilibjs.eventLike"/>
           </classes>
