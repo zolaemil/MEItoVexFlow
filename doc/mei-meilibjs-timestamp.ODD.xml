@@ -119,13 +119,25 @@
         </classSpec>
 
         <classSpec ident="att.rest.log" module="MEI.shared" type="atts" mode="change">
-          <classes>
+          <classes mode="replace">
             <memberOf key="att.augmentdots"/>
             <memberOf key="att.event"/>
             <memberOf key="att.duration.musical.req"/>
             <memberOf key="att.fermatapresent"/>
             <memberOf key="att.tupletpresent"/>
             <memberOf key="att.rest.log.cmn"/>
+          </classes>
+        </classSpec>
+
+        <classSpec ident="att.space.log" module="MEI.shared" type="atts" mode="change">
+          <desc>Logical domain attributes.</desc>
+          <classes mode="replace">
+            <memberOf key="att.augmentdots"/>
+            <memberOf key="att.event"/>
+            <memberOf key="att.duration.musical.req"/>
+            <memberOf key="att.fermatapresent"/>
+            <memberOf key="att.tupletpresent"/>
+            <memberOf key="att.space.log.cmn"/>
           </classes>
         </classSpec>
         
