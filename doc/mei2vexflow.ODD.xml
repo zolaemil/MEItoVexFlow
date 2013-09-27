@@ -1,0 +1,299 @@
+<?xml-model href="../source/tei_odds.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="../source/tei_odds.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:rng="http://relaxng.org/ns/structure/1.0"
+  xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>MEI to VexFlow - accepted MEI format</title>
+      </titleStmt>
+      <publicationStmt>
+        <p/>
+      </publicationStmt>
+      <sourceDesc>
+        <p/>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <divGen type="toc"/>
+    </front>
+    <body>
+      
+      <!-- Give this ODD a name (@ident) and define which elements are allowed as root element.-->
+      
+      <!-- I think score or body could be a starting point too, as MEI2VF doesn't do anything with header! -->
+      <schemaSpec ident="MEI2VF" ns="http://www.music-encoding.org/ns/mei" start="mei music body mdiv">
+        
+        <!-- Only allow those modules that you know MEI2VF can understand, exclude the others -->
+        
+        <moduleRef key="MEI"/>
+        <moduleRef key="MEI.shared"/>
+        <moduleRef key="MEI.header"/> <!-- MEI2VF won't really do anything with this, but it's too essential to be excluded -->
+        <moduleRef key="MEI.cmn"/>
+        <!--<moduleRef key="MEI.mensural"/> -->
+        <!--<moduleRef key="MEI.neumes"/>-->
+        <!--<moduleRef key="MEI.analysis"/>-->
+        <!--<moduleRef key="MEI.cmnOrnaments"/>-->
+        <!--<moduleRef key="MEI.corpus"/>-->
+        <moduleRef key="MEI.critapp"/>
+        <!--<moduleRef key="MEI.edittrans"/>-->
+        <!--<moduleRef key="MEI.facsimile"/>-->
+        <!--<moduleRef key="MEI.figtable"/>-->
+        <!--<moduleRef key="MEI.frbr"/>-->
+        <!--<moduleRef key="MEI.harmony"/>-->
+        <moduleRef key="MEI.linkalign"/>
+        <moduleRef key="MEI.lyrics"/>
+        <!--<moduleRef key="MEI.midi"/>-->
+        <!--<moduleRef key="MEI.namesdates"/>-->
+        <!--<moduleRef key="MEI.performance"/>-->
+        <moduleRef key="MEI.ptrref"/>
+        <!--<moduleRef key="MEI.tablature"/>-->
+        <moduleRef key="MEI.text"/>
+        <!--<moduleRef key="MEI.usersymbols"/>-->
+
+        <!-- Disable mensural- and neume-specific model classes in the shared module -->
+        <classSpec ident="model.scorePart.mensuralAndNeumes" module="MEI.shared" type="model"
+          mode="delete"/>
+        <classSpec ident="model.sectionPart.mensuralAndNeumes" module="MEI.shared" type="model"
+          mode="delete"/>
+        <classSpec ident="model.staffPart.mensuralAndNeumes" module="MEI.shared" type="model"
+          mode="delete"/>
+        <classSpec ident="model.layerPart.mensuralAndNeumes" module="MEI.shared" type="model"
+          mode="delete"/>
+        
+        <!-- The things that you can change are: 
+              * elements
+              * classes (of attributes and of elements)
+              * macros (datatypes and predetermined content models)
+        -->
+
+       <!-- ===============================================================================   
+            === MEI2VexFlow specific constraints ==========================================  -->
+     
+             
+        <!-- staffDef constraints:
+              - @n (mandatory)
+              - @meter.count @meter.unit (mandatory)
+              - @key.sig
+              - @key.pname
+              - @key.accid
+              - @clef.shape (mandatory)
+              - @clef.line (mandatory)
+              - @clef.dis (only '8')
+              - @clef.dis.place (only 'below')
+
+              - @clef.visible 
+              - @meter.rend
+              - @key.sig.show
+        -->
+        <classSpec ident="att.mei2vf.common.req" module="MEI.shared" type="atts" mode="add">
+          <desc>Attributes required by MEItoVexFlow.</desc>
+          <attList>
+            <attDef ident="n" usage="req">
+              <desc>provides a name or number designation for an element. While the value need not be
+                unique, it is required to be a single token.</desc>
+              <datatype>
+                <rng:data type="NMTOKEN"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+        
+        <classSpec ident="att.mei2vf.common.opt" module="MEI.shared" type="atts" mode="add">
+          <desc>Optional common attributes in MEItoVexFlow</desc>
+          <attList>
+            <attDef ident="label" usage="opt">
+              <desc>provides a label for an element. The value may be any string.</desc>
+            </attDef>
+            <attDef ident="xml:base" usage="opt">
+              <desc>provides a base URI reference with which applications can resolve relative URI
+                references into absolute URI references.</desc>
+              <datatype>
+                <rng:ref name="data.URI"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+        
+        <elementSpec ident="staffDef" module="MEI.shared" mode="change">
+          <desc>(staff definition) – Container for staff meta-information. MEI2VexFlow requires 
+            staffDef elements to specify clef and time signature.</desc>
+          <classes mode="replace">
+            <memberOf key="att.mei2vf.common.req"/>
+            <memberOf key="att.mei2vf.common.opt"/>
+            <memberOf key="att.declaring"/>
+            <memberOf key="att.staffDef.log"/>
+            <memberOf key="att.staffDef.vis"/>
+            <memberOf key="att.staffDef.ges"/>
+            <memberOf key="att.staffDef.anl"/>
+            <memberOf key="model.staffDefLike"/>
+          </classes>
+          <!-- only certain combinations of attributes @clef.shape and @clef.line are allowed -->
+          <constraintSpec ident="Limit_Clefs" scheme="isoschematron">
+            <constraint>
+              <sch:rule context="mei:staffDef">
+                <sch:assert test="if (@clef.shape='G') then (@clef.line='2')">
+                  @clef.line must be set to '2' when @clef.shape is 'G'.
+                </sch:assert>
+                <sch:assert test="if (@clef.shape='F') then (@clef.line='4')">
+                  @clef.line must be set to '4' when @clef.shape is 'F'.
+                </sch:assert>
+                <sch:assert test="if (@clef.shape='C') then (@clef.line='3' or @clef.line='2' or @clef.line='4')">
+                  @clef.line must be set to '2', '3' or '4' when @clef.shape is 'C'.
+                </sch:assert>
+              </sch:rule>
+            </constraint>
+          </constraintSpec>
+        </elementSpec>
+        
+        <macroSpec ident="data.OCTAVE.DIS" module="MEI" type="dt" mode="change">
+          <desc>The amount of octave displacement; MEI2VexFlow allows one octave siaplacement, 
+            that is, '8' (as in '8va' for 1 octave). (MEI-cmn also allows 
+            '15' for 2 octaves, and '22' for 3 octaves.)</desc>
+          <content mode="replace">
+            <rng:data type="positiveInteger">
+              <rng:param name="pattern">8</rng:param>
+            </rng:data>
+          </content>
+        </macroSpec>
+        
+        <macroSpec ident="data.DIS.PLACE" module="MEI" type="dt" mode="change">
+          <content>
+            <rng:choice>
+              <rng:value>below</rng:value>
+            </rng:choice>
+          </content>
+        </macroSpec>
+        
+        <classSpec ident="att.mei2vf.cleffing.log" module="MEI.shared" type="atts" mode="add">
+          <attList>
+            <attDef ident="clef.shape" usage="req">
+              <desc>encodes a value for the clef symbol.</desc>
+              <datatype>
+                <rng:ref name="data.CLEFSHAPE"/>
+              </datatype>
+            </attDef>
+            <attDef ident="clef.line" usage="req">
+              <desc>contains a default value for the position of the clef. The value must be in the
+                range between 1 and the number of lines on the staff. The numbering of lines starts with
+                the lowest line of the staff.</desc>
+              <datatype>
+                <rng:ref name="data.CLEFLINE"/>
+              </datatype>
+            </attDef>
+            <attDef ident="clef.dis" usage="opt">
+              <desc>records the amount of octave displacement to be applied to the clef.</desc>
+              <datatype>
+                <rng:ref name="data.OCTAVE.DIS"/>
+              </datatype>
+            </attDef>
+            <attDef ident="clef.dis.place" usage="opt" mode="replace">
+              <datatype>
+                <rng:ref name="data.DIS.PLACE"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+        
+        
+        <classSpec ident="att.mei2vf.meterSigDefault.log" module="MEI.shared" type="atts" mode="add">
+          <desc>Used by staffDef and scoreDef to provide default values for attributes in the logical
+            domain related to meter signature.</desc>
+          <attList>
+            <attDef ident="meter.count" usage="req">
+              <desc>captures the number of beats in a measure, that is, the top number of the meter
+                signature. It must contain a decimal number or an additive expression that evaluates to
+                a decimal number, such as 2+3.</desc>
+              <datatype>
+                <rng:data type="string">
+                  <rng:param name="pattern">\d+(\.\d+)?(\s*\+\s*\d+(\.\d+)?)*</rng:param>
+                </rng:data>
+              </datatype>
+            </attDef>
+            <attDef ident="meter.unit" usage="req">
+              <desc>contains the number indicating the beat unit, that is, the bottom number of the
+                meter signature.</desc>
+              <datatype>
+                <rng:data type="decimal"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+        
+        
+        <classSpec ident="att.staffDef.log" module="MEI.shared" type="atts" mode="change">
+          <classes mnode="replace">
+            <memberOf key="att.mei2vf.cleffing.log"/>
+            <memberOf key="att.duration.default"/>
+            <memberOf key="att.keySigDefault.log"/>
+            <memberOf key="att.mei2vf.meterSigDefault.log"/>
+            <memberOf key="att.octavedefault"/>
+            <memberOf key="att.transposition"/>
+            <memberOf key="att.staffDef.log.cmn"/>
+            <memberOf key="att.staffDef.log.mensural"/>
+          </classes>
+        </classSpec>
+        
+        <!-- TODO: @dur @pname and @oct must be defined on note elements 
+                   A) @dur must be defined for note elements:
+                      TODO: INCLUDE CONSTR '@dur of note, rest, space must be defined!' in mei-meilibjs-timestamp.ODD
+                   B) @pname and @oct must be defined on note elements
+        -->
+        
+        <!-- B) @pname and @oct are always required -->
+        <classSpec ident="att.pitch" module="MEI.shared" type="atts" mode="change">
+          <attList>
+            <attDef ident="pname" usage="req" mode="change"/>
+          </attList>
+        </classSpec>
+        <classSpec ident="att.octave" module="MEI.shared" type="atts" mode="change">
+          <attList>
+            <attDef ident="oct" usage="req" mode="change"/>
+          </attList>
+        </classSpec>
+        
+        <!-- @dur must be defined on rest elements 
+          TODO: INCLUDE CONSTR '@dur of note, rest, space must be defined!' in mei-meilibjs-timestamp.ODD
+        -->
+        
+        <!-- space element isn't supported -->
+        <elementSpec ident="space" module="MEI.shared" mode="delete"/>
+                
+        <!-- children of section can only be:
+              - measure
+              - scoreDef
+              - staffDef
+              - sb
+             This constraint is implemented by removing elements that aren't supported anyway:
+        --> 
+        <elementSpec ident="ending" module="MEI.shared" mode="delete"/>
+        <elementSpec ident="annot" module="MEI.shared" mode="delete"/>
+        <elementSpec ident="ending" module="MEI.shared" mode="delete"/>
+        <elementSpec ident="expansion" module="MEI.shared" mode="delete"/>
+        <elementSpec ident="pb" module="MEI.shared" mode="delete"/>
+
+
+        
+        <!-- Clef constraints -->
+        <macroSpec ident="data.CLEFSHAPE" module="MEI" type="dt" mode="change">
+          <desc>Clef shape attribute values (Read, p.53-56). Some values correspond to the Unicode
+            Standard. MEI2VF can only render G, F and C clef glyphs.</desc>
+          <content>
+            <rng:choice>
+              <rng:value>G</rng:value>
+              <a:documentation>G clef (Unicode 1D11E)</a:documentation>
+              <rng:value>F</rng:value>
+              <a:documentation>F clef (Unicode 1D122)</a:documentation>
+              <rng:value>C</rng:value>
+              <a:documentation>C clef (Unicode 1D121)</a:documentation>
+            </rng:choice>
+          </content>
+        </macroSpec>
+                
+
+      </schemaSpec>
+    </body>
+  </text>
+</TEI>
