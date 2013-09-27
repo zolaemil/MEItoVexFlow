@@ -178,7 +178,7 @@
             <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
 
-          <!-- duration of should should be well-defined! 
+          <!-- duration of chord should be well-defined! 
                A) all child notes, as long as they belong to the current layer, must have the 
                   same @dur value.
                B) if @dur is defined, it should be the same value then all 
