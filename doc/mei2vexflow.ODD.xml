@@ -168,55 +168,55 @@
           <classes mode="change">
             <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
-            <!-- duration of chord should be well-defined! 
-                 A) all child notes, as long as they belong to the current layer, must have the 
-                    same @dur value.
-                 B) if @dur is defined, it should be the same value then all 
-                    child elements' @dur if any of them are defined.
-            -->    
-            <constraintSpec ident="meilibjs_chordDur" scheme="isoschematron" mode="change">
-              <constraint>
-                <sch:rule context="mei:chord[@dur][ancestor::layer[@n]]">
-                  <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
-                  <sch:assert test="*[not(@layer)]/@dur = @dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                  <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                </sch:rule>
-                <sch:rule context="mei:chord[@dur][ancestor::layer[not(@n)]]">
-                  <sch:let name="this_layer" value="1"/>
-                  <sch:assert test="*[not(@layer)]/@dur = @dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                  <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                </sch:rule>
-                <sch:rule context="mei:chord[not(@dur)][ancestor::layer[@n]]">
-                  <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>                
-                  <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
-                  <sch:assert test="*[not(@layer)]/@dur = $this_dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                  <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                </sch:rule>
-                <sch:rule context="mei:chord[not(@dur)][ancestor::layer[not(@n)]]">
-                  <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>
-                  <sch:let name="this_layer" value="1"/>
-                  <sch:assert test="*[not(@layer)]/@dur = $this_dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                  <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
-                    duration of chord must be well-defined
-                  </sch:assert>
-                </sch:rule>
-              </constraint>
-            </constraintSpec>
-          </elementSpec>
+          <!-- duration of chord should be well-defined! 
+               A) all child notes, as long as they belong to the current layer, must have the 
+                  same @dur value.
+               B) if @dur is defined, it should be the same value then all 
+                  child elements' @dur if any of them are defined.
+          -->    
+          <constraintSpec ident="meilibjs_chordDur" scheme="isoschematron" mode="change">
+            <constraint>
+              <sch:rule context="mei:chord[@dur][ancestor::layer[@n]]">
+                <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
+                <sch:assert test="*[not(@layer)]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:chord[@dur][ancestor::layer[not(@n)]]">
+                <sch:let name="this_layer" value="1"/>
+                <sch:assert test="*[not(@layer)]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:chord[not(@dur)][ancestor::layer[@n]]">
+                <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>                
+                <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
+                <sch:assert test="*[not(@layer)]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:chord[not(@dur)][ancestor::layer[not(@n)]]">
+                <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>
+                <sch:let name="this_layer" value="1"/>
+                <sch:assert test="*[not(@layer)]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+                <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
+                  duration of chord must be well-defined
+                </sch:assert>
+              </sch:rule>
+            </constraint>
+          </constraintSpec>
+        </elementSpec>
           
           
         <!-- children of beam can only be note, rest, space or chord -->
