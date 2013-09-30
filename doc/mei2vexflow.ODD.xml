@@ -68,25 +68,198 @@
               * classes (of attributes and of elements)
               * macros (datatypes and predetermined content models)
         -->
+        
+        
+        <!-- ===============================================================================   
+             === CONSTRAINTS INHERITED FROM MEILIB.JS TIMESTAMP CONVERSION METHODS =========  
+        -->
+        
+        <!-- @dur of note, rest, space must be defined! -->
+        <classSpec ident="att.duration.musical.req" module="MEI.shared" type="atts" mode="add">
+          <desc>Required attributes that express duration in musical terms.</desc>
+          <attList>
+            <attDef ident="dur" usage="req">
+              <desc>records the duration of a feature using the relative durational values provided by
+                the data.DURATION datatype.</desc>
+              <datatype>
+                <rng:ref name="data.DURATION"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+        
+        <classSpec ident="att.note.log" module="MEI.shared" type="atts" mode="change">
+          <classes mode="replace">
+            <memberOf key="att.event"/>
+            <memberOf key="att.accidental"/>
+            <memberOf key="att.articulation"/>
+            <memberOf key="att.augmentdots"/>
+            <memberOf key="att.duration.musical.req"/>
+            <memberOf key="att.fermatapresent"/>
+            <memberOf key="att.pitched"/>
+            <memberOf key="att.syltext"/>
+            <memberOf key="att.slurpresent"/>
+            <memberOf key="att.tiepresent"/>
+            <memberOf key="att.tupletpresent"/>
+            <memberOf key="att.note.log.cmn"/>
+            <memberOf key="att.note.log.mensural"/>
+          </classes>
+        </classSpec>
+
+        <classSpec ident="att.rest.log" module="MEI.shared" type="atts" mode="change">
+          <classes mode="replace">
+            <memberOf key="att.augmentdots"/>
+            <memberOf key="att.event"/>
+            <memberOf key="att.duration.musical.req"/>
+            <memberOf key="att.fermatapresent"/>
+            <memberOf key="att.tupletpresent"/>
+            <memberOf key="att.rest.log.cmn"/>
+          </classes>
+        </classSpec>
+
+        <!-- 'space' element isn't supported by MEI2VF
+        <classSpec ident="att.space.log" module="MEI.shared" type="atts" mode="change">
+          <desc>Logical domain attributes.</desc>
+          <classes mode="replace">
+            <memberOf key="att.augmentdots"/>
+            <memberOf key="att.event"/>
+            <memberOf key="att.duration.musical.req"/>
+            <memberOf key="att.fermatapresent"/>
+            <memberOf key="att.tupletpresent"/>
+            <memberOf key="att.space.log.cmn"/>
+          </classes>
+        </classSpec>        
+ -->
+        
+        <classSpec ident="model.meilibjs.eventLike" mode="add" module="MEI.cmn" type="model">
+          <desc>groups event elements what MeiLib.js can accept when converting between timestamps and xml:id values</desc>
+        </classSpec>
+        
+        <classSpec ident="model.meilibjs.simpleEventLike" mode="add" module="MEI.cmn" type="model">
+          <desc>groups event elements with atomic duration value</desc>
+          <classes>
+            <memberOf key="model.meilibjs.eventLike"/>
+          </classes>
+        </classSpec>
+        
+        <elementSpec ident="note" module="MEI.shared" mode="change">
+          <classes mode="change">
+            <memberOf key="model.meilibjs.simpleEventLike"/>
+          </classes>
+        </elementSpec>
+        <elementSpec ident="rest" module="MEI.shared" mode="change">
+          <classes mode="change">
+            <memberOf key="model.meilibjs.simpleEventLike"/>
+          </classes>
+        </elementSpec>
+        <!-- 'space' element isn't supported by MEI2VF
+        <elementSpec ident="space" module="MEI.shared" mode="change">
+          <classes mode="change">
+            <memberOf key="model.meilibjs.simpleEventLike"/>
+          </classes>
+        </elementSpec> -->
+        <elementSpec ident="mRest" module="MEI.cmn" mode="change">
+          <classes mode="change">
+            <memberOf key="model.meilibjs.eventLike"/>
+          </classes>
+        </elementSpec>
+
+        <elementSpec ident="chord" module="MEI.shared" mode="change">
+          <classes mode="change">
+            <memberOf key="model.meilibjs.simpleEventLike"/>
+          </classes>
+            <!-- duration of chord should be well-defined! 
+                 A) all child notes, as long as they belong to the current layer, must have the 
+                    same @dur value.
+                 B) if @dur is defined, it should be the same value then all 
+                    child elements' @dur if any of them are defined.
+            -->    
+            <constraintSpec ident="meilibjs_chordDur" scheme="isoschematron" mode="change">
+              <constraint>
+                <sch:rule context="mei:chord[@dur][ancestor::layer[@n]]">
+                  <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
+                  <sch:assert test="*[not(@layer)]/@dur = @dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                  <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                </sch:rule>
+                <sch:rule context="mei:chord[@dur][ancestor::layer[not(@n)]]">
+                  <sch:let name="this_layer" value="1"/>
+                  <sch:assert test="*[not(@layer)]/@dur = @dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                  <sch:assert test="*[@layer=$this_layer]/@dur = @dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                </sch:rule>
+                <sch:rule context="mei:chord[not(@dur)][ancestor::layer[@n]]">
+                  <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>                
+                  <sch:let name="this_layer" value="ancestor::layer[1]/@n"/>
+                  <sch:assert test="*[not(@layer)]/@dur = $this_dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                  <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                </sch:rule>
+                <sch:rule context="mei:chord[not(@dur)][ancestor::layer[not(@n)]]">
+                  <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>
+                  <sch:let name="this_layer" value="1"/>
+                  <sch:assert test="*[not(@layer)]/@dur = $this_dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                  <sch:assert test="*[@layer=$this_layer]/@dur = $this_dur">
+                    duration of chord must be well-defined
+                  </sch:assert>
+                </sch:rule>
+              </constraint>
+            </constraintSpec>
+          </elementSpec>
+          
+          
+        <!-- children of beam can only be note, rest, space or chord -->
+        <elementSpec ident="beam" module="MEI.cmn" mode="change">
+          <classes mode="change">
+            <memberOf key="model.meilibjs.eventLike"/>
+          </classes>
+          <content mode="replace">
+            <rng:zeroOrMore>
+              <rng:choice>
+                <rng:ref name="model.meilibjs.simpleEventLike"/>
+              </rng:choice>
+            </rng:zeroOrMore>
+          </content>
+        </elementSpec>
+
+        <!-- children of layer can only be note, rest, space, mRest, chord or beam -->
+        <elementSpec ident="layer" module="MEI.shared" mode="change">
+          <desc mode="change">An independent stream of events on a staff. In order to convert 
+            xml:id and timestamp values there and back, MeiLib.js can only accept certain elements under layer.
+            <!-- The term 'layer' is used instead of
+            'voice' in order to avoid confusion between 'voice' and 'voice leading'. The def attribute
+            may be used to create a connection with a layerDef element where logical and visual
+            information about the layer is recorded. Alternatively, the n attribute may be used as a
+            reference to a layerDef element with the same value in its n attribute. If neither def nor n
+            attributes are present, then encoding order of the layers is presumed to match the encoding
+            order of the layer definitions.--></desc>
+          <content mode="replace">
+            <rng:zeroOrMore>
+                <rng:ref name="model.meilibjs.eventLike"/>
+            </rng:zeroOrMore>
+          </content>
+        </elementSpec>
 
        <!-- ===============================================================================   
-            === MEI2VexFlow specific constraints ==========================================  -->
-     
+            === CONSTRAINTS SPECIFIC TO MEI2VF ============================================
+            (SOME ARE MERGED WITH CONSTRAINTS INHERITED FROM MEILIB.JS TIMESTAMP CONVERSION METHODS)    
+       -->
              
         <!-- staffDef constraints:
-              - @n (mandatory)
-              - @meter.count @meter.unit (mandatory)
-              - @key.sig
-              - @key.pname
-              - @key.accid
-              - @clef.shape (mandatory)
-              - @clef.line (mandatory)
-              - @clef.dis (only '8')
-              - @clef.dis.place (only 'below')
-
-              - @clef.visible 
-              - @meter.rend
-              - @key.sig.show
+              - mandatory attributes: @n, @meter.count, @meter.unit, @clef.shape, @clef.line
+              - @clef.dis value only '8'
+              - @clef.dis.place value only 'below'
         -->
         <classSpec ident="att.mei2vf.common.req" module="MEI.shared" type="atts" mode="add">
           <desc>Attributes required by MEItoVexFlow.</desc>
@@ -118,8 +291,9 @@
         </classSpec>
         
         <elementSpec ident="staffDef" module="MEI.shared" mode="change">
-          <desc>(staff definition) – Container for staff meta-information. MEI2VexFlow requires 
-            staffDef elements to specify clef and time signature.</desc>
+          <desc>(staff definition) – Container for staff meta-information. Only certain combinations of 
+            attributes @clef.shape and @clef.line are allowed by MEItoVexFlow. Change of time 
+            signature isn't allowed within measures.</desc>
           <classes mode="replace">
             <memberOf key="att.mei2vf.common.req"/>
             <memberOf key="att.mei2vf.common.opt"/>
@@ -130,6 +304,7 @@
             <memberOf key="att.staffDef.anl"/>
             <memberOf key="model.staffDefLike"/>
           </classes>
+          
           <!-- only certain combinations of attributes @clef.shape and @clef.line are allowed -->
           <constraintSpec ident="Limit_Clefs" scheme="isoschematron">
             <constraint>
@@ -143,6 +318,31 @@
                 <sch:assert test="if (@clef.shape='C') then (@clef.line='3' or @clef.line='2' or @clef.line='4')">
                   @clef.line must be set to '2', '3' or '4' when @clef.shape is 'C'.
                 </sch:assert>
+              </sch:rule>
+            </constraint>
+          </constraintSpec>
+          
+          <!-- meter change only between measures! 
+            ==> 1. sub-layer meter changes: forbidden by the constraint 'children of layer can only 
+                   be note, rest, space, mRest, chord or beam'
+                2. super-layer meter changes (<layer n="1"/><staffDef/><layer n="1">): 
+                   ASSERT: if staffDef contains meter.count or meter.unit, then they should be the same than the closest 
+                           staffDef (with same @n) backwards in the tree.
+            TODO: test this rule!
+          -->
+          <constraintSpec ident="meilibjs_meterChange" scheme="isoschematron" mode="change">
+            <constraint>
+              <sch:rule context="mei:staffDef[@meter.count][ancestor::mei:measure]">
+                <sch:let name="this_n" value="@n"/>
+                <sch:let name="this_meter_count" value="@meter.count"/>
+                <sch:let name="prev_meter_count" value="preceding::mei:scoreDef[@n=$this_n and @meter.count][1]/@meter.count"/>
+                <sch:assert test="$this_meter_count = $prev_meter_count">cannot change time signature within a measure.</sch:assert>
+              </sch:rule>
+              <sch:rule context="mei:staffDef[@meter.unit][ancestor::mei:measure]"> 
+                <sch:let name="this_n" value="@n"/>
+                <sch:let name="this_meter_unit" value="@meter.unit"/>
+                <sch:let name="prev_meter_unit" value="preceding::mei:scoreDef[@n=$this_n and @meter.unit][1]/@meter.unit"/>
+                <sch:assert test="$this_meter_unit = $prev_meter_unit">cannot change time signature within a measure.</sch:assert>
               </sch:rule>
             </constraint>
           </constraintSpec>
@@ -258,7 +458,7 @@
           TODO: INCLUDE CONSTR '@dur of note, rest, space must be defined!' in mei-meilibjs-timestamp.ODD
         -->
         
-        <!-- space element isn't supported -->
+        <!-- space element isn't supported by MEI2VF (yet)-->
         <elementSpec ident="space" module="MEI.shared" mode="delete"/>
                 
         <!-- children of section can only be:
@@ -276,7 +476,11 @@
 
 
         
-        <!-- Clef constraints -->
+        <!-- Clef constraints
+             - shape is only G, F or C
+             - only certain combinations of attributes @clef.shape 
+               and @clef.line are allowed (see at staffDef elementSpec constraints!)
+        -->
         <macroSpec ident="data.CLEFSHAPE" module="MEI" type="dt" mode="change">
           <desc>Clef shape attribute values (Read, p.53-56). Some values correspond to the Unicode
             Standard. MEI2VF can only render G, F and C clef glyphs.</desc>
