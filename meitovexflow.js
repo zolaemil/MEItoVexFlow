@@ -63,7 +63,7 @@ MEI2VF.RUNTIME_ERROR.prototype.toString = function() {
   return "MEI2VF.RUNTIME_ERROR: " + this.error_code + ': ' + this.message;
 }
 
-MEI2VF.render_notation = function(score, target, width, height) {
+MEI2VF.render_notation = function(score, target, width, height, backend) {
   var width = width || 800;
   var height = height || 350;
   var n_measures; // = $(score).find('measure').get().length;
@@ -368,8 +368,8 @@ MEI2VF.render_notation = function(score, target, width, height) {
     }
   };
 
-  var initialise_score = function(canvas) {
-    var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
+  var initialise_score = function(target) {
+    var renderer = new Vex.Flow.Renderer(target, backend || Vex.Flow.Renderer.Backends.CANVAS);
     context = renderer.getContext();
   };
 

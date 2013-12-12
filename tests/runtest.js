@@ -1,5 +1,5 @@
 
-MEI2VF.RunTest = function(test_case, canvas, titleElem){
+MEI2VF.RunTest = function(test_case, canvas, titleElem, backend){
 
   $(titleElem).html(test_case.title);
   var canvas_width = test_case.canvas_width ? test_case.canvas_width : 1031;
@@ -21,7 +21,7 @@ MEI2VF.RunTest = function(test_case, canvas, titleElem){
   //... and render it onto the canvas
   var MEI = xmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'score');
   Vex.LogInfo('Rendering... ');
-  MEI2VF.render_notation(MEI, canvas, score_width, score_height);
+  MEI2VF.render_notation(MEI, canvas, score_width, score_height, backend);
   Vex.LogInfo('Done (' + test_case.title + ')');
 	
 }
