@@ -962,11 +962,16 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     }
   };
 
-  var make_rest = function(element, parent_layer, parent_staff_element, parent_measure) {
+  var make_rest = function(element, parent_layer, parent_staff_element, parent_measure, visible) {
+    if (visible == undefined) visible = true;
     try {
-      var rest = new Vex.Flow.StaveNote({keys: ['c/5'], duration: mei_note2vex_dur(element, false) + 'r'});
-      if ($(element).attr('dots') === '1') {
-        rest.addDotToAll();
+      if (visible) {
+        var rest = new Vex.Flow.StaveNote({keys: ['c/5'], duration: mei_note2vex_dur(element, false) + 'r'});
+        if ($(element).attr('dots') === '1') {
+          rest.addDotToAll();
+        }
+      } else {
+        var rest = new Vex.Flow.GhostNote({ duration: mei_note2vex_dur(element, false) + 'r' });
       }
       return rest;
     } catch (x) {
@@ -1040,7 +1045,9 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     if (element_type === 'rest') {
       return make_rest(element, parent_layer, parent_staff_element, parent_measure);
     } else if (element_type === 'mRest') {
-      return make_mrest(element, parent_layer, parent_staff_element, parent_measure);
+        return make_mrest(element, parent_layer, parent_staff_element, parent_measure);
+    } else if (element_type === 'space') {
+        return make_rest(element, parent_layer, parent_staff_element, parent_measure, false);
     } else if (element_type === 'note') {
       return make_note(element, parent_layer, parent_staff_element, parent_measure);
     } else if (element_type === 'beam') {
