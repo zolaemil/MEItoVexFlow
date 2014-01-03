@@ -43,6 +43,13 @@ MeiLibTest = function(){
       $('#' + current_test_id).append('<div class="test-fail">Fail</div>');
     }
   }
+  
+  var summary = function() {
+    $('#results').append('<div id="summary"></div>');
+    $('div#summary').append('<div class="total-test">Total # of asserts: ' + (asserts_passed + asserts_failed) + '</div>');
+    $('div#summary').append('<div class="total-pass">Pass: ' + asserts_passed + '</div>');
+    $('div#summary').append('<div class="total-fail">Fail: ' + asserts_failed + '</div>');
+  }
 
   var print_xml = function(xml) {
     document.write(serialize_xml(xml));
@@ -366,6 +373,8 @@ MeiLibTest = function(){
   // console.log(rdg1.score);
   // console.log(rdg2.score);
   console.log('Done');
+  
+  summary();
   
 
 	
