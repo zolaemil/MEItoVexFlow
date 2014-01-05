@@ -248,7 +248,7 @@ MeiLibTest = function(){
   // console.log(JSON.stringify(single_path_score.variantPath));
   //TO ASSERT: 
   //  1. There's no <app> in the score
-  //  2. There are processing insructions with IDs: app01.l1s1m2, app02.l1s1m3 and app.m8-9
+  //  2. TODO: There are processing insructions with IDs: app01.l1s1m2, app02.l1s1m3 and app.m8-9
   //  3. variantPath is {"app01.l1s1m2":{"xmlID":"gqhd","tagname":"lem"},"app02.l1s1m3":{"xmlID":"x5h2","tagname":"lem"},"app.m8-9":{"xmlID":"lem.app.m9-10","tagname":"lem"}}
   apps = $(single_path_score.score).find('app');
   assert(apps.length, 0);
@@ -369,9 +369,107 @@ MeiLibTest = function(){
 
   end_test();
 
-  // console.log(lem.score);
-  // console.log(rdg1.score);
-  // console.log(rdg2.score);
+  console.log('********* TEST: MeiLib.RichMei - Simple ***********');
+  start_test('RichMei-Simple');
+  var xmlid_asserts = {
+    'app-recon':{} , 
+    'choice01':{}, 
+    'app-var':{} 
+  };
+  var xmlDoc_rich_mei = loadXMLDoc('TC.CanonicalMEI.01.xml');
+  var meiDoc = new MeiLib.MeiDoc(xmlDoc_rich_mei);
+
+  console.log(meiDoc.APPs);
+  var i;
+  for (var appID in meiDoc.ALTs) {
+    assert(xmlid_asserts.hasOwnProperty(appID), true);
+  }  
+  meiDoc.initSectionView();
+  // TO ASSERT: 
+  //  1. It is a plain MEI, that is:
+  //    * there isn't any app or choice
+  //    * sectionplane is... 
+  console.log(meiDoc.sectionplane);
+  apps = $(meiDoc.sectionview_score).find('app');
+  choices = $(meiDoc.sectionview_score).find('app');
+  assert(apps.length, 0);
+  assert(choices.length, 0);
+  assert(meiDoc.sectionplane["app-recon"], undefined);
+  assert(meiDoc.sectionplane["choice01"].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var"].tagname, "lem");
+  end_test();
+
+  console.log('********* TEST: MeiLib.RichMei - Altgroups ***********');
+  start_test('RichMei-Altgroups');
+  var xmlid_asserts = {
+    'app-recon-01':{} , 
+    'app-recon-02':{} , 
+    'choice01':{}, 
+    'app-var-01':{},
+    'app-var-02':{} 
+  };
+  xmlDoc_rich_mei = loadXMLDoc('TC.CanonicalMEI.02.xml');
+  meiDoc = new MeiLib.MeiDoc(xmlDoc_rich_mei);
+
+  var i;
+  for (var appID in meiDoc.ALTs) {
+    assert(xmlid_asserts.hasOwnProperty(appID), true);
+  }  
+  meiDoc.initSectionView();
+  console.log(meiDoc.sectionplane);
+  console.log(meiDoc.altgroups);
+
+  apps = $(meiDoc.sectionview_score).find('app');
+  choices = $(meiDoc.sectionview_score).find('app');
+  assert(apps.length, 0);
+  assert(choices.length, 0);
+  assert(meiDoc.sectionplane["app-recon-01"], undefined);
+  assert(meiDoc.sectionplane["app-recon-02"], undefined);
+  assert(meiDoc.sectionplane["choice01"].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var-01"].tagname, "lem");
+  assert(meiDoc.sectionplane["app-var-02"].tagname, "lem");
+  
+  assert(meiDoc.altgroups["app-recon-01"][0], "app-recon-01");
+  assert(meiDoc.altgroups["app-recon-01"][1], "app-recon-02");
+  assert(meiDoc.altgroups["app-recon-02"][0], "app-recon-01");
+  assert(meiDoc.altgroups["app-recon-02"][1], "app-recon-02");
+  assert(meiDoc.altgroups["app-var-01"][0], "app-var-01");
+  assert(meiDoc.altgroups["app-var-01"][1], "app-var-02");
+  assert(meiDoc.altgroups["app-var-02"][0], "app-var-01");
+  assert(meiDoc.altgroups["app-var-02"][1], "app-var-02");
+  end_test();
+
+  console.log('********* TEST: MeiLib.RichMei - Modify Section View ***********');
+  start_test('RichMei-SectionView');
+  xmlDoc_rich_mei = loadXMLDoc('TC.CanonicalMEI.02.xml');
+  meiDoc = new MeiLib.MeiDoc(xmlDoc_rich_mei);
+  meiDoc.initSectionView();
+
+  console.log('sectionplane after init: ');
+  console.log(meiDoc.sectionplane);
+  assert(meiDoc.sectionplane["app-recon-01"], undefined);
+  assert(meiDoc.sectionplane["app-recon-02"], undefined);
+  assert(meiDoc.sectionplane["choice01"].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var-01"].tagname, "lem");
+  assert(meiDoc.sectionplane["app-var-02"].tagname, "lem");
+    
+  var sectionplaneUpdate = {};
+  sectionplaneUpdate["app-recon-01"] = "rdgA.app-recon-01";
+  sectionplaneUpdate["choice01"] = "sic-choice01";
+  sectionplaneUpdate["app-var-01"] = "rdg.app-var-01";
+  meiDoc.updateSectionView(sectionplaneUpdate);
+
+  console.log('sectionplane after modifySectionview: ');
+  console.log(meiDoc.sectionplane);
+  // print_xml(meiDoc.sectionview_score);
+  assert(meiDoc.sectionplane["app-recon-01"].xmlID, "rdgA.app-recon-01");
+  assert(meiDoc.sectionplane["app-recon-02"].xmlID, "rdgA.app-recon-02");
+  assert(meiDoc.sectionplane["choice01"].xmlID, "sic-choice01");
+  assert(meiDoc.sectionplane["app-var-01"].xmlID, "rdg.app-var-01");
+  assert(meiDoc.sectionplane["app-var-02"].xmlID, "rdg.app-var-02");
+  
+  
+  end_test();
   console.log('Done');
   
   summary();

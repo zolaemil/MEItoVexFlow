@@ -405,16 +405,20 @@ MeiLib.AppReplacement = function(tagname, xmlID) {
 }
 
 /**
- * Represents a <lem> or <rdg> element.
+ * Represents a <lem>, <rdg>, <sic> or <corr> element.
  * 
  * @param xmlID {String} the xml:id attribute value of the element.
  * @param tagname {String} 'lem' for <lem> and 'rdg for <rdg> elements.
  * @param source {String} space-separated list of the source IDs what the given variant belongs to.
+ * @param resp {String} xmlID of the editor responsible for the given reading or correction.
+ * @param n {String} @n attribute value of the element.
  */
-MeiLib.Variant = function(xmlID, tagname, source){
+MeiLib.Variant = function(xmlID, tagname, source, resp, n){
   this.xmlID = xmlID;
   this.tagname = tagname;
   this.source = source;
+  this.resp = resp;
+  this.n = n;
 }
 
 /**
@@ -823,3 +827,374 @@ MeiLib.SliceMEI = function(MEI, params) {
 
   return slice;
 }
+
+
+/**
+ * Represents an MEI <app> or <choice> element. 
+ * 
+ * @param xmlID {String} the xml:id attribute value of the <app> or <choice> element.
+ * @param parentID {String} the xml:id attribute value of the direct parent element of the <app> or <choice> element.
+ */
+MeiLib.Alt = function(xmlID, parentID) {
+  this.xmlID = xmlID;
+  this.altitems = [];
+  this.parentID = parentID;
+}
+
+/**
+ * Represents a <lem>, <rdg>, <sic> or <corr> element.
+ * 
+ * @param xmlID {String} the xml:id attribute value of the element.
+ * @param tagname {String} 'lem' for <lem> and 'rdg for <rdg> elements.
+ * @param source {String} space-separated list of the source IDs what the given item belongs to.
+ * @param resp {String} xmlID of the editor responsible for the given reading or correction.
+ * @param n {String} @n attribute value of the element.
+ */
+MeiLib.Variant = function(xmlID, tagname, source, resp, n){
+  this.xmlID = xmlID;
+  this.tagname = tagname;
+  this.source = source;
+  this.resp = resp;
+  this.n = n;
+}
+
+/**
+ * A Rich MEI is an MEI that contain ambiguity represented by Critical Apparatus (<app>, <rdg>, etc.),
+ * or Editorial Transformation (<choice>, <corr>, etc.) elements. 
+ * 
+ * @param meiDoc is the MEI document.
+ */
+MeiLib.MeiDoc = function(meiXmlDoc) {
+  if (meiXmlDoc) this.init(meiXmlDoc);
+}
+
+
+/**
+ * Initializes a <code>MeiLib.MeiDoc</code> object.
+ *
+ * The constructor extracts information about alternative encodings and compiles 
+ * them into a JS object (this.ALTs). The obejcts are exposed as per the following:
+ *  1. <code>sourceList</code> is the list of sources as defined in the MEI header (meiHead).
+ *  2. <code>editorList</code> is the list of editors listed in the MEI header.
+ *  3. <code>ALTs</code> is the object that contains information about the alternative encodings. It
+ *     contains one entry per for each <app> or <choice> element. It is indexed by the xml:id attribute 
+ *     value of the elements.
+ *  4. <code>altgroups</code> is the obejct that contains how <app> and <choice> elements are grouped 
+ *     together to form a logical unit of alternative encoding.
+ * @param meiXmlDoc is an XML document containing the rich MEI
+ */
+MeiLib.MeiDoc.prototype.init = function(meiXmlDoc) {
+  this.xmlDoc = meiXmlDoc;
+  this.rich_head = meiXmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'meiHead')[0];
+  this.rich_music = meiXmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'music')[0];
+  this.rich_score = $(this.rich_music).find('score')[0];
+  this.parseSourceList();
+  this.parseEditorList();
+  this.parseALTs();
+  this.initAltgroups();
+  this.initSectionView();
+}
+
+MeiLib.MeiDoc.prototype.getRichScore = function() {
+  return this.rich_score;
+}
+
+MeiLib.MeiDoc.prototype.getPlainScore = function() {
+  return this.plain_score;
+}
+
+MeiLib.MeiDoc.prototype.getALTs = function() {
+  return this.ALTs;
+}
+
+MeiLib.MeiDoc.prototype.getSourceList = function() {
+  return this.sourceList;
+}
+
+MeiLib.MeiDoc.prototype.getEditorList = function() {
+  return this.editorList;
+}
+
+/**
+ * Extracts information about the sources as defined in the MEI header.
+ * 
+ * @return {Object} is a container indexed by the xml:id attribute value of the <sourceDesc> element.
+ */
+MeiLib.MeiDoc.prototype.parseSourceList = function() {
+  // var srcs = $(this.rich_head).find('sourceDesc').children();
+  // this.sourceList = {};
+  // var i
+  // for(i=0;i<srcs.length;++i) {
+  //   var src = srcs[i];
+  //   var xml_id = $(src).attr('xml:id');
+  //   var serializer = new XMLSerializer();
+  //   this.sourceList[xml_id] = serializer.serializeToString(src);    
+  // }
+  // return this.sourceList;
+  this.sources = $(this.rich_head).find('sourceDesc').children();
+  return this.sources;
+}
+
+MeiLib.MeiDoc.prototype.parseEditorList = function() {
+  // var edtrs = $(this.rich_head).find('titleStmt').children('editor');
+  // this.editorList = {};
+  // var i
+  // for(i=0;i<edtrs.length;++i) {
+  //   var edtr = edtrs[i];
+  //   var xml_id = $(edtr).attr('xml:id');
+  //   this.editorList[xml_id] = edtr;
+  // }
+  this.editors = $(this.rich_head).find('titleStmt').children('editor');
+  return this.editors;
+}
+/**
+ * Extracts information about the elements encoding alternatives. The method stores its result in 
+ * the <code>ALTs</code> property.
+ * 
+ * <code>ALTs</code> is a container of  MeiLib.Alt obejcts indexed by the xml:id attribute value 
+ * of the <app> or <choice> elements. 
+ */
+MeiLib.MeiDoc.prototype.parseALTs = function() {
+  this.ALTs = {};
+//  console.log(this.rich_score);
+  var apps = $(this.rich_score).find('app, choice');
+  for (var i=0;i<apps.length; i++) {
+    var app = apps[i];
+    var parent = app.parentNode;
+    var altitems = $(app).find('rdg, lem, sic, corr');
+    var AppsItem = new MeiLib.Alt(MeiLib.XMLID(app), MeiLib.XMLID(parent));
+    AppsItem.altitems = {};
+    for (var j=0;j<altitems.length;j++) {
+      var altitem = altitems[j];
+      var source = $(altitem).attr('source');
+      var resp = $(altitem).attr('resp');
+      var n = $(altitem).attr('n');
+      var tagname = $(altitem).prop('localName');
+      var varXMLID = MeiLib.XMLID(altitem);
+      AppsItem.altitems[varXMLID] = new MeiLib.Variant(varXMLID, tagname, source, resp, n);
+    }
+    this.ALTs[MeiLib.XMLID(app)] = AppsItem;
+  }
+}
+
+MeiLib.MeiDoc.prototype.initAltgroups = function() {
+  var ALTs = this.ALTs;
+  annots = $(this.rich_score).find('annot[type="appGrp"], annot[type="choiceGrp"]');
+  this.altgroups = {};
+  for (var i=0;i<annots.length; i++) {
+    altgroup = [];
+    token_list = $(annots[i]).attr('plist').split(' ');
+    for (var j in token_list) {
+       altgroup.push(token_list[j].replace('#', ''));
+    }
+    for (var j in altgroup) {
+      this.altgroups[altgroup[j]] = altgroup;
+    }
+  };
+}
+
+MeiLib.MeiDoc.prototype.initSectionView  = function(altReplacements) {
+  altReplacements = altReplacements || {};
+  // Make a copy of the rich MEI. We don't want to remove nodes from the original object.
+  this.sectionview_score = this.rich_score.cloneNode(true);
+  this.sectionplane = {};
+  
+  // Transform this.sectionview_score into a plain MEI:
+  //
+  //   * itereate through all <app> and <choice> elements:
+  //     o chose the appropriate rdg or lem defined by sectionplane (sectionplane[app.xmlID]).
+  //       If nothing is defined, leave it empty.
+  //     o chose the appropriate sic or corr defined by sectionplance (sectionplane[choice.xmlID])
+  //       If nothing is defined, but chose the first corr, if exists, otherwise chose sic, if exists.
+  // When replacing an item, mark the location of replacement with XML processing instructions.
+  
+  var alts = $(this.sectionview_score).find('app, choice');
+  // TODO: 
+  //   1. DONE apps <-- alts 
+  //   2. DONE app <-- alt
+  //   3. DONE app_xml_id <-- alt_xml_id
+  //   4. DONE rdg_xml_id <-- alt_item_xml_id 
+  //   4. DONE rdg_inst <-- alt_item
+  
+  var alt_instance2insert;
+  var alt_item_xml_id;
+  var this_sectionview_score = this.sectionview_score;
+  var this_sectionplane = this.sectionplane;
+  var this_ALTs = this.ALTs;
+  var xmlDoc = this.xmlDoc;
+  $(alts).each(function(i, alt){
+    var alt_xml_id = MeiLib.XMLID(alt);
+    var replacement = altReplacements[alt_xml_id];
+    if (replacement) {
+      // apply replacement, or...
+      alt_item_xml_id = replacement.xmlID;
+      var alt_item = $(this_score).find(replacement.tagname + '[xml\\:id="' + alt_item_xml_id +'"]')[0];
+      if (!alt_item) throw new MeiLib.RuntimeError('MeiLib.SingleVariantPathScore.prototype.init():E01', "Cannot find <lem>, <rdg>, <sic>, or <corr> with @xml:id '" + alt_item_xml_id + "'.");
+      alt_instance2insert = alt_item.childNodes;      
+    } else {
+      if (alt.localName === 'choice') {
+        // ...the default replacement is...
+        var corr = $(alt).find('corr')[0];
+        if (corr) {
+          // ...the first corr...
+          alt_item_xml_id = MeiLib.XMLID(corr);
+          alt_instance2insert = corr.childNodes;
+          //...or
+        } else {
+          // ...the first sic.
+          var sic = $(alt).find('sic')[0];
+          if (sic) {
+            alt_item_xml_id = MeiLib.XMLID(sic);
+            alt_instance2insert = sic.childNodes;
+          } else {
+            alt_instance2insert = [];
+          }
+        } 
+      } else {
+        var lem = $(alt).find('lem')[0];
+        if (lem) {
+          // ...the first cor...
+          alt_item_xml_id = MeiLib.XMLID(lem);
+          alt_instance2insert = lem.childNodes;
+          //...or
+        } else {
+          alt_instance2insert = [];
+        }
+      }
+    }
+    var parent = alt.parentNode;
+    var PIStart = xmlDoc.createProcessingInstruction('MEI2VF', 'rdgStart="' + alt_xml_id + '"');
+    parent.insertBefore(PIStart, alt);
+    $.each(alt_instance2insert, function () { 
+      parent.insertBefore(this.cloneNode(true), alt); 
+    });
+    var PIEnd = xmlDoc.createProcessingInstruction('MEI2VF', 'rdgEnd="' + alt_xml_id + '"');
+    parent.insertBefore(PIEnd, alt);
+    parent.removeChild(alt);
+
+    this_sectionplane[alt_xml_id] = this_ALTs[alt_xml_id].altitems[alt_item_xml_id];
+    // console.log('MeiLib.MeiDoc.prototype.initSectionView(): ' + alt_xml_id + ', ' + alt_item_xml_id);
+  })
+
+  return this.sectionview_score;
+  
+}
+
+/**
+ * Updates the sectionview score (plain MEI) by replacing one or more alternative instance with other alternatives. 
+ * 
+ * @param sectionplaneUpdate {object} the list of changes. It is an container of xml:id attribute values of 
+ *                                   <rdg>, <lem>, <sic> or <corr> elements, indexed by the xml:id attribute values of the
+ *                                   corresponding <app> or <choice> elements.
+ *                                   sectionplaneUpdate[altXmlID] = altInstXmlID is the xml:id attribute value of 
+ *                                   the <rdg>, <lem>, <sic> or <corr> element, which is to be inserted in place of the 
+ *                                   original <app xml:id=altXmlID> or <choice xml:id=altXmlID>
+ *                                   When replacing an <app> or <choice> that is part of a group of such elements (defined
+ *                                   by this.altgroups), then those other elements needs to be replaced as well.
+ */
+MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
+  
+  var corresponding_alt_item = function(altitems, altitem) {
+    var vars_match = function(v1, v2) {
+      var res = 0;
+      for (var field in v1) {
+        if (v1[field] !== undefined && v1[field] === v2[field]) {
+          res++;
+        }
+      }
+      console.log('vars_match: ' + res);
+      return res;
+    }
+    var max = 0;
+    var corresponding_item;
+    for (var alt_item_id in altitems) {
+      M = vars_match(altitems[alt_item_id], altitem);
+      if (max<M) {
+        max = M;
+        corresponding_item = altitems[alt_item_id];
+      }
+    }
+    return corresponding_item;
+  }
+
+  for (altID in sectionplaneUpdate) {
+    var alt_instance2insert = this.ALTs[altID].altitems[sectionplaneUpdate[altID]];
+    altgroup = this.altgroups[altID];
+    if (altgroup) {
+      // if altID is present in altgroups, then replace all corresponding alts with the 
+      // alt_item that correspons to alt_instance2insert
+      for (var i in altgroup) {
+        altID__ = altgroup[i];
+        alt_instance2insert__ = corresponding_alt_item(this.ALTs[altID__].altitems, alt_instance2insert);
+        this.replaceAltInstance({appXmlID:altID__, replaceWith:alt_instance2insert__});
+      }
+    } else {
+      // otherwise just replace alt[xml:id=altID]
+      this.replaceAltInstance({appXmlID:altID, replaceWith:alt_instance2insert});      
+    }
+  }
+}
+
+/**
+ * Replace an alternative instance in the sectionview score and in the sectionplane
+ * 
+ * @param alt_inst_update {object}
+ * @return the updated score
+ */
+MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
+  
+  var app_xml_id = alt_inst_update.appXmlID;
+  var alt_instance2insert = [];
+  if (alt_inst_update.replaceWith) {
+    var replaceWith_xmlID = alt_inst_update.replaceWith.xmlID;
+    var var_inst_elem = $(this.rich_score).find(alt_inst_update.replaceWith.tagname + '[xml\\:id="' + replaceWith_xmlID +'"]')[0];
+    alt_instance2insert = var_inst_elem.childNodes;
+  }
+  
+  var match_pseudo_attrValues = function(data1, data2) {
+    data1 = data1.replace("'", '"');
+    data2 = data2.replace("'", '"');
+    return data1 === data2;
+  }
+  
+  var parent = $(this.sectionview_score).find('[xml\\:id=' + this.ALTs[app_xml_id].parentID +']')[0];
+  var children = parent.childNodes;
+  var inside_inst = false;
+  var found = false;
+  var insert_before_this = null;
+  $(children).each( function() {
+    var child = this;
+    if (child.nodeType === 7) {
+      if (child.nodeName === 'MEI2VF' && match_pseudo_attrValues(child.nodeValue, 'rdgStart="' + app_xml_id + '"')) {
+        inside_inst = true;     
+        found = true;   
+      } else if (child.nodeName === 'MEI2VF' && match_pseudo_attrValues(child.nodeValue, 'rdgEnd="' + app_xml_id + '"')) {
+        inside_inst = false;                
+        insert_before_this = child;
+      }
+    } else if (inside_inst) {
+      parent.removeChild(child);
+    } 
+  });
+
+  if (!found) throw "processing instruction not found"; 
+  if (inside_inst) throw "Unmatched <?MEI2VF rdgStart?>";
+    
+  var insert_method; 
+  if (insert_before_this) { 
+    insert_method = function (elem) { parent.insertBefore(elem, insert_before_this) };
+  } else {
+    insert_method = function (elem) { parent.appendChild(elem) };
+  }
+
+  $.each(alt_instance2insert, function () { 
+     insert_method(this.cloneNode(true)); 
+  });  
+   
+  this.sectionplane[app_xml_id] = alt_inst_update.replaceWith;
+   
+  return this.sectionview_score;
+}
+
+
+
