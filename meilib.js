@@ -1083,7 +1083,6 @@ MeiLib.MeiDoc.prototype.initSectionView  = function(altReplacements) {
     parent.removeChild(alt);
 
     this_sectionplane[alt_xml_id] = this_ALTs[alt_xml_id].altitems[alt_item_xml_id];
-    // console.log('MeiLib.MeiDoc.prototype.initSectionView(): ' + alt_xml_id + ', ' + alt_item_xml_id);
   })
 
   return this.sectionview_score;
