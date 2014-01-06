@@ -369,8 +369,8 @@ MeiLibTest = function(){
 
   end_test();
 
-  console.log('********* TEST: MeiLib.RichMei - Simple ***********');
-  start_test('RichMei-Simple');
+  console.log('********* TEST: MeiLib.MeiDoc - Simple ***********');
+  start_test('MeiDoc-Simple');
   var xmlid_asserts = {
     'app-recon':{} , 
     'choice01':{}, 
@@ -399,8 +399,8 @@ MeiLibTest = function(){
   assert(meiDoc.sectionplane["app-var"].tagname, "lem");
   end_test();
 
-  console.log('********* TEST: MeiLib.RichMei - Altgroups ***********');
-  start_test('RichMei-Altgroups');
+  console.log('********* TEST: MeiLib.MeiDoc - Altgroups ***********');
+  start_test('MeiDoc-Altgroups');
   var xmlid_asserts = {
     'app-recon-01':{} , 
     'app-recon-02':{} , 
@@ -439,8 +439,8 @@ MeiLibTest = function(){
   assert(meiDoc.altgroups["app-var-02"][1], "app-var-02");
   end_test();
 
-  console.log('********* TEST: MeiLib.RichMei - Modify Section View ***********');
-  start_test('RichMei-SectionView');
+  console.log('********* TEST: MeiLib.MeiDoc - Modify Section View ***********');
+  start_test('MeiDoc-SectionView');
   xmlDoc_rich_mei = loadXMLDoc('TC.CanonicalMEI.02.xml');
   meiDoc = new MeiLib.MeiDoc(xmlDoc_rich_mei);
   meiDoc.initSectionView();
@@ -467,9 +467,8 @@ MeiLibTest = function(){
   assert(meiDoc.sectionplane["choice01"].xmlID, "sic-choice01");
   assert(meiDoc.sectionplane["app-var-01"].xmlID, "rdg.app-var-01");
   assert(meiDoc.sectionplane["app-var-02"].xmlID, "rdg.app-var-02");
-  
-  
   end_test();
+  
   console.log('Done');
   
   summary();
