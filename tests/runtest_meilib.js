@@ -225,82 +225,29 @@ MeiLibTest = function(){
     }
   }
   end_test();
-  
-  console.log('********* TEST: MeiLib.VariantMei ********************************');
-  var xmlDoc_variant_mei = loadXMLDoc('TC.Variants.xml');
 
-  var variantMEI = new MeiLib.VariantMei(xmlDoc_variant_mei);
-  // print_xml(variantMEI.score);
-  console.log(variantMEI.sourceList);
-  console.log(variantMEI.APPs);
-  
-  
-  console.log('********* TEST: MeiLib.SingleVariantPathScore() *******************');
-
-  start_test('SingleVariantPathScore');
-  var appReplacements = {};
-  // appReplacements['app01.l1s1m2'] = new MeiLib.AppReplacement('rdg', 'A_abcd');
-  // appReplacements['app02.l1s1m3'] = new MeiLib.AppReplacement('rdg', 'A');
-  // var single_path_score = new MeiLib.SingleVariantPathScore(xmlDoc_variant_mei,appReplacements);
-  var single_path_score = new MeiLib.SingleVariantPathScore(variantMEI);
-
-  // print_xml(single_path_score.score);
-  // console.log(JSON.stringify(single_path_score.variantPath));
-  //TO ASSERT: 
-  //  1. There's no <app> in the score
-  //  2. TODO: There are processing insructions with IDs: app01.l1s1m2, app02.l1s1m3 and app.m8-9
-  //  3. variantPath is {"app01.l1s1m2":{"xmlID":"gqhd","tagname":"lem"},"app02.l1s1m3":{"xmlID":"x5h2","tagname":"lem"},"app.m8-9":{"xmlID":"lem.app.m9-10","tagname":"lem"}}
-  apps = $(single_path_score.score).find('app');
-  assert(apps.length, 0);
-  assert(single_path_score.variantPath["app01.l1s1m2"].tagname, "lem");
-  assert(single_path_score.variantPath["app02.l1s1m3"].tagname, "lem");
-  assert(single_path_score.variantPath["app.m8-9"].tagname, "lem");
-  end_test();
-  
-  
-
-  console.log('********* updateVariantPath() *******************');
-  start_test('updateVariantPath');
-  var variantPathUpdate = {};
-  variantPathUpdate['app01.l1s1m2'] = 'B_xyz';
-  variantPathUpdate['app.m8-9'] = 'rdg.app.m9-10';
-  single_path_score.updateVariantPath(variantPathUpdate);
-  // print_xml(single_path_score.score);
-  // console.log(JSON.stringify(single_path_score.variantPath));
-  //TO ASSERT:
-  //  1. TODO: There are the right notes within the appropriate processing instructions
-  //  2. vairantPath is {"app01.l1s1m2":{"xmlID":"B_xyz","tagname":"rdg","source":"B"},"app02.l1s1m3":{"xmlID":"x5h2","tagname":"lem"},"app.m8-9":{"xmlID":"rdg.app.m9-10","tagname":"rdg","source":"A"}} 
-  assert(single_path_score.variantPath["app01.l1s1m2"].tagname, "rdg");
-  assert(single_path_score.variantPath["app01.l1s1m2"].xmlID, "B_xyz");
-  assert(single_path_score.variantPath["app01.l1s1m2"].source, "B");
-  assert(single_path_score.variantPath["app02.l1s1m3"].tagname, "lem");
-  assert(single_path_score.variantPath["app.m8-9"].tagname, "rdg");
-  assert(single_path_score.variantPath["app.m8-9"].xmlID, "rdg.app.m9-10");
-  assert(single_path_score.variantPath["app.m8-9"].source, "A");
-  end_test();
-
-  console.log('********* getSlice() *******************');
-
-  start_test('getSlice');
-  var sliceXML = single_path_score.getSlice({start_n:2, end_n:4, noClef:true, noKey:true, noMeter:true} );
-  // print_xml(sliceXML);
-  //TO ASSERT: 
-  // 1. the result has three measures, 
-  // 2. the first measure is @n=2
-  // 3. the last measure is @n=4
-  // 4. in staffDef @clef.visible = false
-  // 5. in staffDef @key.sig.show = false
-  // 6. in staffDef @meter.rend = false
-  measures = $(sliceXML).find('measure');
-  staffDef = $(sliceXML).find('staffDef')[0];
-  staves = $(measures[0]).find('staff');
-  assert(measures.length, 3);
-  assert($(measures[0]).attr('n'), "2");
-  assert($(measures[2]).attr('n'), "4");
-  assert($(staffDef).attr('clef.visible'), "false");
-  assert($(staffDef).attr('key.sig.show'), "false");
-  assert($(staffDef).attr('meter.rend'), "false");
-  end_test();
+  // console.log('********* getSlice() *******************');
+  // 
+  // start_test('getSlice');
+  // var sliceXML = single_path_score.getSlice({start_n:2, end_n:4, noClef:true, noKey:true, noMeter:true} );
+  // // print_xml(sliceXML);
+  // //TO ASSERT: 
+  // // 1. the result has three measures, 
+  // // 2. the first measure is @n=2
+  // // 3. the last measure is @n=4
+  // // 4. in staffDef @clef.visible = false
+  // // 5. in staffDef @key.sig.show = false
+  // // 6. in staffDef @meter.rend = false
+  // measures = $(sliceXML).find('measure');
+  // staffDef = $(sliceXML).find('staffDef')[0];
+  // staves = $(measures[0]).find('staff');
+  // assert(measures.length, 3);
+  // assert($(measures[0]).attr('n'), "2");
+  // assert($(measures[2]).attr('n'), "4");
+  // assert($(staffDef).attr('clef.visible'), "false");
+  // assert($(staffDef).attr('key.sig.show'), "false");
+  // assert($(staffDef).attr('meter.rend'), "false");
+  // end_test();
 
   console.log('********* TEST: MeiLib.SliceMEI() ********************************');
 
@@ -349,25 +296,25 @@ MeiLibTest = function(){
   
   end_test();
 
-  console.log('********* TEST: MeiLib.VariantMei.prototype.getSlice() ***********');
-
-  start_test('VariantMei-prototype-getSlice');
-  var sliceMEI = variantMEI.getSlice({start_n:2, end_n:2, noClef:true, noKey:true, noMeter:true});
-  var lem = new MeiLib.SingleVariantPathScore(sliceMEI);
-  var rdg1 = new MeiLib.SingleVariantPathScore(sliceMEI, {
-    'app01.l1s1m2': new MeiLib.AppReplacement('rdg', 'A_abcd'),
-  });
-  var rdg2 = new MeiLib.SingleVariantPathScore(sliceMEI, {
-    'app01.l1s1m2': new MeiLib.AppReplacement('rdg', 'B_xyz'),
-  });
-  //TO ASSERT: 
-  //  1. sliceMEI has one measure
-  //  2. that measure has @n=2
-  measures = $(sliceMEI.score).find('measure');
-  assert(measures.length, 1, true, sliceMEI.score);
-  assert($(measures[0]).attr('n'), "2", true, sliceMEI.score);
-
-  end_test();
+  // console.log('********* TEST: MeiLib.VariantMei.prototype.getSlice() ***********');
+  // 
+  // start_test('VariantMei-prototype-getSlice');
+  // var sliceMEI = variantMEI.getSlice({start_n:2, end_n:2, noClef:true, noKey:true, noMeter:true});
+  // var lem = new MeiLib.SingleVariantPathScore(sliceMEI);
+  // var rdg1 = new MeiLib.SingleVariantPathScore(sliceMEI, {
+  //   'app01.l1s1m2': new MeiLib.AppReplacement('rdg', 'A_abcd'),
+  // });
+  // var rdg2 = new MeiLib.SingleVariantPathScore(sliceMEI, {
+  //   'app01.l1s1m2': new MeiLib.AppReplacement('rdg', 'B_xyz'),
+  // });
+  // //TO ASSERT: 
+  // //  1. sliceMEI has one measure
+  // //  2. that measure has @n=2
+  // measures = $(sliceMEI.score).find('measure');
+  // assert(measures.length, 1, true, sliceMEI.score);
+  // assert($(measures[0]).attr('n'), "2", true, sliceMEI.score);
+  // 
+  // end_test();
 
   console.log('********* TEST: MeiLib.MeiDoc - Simple ***********');
   start_test('MeiDoc-Simple');
