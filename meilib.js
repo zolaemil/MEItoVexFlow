@@ -992,7 +992,23 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
     }
   };
 }
-
+/**
+ * The MeiLib.MeiDoc.initSectionView transforms the rich MEI (this.rich_score) into a plain MEI (this.sectionview_score)
+ * 
+ * An MEI is called 'plain' MEI if it contains no <app> or <choice> elements. Such an MEI can also be referred 
+ * after the analogy of 2D section views of a 3D object: the rich MEI is a higher-dimensional object, of which 
+ * we would like to display a 'flat' section view. The term 'section plane' refers to a combination of
+ * alternatives at different locations in the score. The section plane defines the actual view of the 
+ * higher-dimensional object. For instance, consider a score that has two different variants at measure 
+ * #5 (let's call them (variant A and variant B), and it contains three different variants at measure #10 
+ * (let's call those ones variants C, D and E). In this case the section plane would contain two elements 
+ * the first one is either A or B, the second one is C, D or E.
+ * 
+ * The extracted information about all the <app> and <choice> elements are stored in an array. 
+ * Using this array the application can access information such as what alternative encodings are present 
+ * in the score, what source a variant comes from, etc. This array is exposed by te <code>ALTs</code> property.
+ * 
+ */
 MeiLib.MeiDoc.prototype.initSectionView  = function(altReplacements) {
   altReplacements = altReplacements || {};
   // Make a copy of the rich MEI. We don't want to remove nodes from the original object.
