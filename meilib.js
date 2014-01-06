@@ -1029,7 +1029,7 @@ MeiLib.MeiDoc.prototype.initSectionView  = function(altReplacements) {
       // apply replacement, or...
       alt_item_xml_id = replacement.xmlID;
       var alt_item = $(this_score).find(replacement.tagname + '[xml\\:id="' + alt_item_xml_id +'"]')[0];
-      if (!alt_item) throw new MeiLib.RuntimeError('MeiLib.SingleVariantPathScore.prototype.init():E01', "Cannot find <lem>, <rdg>, <sic>, or <corr> with @xml:id '" + alt_item_xml_id + "'.");
+      if (!alt_item) throw new MeiLib.RuntimeError('MeiLib.MeiDoc.prototype.initSectionView():E01', "Cannot find <lem>, <rdg>, <sic>, or <corr> with @xml:id '" + alt_item_xml_id + "'.");
       alt_instance2insert = alt_item.childNodes;      
     } else {
       if (alt.localName === 'choice') {
@@ -1212,7 +1212,7 @@ MeiLib.MeiDoc.prototype.getSectionViewSlice = function(params) {
  *
  * @param params {Obejct} contains the parameters for slicing. For more info see at documentation 
  *               of MeiLib.SliceMEI
- * @return a VariantMei object
+ * @return a MeiDoc object
  */
 MeiLib.MeiDoc.prototype.getRichSlice = function(params) {
   var slice = new MeiLib.MeiDoc();
