@@ -1196,5 +1196,37 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
   return this.sectionview_score;
 }
 
+/**
+ * Get a slice of the sectionview_score.
+ *
+ * @param params {Obejct} contains the parameters for slicing. For more info see at documentation 
+ *               of MeiLib.SliceMEI
+ * @return an XML DOM object containing the slice of the plain MEI
+ */
+MeiLib.MeiDoc.prototype.getSectionViewSlice = function(params) {
+  return MeiLib.SliceMEI(this.sectionview_score, params);
+}
+
+/**
+ * Get a slice of the whole rich MEI document.
+ *
+ * @param params {Obejct} contains the parameters for slicing. For more info see at documentation 
+ *               of MeiLib.SliceMEI
+ * @return a VariantMei object
+ */
+MeiLib.MeiDoc.prototype.getRichSlice = function(params) {
+  var slice = new MeiLib.MeiDoc();
+  slice.xmlDoc = this.xmlDoc;
+  slice.rich_head = this.rich_head.cloneNode();
+  slice.rich_music = this.rich_music.cloneNode();
+  slice.rich_score = MeiLib.SliceMEI(this.rich_score, params);
+  slice.sourceList = this.sourceList;
+  slice.editorList = this.editorList;
+  slice.ALTs = this.ALTs;
+  slice.altgroups = this.altgroups;
+  return slice;
+}
+
+
 
 
