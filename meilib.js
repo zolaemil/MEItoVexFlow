@@ -1005,16 +1005,10 @@ MeiLib.MeiDoc.prototype.initSectionView  = function(altReplacements) {
   //     o chose the appropriate rdg or lem defined by sectionplane (sectionplane[app.xmlID]).
   //       If nothing is defined, leave it empty.
   //     o chose the appropriate sic or corr defined by sectionplance (sectionplane[choice.xmlID])
-  //       If nothing is defined, but chose the first corr, if exists, otherwise chose sic, if exists.
+  //       If nothing is defined, chose the first corr, if exists, otherwise chose sic, if exists.
   // When replacing an item, mark the location of replacement with XML processing instructions.
   
   var alts = $(this.sectionview_score).find('app, choice');
-  // TODO: 
-  //   1. DONE apps <-- alts 
-  //   2. DONE app <-- alt
-  //   3. DONE app_xml_id <-- alt_xml_id
-  //   4. DONE rdg_xml_id <-- alt_item_xml_id 
-  //   4. DONE rdg_inst <-- alt_item
   
   var alt_instance2insert;
   var alt_item_xml_id;
