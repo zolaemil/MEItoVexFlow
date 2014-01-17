@@ -643,7 +643,7 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
   for (var i=0;i<annots.length; i++) {
     altgroup = [];
     token_list = $(annots[i]).attr('plist').split(' ');
-    for (var j in token_list) {
+    for (var j=0; j<token_list.length; j++) {
        altgroup.push(token_list[j].replace('#', ''));
     }
     for (var j in altgroup) {
