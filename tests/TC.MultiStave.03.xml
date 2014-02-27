@@ -13,14 +13,19 @@
 			<mdiv>
 				<score>
 					<scoreDef>
-						<staffGrp>
-							<staffDef n="1" label="Voice" clef.line="4" clef.shape="C" meter.count="6" meter.unit="8"/>
+						<staffGrp symbol="bracket">
+							<staffDef n="1" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4"/>
+							<staffDef n="2" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4"/>
 						</staffGrp>
 					</scoreDef>
 					<section>
 						<measure n="1">
 							<staff n="1">
-								<layer>
+								<layer>									
+								</layer>
+							</staff>
+							<staff n="2">
+								<layer>									
 								</layer>
 							</staff>
 						</measure>

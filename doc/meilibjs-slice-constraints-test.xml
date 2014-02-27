@@ -1,0 +1,21 @@
+<music xmlns="http://www.music-encoding.org/ns/mei">
+  <body>
+    <mdiv>
+      <score>
+        <mei:scoreDef xmlns:mei="http://www.music-encoding.org/ns/mei" key.pname="c" key.mode="major">
+          <staffGrp>
+            <staffGrp barthru="false">
+              <staffDef n="1" label="Supremus" clef.line="3" clef.shape="G" meter.count="4" meter.unit="4"/>
+            </staffGrp>
+          </staffGrp>
+        </mei:scoreDef>
+        <section>
+          <app><rdg/></app>
+          <measure>
+            <app><rdg/></app>
+          </measure>
+        </section>
+      </score>
+    </mdiv>
+  </body>
+</music>
