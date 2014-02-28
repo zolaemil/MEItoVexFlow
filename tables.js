@@ -67,3 +67,13 @@ mei2vexflowTables.articulations = {
   'stroke': 'a|'
 };
 
+mei2vexflowTables.barlines = {
+	'single'   : Vex.Flow.Barline.type.SINGLE,
+	'dbl'      : Vex.Flow.Barline.type.DOUBLE,
+	'end'      : Vex.Flow.Barline.type.END,
+	'rptstart' : Vex.Flow.Barline.type.REPEAT_BEGIN,
+	'rptend'   : Vex.Flow.Barline.type.REPEAT_END,
+	'rptboth'  : Vex.Flow.Barline.type.REPEAT_BOTH,
+	'invis'    : Vex.Flow.Barline.type.NONE
+};
+

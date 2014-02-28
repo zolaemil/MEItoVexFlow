@@ -22,6 +22,12 @@
 * permissions and limitations under the License.
 ***/
 
+
+Vex.Flow.clefProperties.values.octave = { line_shift: 3.5 };
+// currently, there's no 8va treble clef in VexFlow; I set the regular treble clef instead as a workaround:
+Vex.Flow.Clef.types.octave = { code: "v83", point: 40, line: 3 };
+
+
 Node.prototype.attrs = function() {
   var i;
   var attrs = {};
@@ -220,24 +226,26 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     return [dir_text, pos];
   }
 
-  var vex_key_cmp = function(key1, key2) {
-    key1 = {pitch: key1.split('/')[0][0], octave: Number(key1.split('/')[1])};
-    key2 = {pitch: key2.split('/')[0][0], octave: Number(key2.split('/')[1])};
-
-    if (key1.octave === key2.octave) {
-      if (key1.pitch === key2.pitch) { 
-        return 0; 
-      } else if (key1.pitch < key2.pitch) { 
-        return -1; 
-      } else if (key1.pitch > key2.pitch) { 
-        return 1; 
-      }
-    } else if (key1.octave < key2.octave) { 
-      return -1; 
-    } else if (key1.octave > key2.octave) { 
-      return 1; 
-    }
-  }
+// this function is not in use anymore: it was only called by mei_note_stem_dir for calculating the stem direction; see above
+  
+//  var vex_key_cmp = function(key1, key2) {
+//    key1 = {pitch: key1.split('/')[0][0], octave: Number(key1.split('/')[1])};
+//    key2 = {pitch: key2.split('/')[0][0], octave: Number(key2.split('/')[1])};
+//
+//    if (key1.octave === key2.octave) {
+//      if (key1.pitch === key2.pitch) { 
+//        return 0; 
+//      } else if (key1.pitch < key2.pitch) { 
+//        return -1; 
+//      } else if (key1.pitch > key2.pitch) { 
+//        return 1; 
+//      }
+//    } else if (key1.octave < key2.octave) { 
+//      return -1; 
+//    } else if (key1.octave > key2.octave) { 
+//      return 1; 
+//    }
+//  }
 
   var mei_dur2vex_dur = function(mei_dur) {
     mei_dur = String(mei_dur);
@@ -299,35 +307,12 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadAttributeValue', 'Invalid attribute value: ' + mei_accid);
   };
   
-  // 1) added support for alto and tenor clef 
-  // 2) changed rules: downstems for all notes on the middle line or above, upstems for all notes below 
-  //    (these are the rules given in Chlapig, Die Praxis des Notengraphikers, p. 39 -- I'm not sure if the engravers'
-  //    rules in other countries deviate; if that should be the case (and there are other cases like this), it might  
-  //    be nice to give users the option to pass a config object and create a constructor function
-  // 3) replaced the dependency on the vex_key_cmp function by object / array look-ups in place (maybe that's not necessary)   
-  var mei_note_stem_dir = function(mei_note, parent_staff_element) {
+  // new functionality: return up/down only if the stem direction is specified in the MEI file; otherwise, return
+  // undefined, which will let VexFlow's autostem feature figure out the direction
+  var mei_note_stem_dir = function(mei_note) {
     var given_dir = $(mei_note).attr('stem.dir');
-    if (!given_dir) {
-      var clef = staff_clef($(parent_staff_element).attr('n'));
-      var oct = $(mei_note).attr('oct');
-      var critical_octave = { treble : '4', octave : '3', bass : '3', alto: '3', tenor: '3' };
-      var pnames_to_reverse = { treble : ['b'], octave : ['b'], bass : ['d', 'e', 'f', 'g', 'a', 'b'], alto : [], tenor: ['a', 'b'] };
-      if (oct > critical_octave[clef]) {
-        return Vex.Flow.StaveNote.STEM_DOWN;
-      }
-      if (oct === critical_octave[clef] && pnames_to_reverse[clef].indexOf($(mei_note).attr('pname')) > -1) {
-        return Vex.Flow.StaveNote.STEM_DOWN;
-      }
-      return Vex.Flow.StaveNote.STEM_UP;
-    }
-    if (given_dir === 'down') {
-      return Vex.Flow.StaveNote.STEM_DOWN;
-    }
-    return Vex.Flow.StaveNote.STEM_UP;
-  };
-  
-//  var mei_note_stem_dir = function(mei_note, parent_staff_element) {
-//    var given_dir = $(mei_note).attr('stem.dir');
+    if (given_dir === 'down') return Vex.Flow.StaveNote.STEM_DOWN;
+    if (given_dir === 'up') return Vex.Flow.StaveNote.STEM_UP;
 //    if (given_dir !== undefined) {
 //      return (given_dir === 'up') ? Vex.Flow.StaveNote.STEM_UP : (given_dir === 'down') ? Vex.Flow.StaveNote.STEM_DOWN : undefined;
 //    } else {
@@ -340,8 +325,8 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
 //        return (vex_key_cmp('c/3', mei_note2vex_key(mei_note)) === -1) ? Vex.Flow.StaveNote.STEM_DOWN : Vex.Flow.StaveNote.STEM_UP;
 //      } 
 //    }
-//  };
-  
+  };
+    
   var mei_staffdef2vex_keyspec = function(mei_staffdef) {
     if ($(mei_staffdef).attr('key.pname') !== undefined) {
       var keyname = $(mei_staffdef).attr('key.pname').toUpperCase();
@@ -410,11 +395,11 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
   var staff_top_rel = function(staff_n) {
     var result = 0;
     var i;
-    for (i=0, exit=0; i<staffDefList.length && !exit;i++) {
+    for (i=0; i<staffDefList.length;i++) {
       if ($(staffDefList[i]).attr('n') !== staff_n.toString()) { 
         result += staff_height(i);
       } else {
-        exit = true;
+        return result;
       }
     }
 //    for (i=0;i<staff_n-1;i++) result += staff_height(i);
@@ -434,7 +419,7 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
   //
   // Initialise staff #staff_n. Render necessary staff modifiers.
   //
-  var initialise_staff_n = function(staff_n, width) {
+  var initialise_staff_n = function(staff_n, width, left_barline, right_barline) {
     
     if (!staff_n) {
       throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".')
@@ -464,8 +449,16 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
       }
       staffInfoArray[staff_n].renderWith.timesig = false;
     }
+    
+    if (left_barline) {
+      staff.setBegBarType(mei2vexflowTables.barlines[left_barline]);
+    }
+    if (right_barline) {
+      staff.setEndBarType(mei2vexflowTables.barlines[right_barline]);
+    }
+    
     staff.setContext(context).draw();
-    // replaced staff.bar_x_shift by staff.getModifierXShift() due to changes in VexFlow
+    // replaced staff.bar_x_shift by staff.getModifierXShift() due to changes in VexFlow:
     staffXShift = staff.getModifierXShift();
     //staffXShift = staff.bar_x_shift; 
     Vex.LogDebug('initialise_staff_n(): staffXShift=' + staffXShift);
@@ -659,7 +652,11 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     //get current staffDef
     var staff_n = Number(staff_element.attrs().n);
     var measure_n = Number(parent_measure.attrs().n);
-    staff = initialise_staff_n(staff_n, measure_width);
+    
+    var left_barline = parent_measure.getAttribute('left');
+    var right_barline = parent_measure.getAttribute('right');
+    // I pass the barline attributes as function parameters; would it be better to write them to the staffinfo array? 
+    staff = initialise_staff_n(staff_n, measure_width, left_barline, right_barline);
     var layer_events = $(staff_element).find('layer').map(function(i, layer) { 
       return extract_events(i, layer, staff_element, parent_measure); 
     }).get();
@@ -912,13 +909,18 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     };
 
     try {
-      var note = new Vex.Flow.StaveNote( 
-        {
-          keys: [mei_note2vex_key(element)],
-          clef: staff_clef($(parent_staff_element).attr('n')),
-          duration: mei_note2vex_dur(element),
-          stem_direction: mei_note_stem_dir(element, parent_staff_element)
-        });
+      var note_opts = {
+        keys: [mei_note2vex_key(element)],
+        clef: staff_clef($(parent_staff_element).attr('n')),
+        duration: mei_note2vex_dur(element)
+      };
+      var specified_stem_direction = mei_note_stem_dir(element);
+      if (specified_stem_direction) {
+        note_opts.stem_direction = specified_stem_direction;
+      } else {
+        note_opts.auto_stem = true;
+      }
+      var note = new Vex.Flow.StaveNote(note_opts); 
 
       note.addAnnotation(2, make_annot_below(mei_syl2vex_annot(element)));
       var annot = mei_dir2vex_annot(parent_measure, element);
@@ -926,7 +928,8 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
 
       try {
         var i;
-        for (i=0;i<parseInt($(element).attr('dots'));i++){
+        var dots = parseInt($(element).attr('dots'));
+        for (i=0;i<dots;i++){
           note.addDotToAll();
         }
       } catch (x) {
@@ -945,19 +948,20 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
 
       //Build a note object that keeps the xml:id
 
+      var pname = $(element).attr('pname');
+      if (!pname) throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have pname attribute');
+      var oct = $(element).attr('oct');
+      if (!oct) throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
+
       // If xml:id is missing, create it
       var xml_id = $(element).attr('xml:id');
       if (!xml_id) {
         xml_id = MeiLib.createPseudoUUID();
         $(element).attr('xml:id', xml_id);
-      }
-
+      }      
+      
       var mei_tie = $(element).attr('tie'); 
       if (!mei_tie) mei_tie = "";
-      var pname = $(element).attr('pname');
-      if (!pname) throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have pname attribute');
-      var oct = $(element).attr('oct');
-      if (!oct) throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
       for (var i=0; i<mei_tie.length; ++i) {
         switch (mei_tie[i]) {
           case 'i': start_tieslur(xml_id, {pname:pname, oct:oct, system:system_n}, ties); break;
@@ -1035,6 +1039,7 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     return elements;
   };
 
+  // TODO add support for features found in make_note (annot etc.) -- extract functions!?
   var make_chord = function(element, parent_layer, parent_staff_element, parent_measure) {
     try {
       var keys = $(element).children().map(mei_note2vex_key).get();
@@ -1046,10 +1051,22 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
       }).get().any();
       if (dotted === true) { duration += 'd'; }
 
-      var chord = new Vex.Flow.StaveNote({keys: keys,
+      var chord_opts = {
+        keys: keys,
         clef: staff_clef($(parent_staff_element).attr('n')),
         duration: duration
-      });
+      };
+      // added stem direction handling (commented out before). VexFlow's current stem direction calculation in stavenote.js is 
+      // too simple (based on the position only of the lowest note) -- maybe substitute there:
+      // middle = (lowest + highest) / 2
+      var specified_stem_direction = mei_note_stem_dir(element);
+      if (specified_stem_direction) {
+        chord_opts.stem_direction = specified_stem_direction;
+      } else {
+        chord_opts.auto_stem = true;
+      }
+      
+      var chord = new Vex.Flow.StaveNote(chord_opts);
       //stem_direction: stem_direction: mei_note_stem_dir(mei_note, parent_staff)});
 
       if (dotted === true) { chord.addDotToAll(); }
