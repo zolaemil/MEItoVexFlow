@@ -298,23 +298,50 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     if (mei_accid === 'ss') return '##';
     throw new MEI2VF.RUNTIME_ERROR('MEI2VF.RERR.BadAttributeValue', 'Invalid attribute value: ' + mei_accid);
   };
-
+  
+  // 1) added support for alto and tenor clef 
+  // 2) changed rules: downstems for all notes on the middle line or above, upstems for all notes below 
+  //    (these are the rules given in Chlapig, Die Praxis des Notengraphikers, p. 39 -- I'm not sure if the engravers'
+  //    rules in other countries deviate; if that should be the case (and there are other cases like this), it might  
+  //    be nice to give users the option to pass a config object and create a constructor function
+  // 3) replaced the dependency on the vex_key_cmp function by object / array look-ups in place (maybe that's not necessary)   
   var mei_note_stem_dir = function(mei_note, parent_staff_element) {
     var given_dir = $(mei_note).attr('stem.dir');
-    if (given_dir !== undefined) {
-      return (given_dir === 'up') ? Vex.Flow.StaveNote.STEM_UP : (given_dir === 'down') ? Vex.Flow.StaveNote.STEM_DOWN : undefined;
-    } else {
+    if (!given_dir) {
       var clef = staff_clef($(parent_staff_element).attr('n'));
-      if (clef === 'treble') {
-        return (vex_key_cmp('a/5', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
-      } else if (clef === 'octave') {
-        return (vex_key_cmp('a/4', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
-      } else if (clef === 'bass') {
-        return (vex_key_cmp('c/3', mei_note2vex_key(mei_note)) === -1) ? Vex.Flow.StaveNote.STEM_DOWN : Vex.Flow.StaveNote.STEM_UP;
-      } 
+      var oct = $(mei_note).attr('oct');
+      var critical_octave = { treble : '4', octave : '3', bass : '3', alto: '3', tenor: '3' };
+      var pnames_to_reverse = { treble : ['b'], octave : ['b'], bass : ['d', 'e', 'f', 'g', 'a', 'b'], alto : [], tenor: ['a', 'b'] };
+      if (oct > critical_octave[clef]) {
+        return Vex.Flow.StaveNote.STEM_DOWN;
+      }
+      if (oct === critical_octave[clef] && pnames_to_reverse[clef].indexOf($(mei_note).attr('pname')) > -1) {
+        return Vex.Flow.StaveNote.STEM_DOWN;
+      }
+      return Vex.Flow.StaveNote.STEM_UP;
     }
+    if (given_dir === 'down') {
+      return Vex.Flow.StaveNote.STEM_DOWN;
+    }
+    return Vex.Flow.StaveNote.STEM_UP;
   };
-
+  
+//  var mei_note_stem_dir = function(mei_note, parent_staff_element) {
+//    var given_dir = $(mei_note).attr('stem.dir');
+//    if (given_dir !== undefined) {
+//      return (given_dir === 'up') ? Vex.Flow.StaveNote.STEM_UP : (given_dir === 'down') ? Vex.Flow.StaveNote.STEM_DOWN : undefined;
+//    } else {
+//      var clef = staff_clef($(parent_staff_element).attr('n'));
+//      if (clef === 'treble') {
+//        return (vex_key_cmp('a/5', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
+//      } else if (clef === 'octave') {
+//        return (vex_key_cmp('a/4', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
+//      } else if (clef === 'bass') {
+//        return (vex_key_cmp('c/3', mei_note2vex_key(mei_note)) === -1) ? Vex.Flow.StaveNote.STEM_DOWN : Vex.Flow.StaveNote.STEM_UP;
+//      } 
+//    }
+//  };
+  
   var mei_staffdef2vex_keyspec = function(mei_staffdef) {
     if ($(mei_staffdef).attr('key.pname') !== undefined) {
       var keyname = $(mei_staffdef).attr('key.pname').toUpperCase();
