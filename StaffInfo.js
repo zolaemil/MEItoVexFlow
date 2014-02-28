@@ -24,7 +24,7 @@
 MEI2VF.StaffInfo = function(staffdef, w_clef, w_keysig, w_timesig) {
   this.renderWith = { clef: w_clef, keysig: w_keysig, timesig: w_timesig };
   this.staffDef = staffdef;
-}
+};
 
 MEI2VF.StaffInfo.prototype.look4changes = function (current_staffDef, new_staffDef) {
   var result = { clef:false, keysig:false, timesig:false };
@@ -49,7 +49,9 @@ MEI2VF.StaffInfo.prototype.look4changes = function (current_staffDef, new_staffD
   } 
   if (  (!cmp_attr(current_staffDef, new_staffDef, 'key.pname') || 
          !cmp_attr(current_staffDef, new_staffDef, 'key.accid') || 
-         !cmp_attr(current_staffDef, new_staffDef) )
+         // added 'key.mode' as third parameter; without a third parameter, cmp_attr would 
+         // try to compare $(e1).attr(undefined) === $(e2).attr(undefined)
+         !cmp_attr(current_staffDef, new_staffDef, 'key.mode') )
      ) {
     result.keysig = true;
   } 
@@ -57,10 +59,10 @@ MEI2VF.StaffInfo.prototype.look4changes = function (current_staffDef, new_staffD
     result.timesig = true;
   }
   return result;
-}
+};
 
 
 MEI2VF.StaffInfo.prototype.updateDef = function(staffdef) {
   this.renderWith = this.look4changes(this.staffDef, staffdef);
   this.staffDef = staffdef;
-}
+};

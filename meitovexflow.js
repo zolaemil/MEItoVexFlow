@@ -438,7 +438,9 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
       staffInfoArray[staff_n].renderWith.timesig = false;
     }
     staff.setContext(context).draw();
-    staffXShift = staff.bar_x_shift;
+    // replaced staff.bar_x_shift by staff.getModifierXShift() due to changes in VexFlow
+    staffXShift = staff.getModifierXShift();
+    //staffXShift = staff.bar_x_shift; 
     Vex.LogDebug('initialise_staff_n(): staffXShift=' + staffXShift);
     return staff;
   }
@@ -966,7 +968,9 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     if (visible == undefined) visible = true;
     try {
       if (visible) {
-        var rest = new Vex.Flow.StaveNote({keys: ['c/5'], duration: mei_note2vex_dur(element, false) + 'r'});
+      	var dur = mei_note2vex_dur(element, false);
+      	// assign whole rests to the fourth line, all others to the middle line:
+        var rest = new Vex.Flow.StaveNote({keys: [(dur === 'w') ? 'd/5' : 'b/4'], duration: dur + 'r'});
         if ($(element).attr('dots') === '1') {
           rest.addDotToAll();
         }
@@ -983,7 +987,7 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
   var make_mrest = function(element, parent_layer, parent_staff_element, parent_measure) {
 
     try {
-      var mrest = new Vex.Flow.StaveNote({keys: ['c/5'], duration: 'wr'});
+      var mrest = new Vex.Flow.StaveNote({keys: ['d/5'], duration: 'wr'});
       return mrest;
     } catch (x) {
       throw new Vex.RuntimeError('BadArguments',
