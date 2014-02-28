@@ -65,7 +65,7 @@ MEI2VF.RUNTIME_ERROR.prototype.toString = function() {
 
 MEI2VF.render_notation = function(score, target, width, height, backend) {
   var width = width || 800;
-  var height = height || 350;
+  var height = height || 350; //TODO: REMOVE (unsued)
   var n_measures; // = $(score).find('measure').get().length;
   var measure_width;// = Math.round(width / n_measures);
   var ANNOT_FONT_SIZE = 13;
