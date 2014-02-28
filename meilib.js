@@ -791,7 +791,8 @@ MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
     if (altgroup) {
       // if altID is present in altgroups, then replace all corresponding alts with the 
       // alt_item that correspons to alt_instance2insert
-      for (var i in altgroup) {
+      var i;
+      for (i=0; i<altgroup.length; i++) {
         altID__ = altgroup[i];
         alt_instance2insert__ = corresponding_alt_item(this.ALTs[altID__].altitems, alt_instance2insert);
         this.replaceAltInstance({appXmlID:altID__, replaceWith:alt_instance2insert__});
