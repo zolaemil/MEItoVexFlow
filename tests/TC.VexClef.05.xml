@@ -21,6 +21,22 @@
 						<measure n="1">
 							<staff n="1">
 								<layer>
+									<note xml:id="e04-8" pname="b" oct="2" dur="8"/>
+									<note xml:id="e01-0" pname="c" oct="3" dur="8"/>
+									<note xml:id="e01-1" pname="d" oct="3" dur="8"/>
+									<note xml:id="e02-0" pname="e" oct="3" dur="8"/>
+									<note xml:id="e02-1" pname="f" oct="3" dur="8"/>
+									<note xml:id="e03-0" pname="g" oct="3" dur="8"/>
+									<note xml:id="e03-1" pname="a" oct="3" dur="8"/>
+									<note xml:id="e04-0" pname="b" oct="3" dur="8"/>
+									<note xml:id="e04-1" pname="c" oct="4" dur="8"/>
+									<note xml:id="e04-2" pname="d" oct="4" dur="8"/>
+									<note xml:id="e04-3" pname="e" oct="4" dur="8"/>
+									<note xml:id="e04-4" pname="f" oct="4" dur="8"/>
+									<note xml:id="e04-5" pname="g" oct="4" dur="8"/>
+									<note xml:id="e04-6" pname="a" oct="4" dur="8"/>
+									<note xml:id="e04-7" pname="b" oct="4" dur="8"/>
+									<note xml:id="e04-8" pname="c" oct="5" dur="8"/>
 								</layer>
 							</staff>
 						</measure>
