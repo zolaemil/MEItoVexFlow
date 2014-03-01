@@ -22,6 +22,7 @@
 * permissions and limitations under the License.
 ***/
 
+
 //// * support for 8va treble clefs (using the regular treble clef glyph) *
 //Vex.Flow.clefProperties.values.octave = { line_shift: 3.5 };
 //// currently, there's no 8va treble clef in VexFlow; I set the regular treble clef instead as a workaround:
