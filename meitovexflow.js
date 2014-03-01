@@ -22,10 +22,10 @@
 * permissions and limitations under the License.
 ***/
 
-
-Vex.Flow.clefProperties.values.octave = { line_shift: 3.5 };
-// currently, there's no 8va treble clef in VexFlow; I set the regular treble clef instead as a workaround:
-Vex.Flow.Clef.types.octave = { code: "v83", point: 40, line: 3 };
+//// * support for 8va treble clefs (using the regular treble clef glyph) *
+//Vex.Flow.clefProperties.values.octave = { line_shift: 3.5 };
+//// currently, there's no 8va treble clef in VexFlow; I set the regular treble clef instead as a workaround:
+//Vex.Flow.Clef.types.octave = { code: "v83", point: 40, line: 3 };
 
 
 Node.prototype.attrs = function() {
@@ -226,7 +226,7 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     return [dir_text, pos];
   }
 
-// this function is not in use anymore: it was only called by mei_note_stem_dir for calculating the stem direction; see above
+// this function is not in use anymore: it was only called by mei_note_stem_dir for calculating the stem direction; see mei_note_stem_dir
   
 //  var vex_key_cmp = function(key1, key2) {
 //    key1 = {pitch: key1.split('/')[0][0], octave: Number(key1.split('/')[1])};
@@ -399,7 +399,7 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
       if ($(staffDefList[i]).attr('n') !== staff_n.toString()) { 
         result += staff_height(i);
       } else {
-        return result;
+        break;
       }
     }
 //    for (i=0;i<staff_n-1;i++) result += staff_height(i);
@@ -655,7 +655,6 @@ MEI2VF.render_notation = function(score, target, width, height, backend) {
     
     var left_barline = parent_measure.getAttribute('left');
     var right_barline = parent_measure.getAttribute('right');
-    // I pass the barline attributes as function parameters; would it be better to write them to the staffinfo array? 
     staff = initialise_staff_n(staff_n, measure_width, left_barline, right_barline);
     var layer_events = $(staff_element).find('layer').map(function(i, layer) { 
       return extract_events(i, layer, staff_element, parent_measure); 
