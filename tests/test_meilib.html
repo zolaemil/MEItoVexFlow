@@ -11,11 +11,13 @@ version="HTML+RDFa 1.0" xml:lang="en">
 		<script type="text/JavaScript" src="runtest_meilib.js"></script>  
 		<script type="text/JavaScript">
 		
-		MeiLibTest();
-		
+			$(document).ready( function(){
+				MeiLibTest();
+			});
 		</script>
 	</head>
 	<body>
-		MeiLib Test Page
+		<h2>MeiLib Test Page</h2>
+		<div id="results"/>
 	</body>
 </html>
