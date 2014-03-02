@@ -24,14 +24,14 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				var test_cases = new Array();
 				
 				// add test cases
-				// test_cases.push({ title: 'Prokofiev Op. 36', mei_xml: 'TC.Prokofiev.xml', canvas_height:400});
-				// test_cases.push({ title: 'Prokofiev Op. 36 (with prefixes)', mei_xml: 'TC.Prokofiev.pref.xml', canvas_height:400});
+				test_cases.push({ title: 'Prokofiev Op. 36', mei_xml: 'TC.Prokofiev.xml', canvas_height:400});
+				test_cases.push({ title: 'Prokofiev Op. 36 (with prefixes)', mei_xml: 'TC.Prokofiev.pref.xml', canvas_height:400});
 				test_cases.push({ title: 'Bartok Duo No.23', mei_xml: 'Bartok-WeddingSong-altered.xml', canvas_height:500});
-				// test_cases.push({ title: 'One-measure piece (Isaac-Rogamus te piissima virgo Maria)', mei_xml: 'TC.One-measure.xml', canvas_width:1100, canvas_height:450});
-				// test_cases.push({ title: 'KeySpec.01 - default pitch and mode [C major]', mei_xml: 'TC.KeySpec.01.xml'});
-				// test_cases.push({ title: 'KeySpec.02 - supplied pitch, default accid and mode [G major]', mei_xml: 'TC.KeySpec.02.xml'});
-				// test_cases.push({ title: 'KeySpec.03 - supplied pitch and accid, default mode [G-flat major]', mei_xml: 'TC.KeySpec.03.xml'});
-				// test_cases.push({ title: 'KeySpec.04 - supplied pitch, accid and mode [D-sharp minor]', mei_xml: 'TC.KeySpec.04.xml'});
+				test_cases.push({ title: 'One-measure piece (Isaac-Rogamus te piissima virgo Maria)', mei_xml: 'TC.One-measure.xml', canvas_width:1100, canvas_height:450});
+				test_cases.push({ title: 'KeySpec.01 - default pitch and mode [C major]', mei_xml: 'TC.KeySpec.01.xml'});
+				test_cases.push({ title: 'KeySpec.02 - supplied pitch, default accid and mode [G major]', mei_xml: 'TC.KeySpec.02.xml'});
+				test_cases.push({ title: 'KeySpec.03 - supplied pitch and accid, default mode [G-flat major]', mei_xml: 'TC.KeySpec.03.xml'});
+				test_cases.push({ title: 'KeySpec.04 - supplied pitch, accid and mode [D-sharp minor]', mei_xml: 'TC.KeySpec.04.xml'});
 				test_cases.push({ title: "Directions.01 - 'pizz' above", mei_xml: 'TC.dir.01.xml'});
 				test_cases.push({ title: "Directions.02 - 'espressivo' below", mei_xml: 'TC.dir.02.xml'});
 				test_cases.push({ title: "Directions.03 - All execution paths", mei_xml: 'TC.dir.03.xml'});
@@ -74,8 +74,7 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				test_cases.push({ title: "Clef - Transposed treble clef (with stem directions)", mei_xml: 'TC.VexClef.06.xml'});
 				test_cases.push({ title: "Plain Staff", mei_xml: 'TC.PlainStaff.xml'});
 				
-				// Missing?
-				//test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
+				test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
 				
 				//Test cases that are supposed to generate error messages on the console:
 				//  test_cases.push({ title: 'Missing_Attribute_Test_Case', mei_xml: 'TC.MissingAttribute.xml'});
