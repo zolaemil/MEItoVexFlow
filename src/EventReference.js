@@ -25,53 +25,58 @@
 * permissions and limitations under the License.
 */
 
+MEI2VF = (function(m2v) {
 
-MEI2VF.EventReference = function(xmlid) {
-  this.xmlid = xmlid;
-}
-
-MEI2VF.EventReference.prototype.setId = function(xmlid){
-  this.xmlid = xmlid;
-}
-
-MEI2VF.EventReference.prototype.setTStamp = function(tstamp){
-  this.tstamp = tstamp;
-  if (this.xmlid) {
-    this.tryResolveReference(true);
+  m2v.EventReference = function(xmlid) {
+    this.xmlid = xmlid;
   }
-}
-
-MEI2VF.EventReference.prototype.tryResolveReference = function(strict) {
-  var tstamp = this.tstamp;
-  var meicontext = this.meicontext;
-  if (!tstamp) throw new MEI2VF.RUNTIME_ERROR('MEI2VF:RERR:BADARG:EventRef001', 'EventReference: tstamp must be set in order to resolve reference.')
-  if (this.meicontext) {
-    //look up event corresponding to the given tstamp (strictly or losely)
-    this.xmlid = MeiLib.tstamp2id(this.tstamp, this.meicontext.layer, this.meicontext.meter);
-  } else {
-    this.xmlid = null;
+  
+  m2v.EventReference.prototype.setId = function(xmlid){
+    this.xmlid = xmlid;
   }
-}
-
-/**
- * @param params { meicontext, strict }; both parameters are optional; 
- *               meicontext is an obejct { layer, meter }; 
- *               strict is boolean, false if not defined.
- *
- */
-MEI2VF.EventReference.prototype.getId = function(params) {
-  if (params && params.meicontext) this.setContext(params.meicontext);
-  if (this.xmlid) return this.xmlid;
-  if (this.tstamp) {
-    if (this.meicontext) {
-      //look up the closest event to tstamp within this.meicontext and return its ID
-      this.tryResolveReference(params && params.strict);
-      return this.xmlid;
+  
+  m2v.EventReference.prototype.setTStamp = function(tstamp){
+    this.tstamp = tstamp;
+    if (this.xmlid) {
+      this.tryResolveReference(true);
     }
-  } 
-  return null;
-}
+  }
+  
+  m2v.EventReference.prototype.tryResolveReference = function(strict) {
+    var tstamp = this.tstamp;
+    var meicontext = this.meicontext;
+    if (!tstamp) throw new m2v.RUNTIME_ERROR('MEI2VF:RERR:BADARG:EventRef001', 'EventReference: tstamp must be set in order to resolve reference.')
+    if (this.meicontext) {
+      //look up event corresponding to the given tstamp (strictly or losely)
+      this.xmlid = MeiLib.tstamp2id(this.tstamp, this.meicontext.layer, this.meicontext.meter);
+    } else {
+      this.xmlid = null;
+    }
+  }
+  
+  /**
+   * @param params { meicontext, strict }; both parameters are optional; 
+   *               meicontext is an obejct { layer, meter }; 
+   *               strict is boolean, false if not defined.
+   *
+   */
+  m2v.EventReference.prototype.getId = function(params) {
+    if (params && params.meicontext) this.setContext(params.meicontext);
+    if (this.xmlid) return this.xmlid;
+    if (this.tstamp) {
+      if (this.meicontext) {
+        //look up the closest event to tstamp within this.meicontext and return its ID
+        this.tryResolveReference(params && params.strict);
+        return this.xmlid;
+      }
+    } 
+    return null;
+  }
+  
+  m2v.EventReference.prototype.setContext = function(meicontext) {
+    this.meicontext = meicontext;
+  }
 
-MEI2VF.EventReference.prototype.setContext = function(meicontext) {
-  this.meicontext = meicontext;
-}
+  return m2v;
+
+}(MEI2VF || {}));

@@ -22,22 +22,28 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF.StaveConnector = function(symbol, top_staff_n, bottom_staff_n) {
-  this.init(symbol, top_staff_n, bottom_staff_n);
-}
+MEI2VF = (function(m2v) {
 
-MEI2VF.StaveConnector.prototype.init = function(symbol, top_staff_n, bottom_staff_n) {
-  this.symbol = symbol;
-  this.top_staff_n = top_staff_n;
-  this.bottom_staff_n = bottom_staff_n;
-}
-
-MEI2VF.StaveConnector.prototype.vexType = function() {
-  switch (this.symbol) {
-    case 'line': return Vex.Flow.StaveConnector.type.SINGLE;
-    case 'brace': return Vex.Flow.StaveConnector.type.BRACE;
-    case 'bracket': return Vex.Flow.StaveConnector.type.BRACKET;
-    case 'none': return null;
-    default: return Vex.Flow.StaveConnector.type.SINGLE;
+  m2v.StaveConnector = function(symbol, top_staff_n, bottom_staff_n) {
+    this.init(symbol, top_staff_n, bottom_staff_n);
   }
-}
+  
+  m2v.StaveConnector.prototype.init = function(symbol, top_staff_n, bottom_staff_n) {
+    this.symbol = symbol;
+    this.top_staff_n = top_staff_n;
+    this.bottom_staff_n = bottom_staff_n;
+  }
+  
+  m2v.StaveConnector.prototype.vexType = function() {
+    switch (this.symbol) {
+      case 'line': return Vex.Flow.StaveConnector.type.SINGLE;
+      case 'brace': return Vex.Flow.StaveConnector.type.BRACE;
+      case 'bracket': return Vex.Flow.StaveConnector.type.BRACKET;
+      case 'none': return null;
+      default: return Vex.Flow.StaveConnector.type.SINGLE;
+    }
+  }
+
+  return m2v;
+
+}(MEI2VF || {}));

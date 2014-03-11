@@ -22,39 +22,58 @@
 * permissions and limitations under the License.
 */
 
+MEI2VF = (function(m2v) {
 
-MEI2VF.StaffVoice = function(voice, staff_n) {
-  this.voice = voice;
-  this.staff_n = staff_n;
-}
-
-MEI2VF.StaveVoices = function() {
-  this.all_voices = new Array();
-}
-MEI2VF.StaveVoices.prototype.addStaffVoice = function(staffVoice) {
-  this.all_voices.push(staffVoice);
-}
-
-MEI2VF.StaveVoices.prototype.addVoice = function(voice, staff_n) {
-  this.addStaffVoice(new MEI2VF.StaffVoice(voice, staff_n));
-}
-
-MEI2VF.StaveVoices.prototype.reset = function() {
-  this.all_voices = [];
-}
-
-MEI2VF.StaveVoices.prototype.format = function(width) {
-  var voices = $.map(this.all_voices, function(staffVoice, i) {
-    return staffVoice.voice;
-  });
-  new Vex.Flow.Formatter().format(voices, width);
-}
-
-MEI2VF.StaveVoices.prototype.draw = function (context, staves) {
-  var all_voices = this.all_voices;
-  var staffVoice;
-  for (var i=0; i<all_voices.length; ++i) {
-    staffVoice = all_voices[i];
-    staffVoice.voice.draw(context, staves[staffVoice.staff_n]);
+  m2v.StaffVoice = function(voice, staff_n) {
+    this.voice = voice;
+    this.staff_n = staff_n;
   }
-}
+  
+  m2v.StaveVoices = function() {
+    this.all_voices = new Array();
+  }
+  m2v.StaveVoices.prototype.addStaffVoice = function(staffVoice) {
+    this.all_voices.push(staffVoice);
+  }
+  
+  m2v.StaveVoices.prototype.addVoice = function(voice, staff_n) {
+    this.addStaffVoice(new m2v.StaffVoice(voice, staff_n));
+  }
+  
+  m2v.StaveVoices.prototype.reset = function() {
+    this.all_voices = [];
+  }
+  
+  m2v.StaveVoices.prototype.format = function(width) {
+    var voices = $.map(this.all_voices, function(staffVoice, i) {
+      return staffVoice.voice;
+    });
+    new Vex.Flow.Formatter().format(voices, width);
+  }
+  
+  m2v.StaveVoices.prototype.draw = function (context, staves) {
+    var all_voices = this.all_voices;
+    var staffVoice;
+    for (var i=0; i<all_voices.length; ++i) {
+      staffVoice = all_voices[i];
+      staffVoice.voice.draw(context, staves[staffVoice.staff_n]);
+    }
+  }
+
+
+  
+  /**
+   * ####################### TO BE USED IN THE LAST FILE INSTEAD OF return m2v: ######################
+   */
+  
+  m2v.getRenderedMeasures = function() {
+  	return m2v.rendered_measures;
+  }
+  
+  return {
+    render_notation: m2v.render_notation,
+    getRenderedMeasures: m2v.getRenderedMeasures
+  };
+
+  
+}(MEI2VF || {}));

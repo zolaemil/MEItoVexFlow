@@ -24,57 +24,63 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF.EventLink = function(first_id, last_id) {
-  this.init(first_id, last_id);
-}
+MEI2VF = (function(m2v) {
+  
+  m2v.EventLink = function(first_id, last_id) {
+    this.init(first_id, last_id);
+  }
+  
+  m2v.EventLink.prototype.init = function(first_id, last_id) {
+    this.first_ref = new m2v.EventReference(first_id);
+    this.last_ref = new m2v.EventReference(last_id);
+    this.params = {};
+  }
+  /**
+   * @param params is an object. for ties and slurs { linkCond } to indicate the linking condition when 
+   *               parsing from attributes (pitch name for ties, nesting level for slurs); for hairpins
+   *               params it is an object { place, form }
+   */
+  m2v.EventLink.prototype.setParams = function (params) {
+    this.params = params;
+  }
+  
+  m2v.EventLink.prototype.setFirstRef = function (first_ref) {
+    this.first_ref = first_ref;
+  }
+  
+  m2v.EventLink.prototype.setLastRef = function (last_ref) {
+    this.last_ref = last_ref;
+  }
+  
+  m2v.EventLink.prototype.setFirstId = function(id) {
+    this.first_ref.setId(id);
+  }
+  
+  m2v.EventLink.prototype.setLastId = function(id) {
+    this.last_ref.setId(id);
+  }
+  
+  m2v.EventLink.prototype.setFirstTStamp = function (tstamp) {
+    this.first_ref.setTStamp(tstamp);
+  }
+  
+  m2v.EventLink.prototype.setLastTStamp = function (tstamp2) {
+    this.last_ref.setTStamp(tstamp2);
+  }
+  
+  m2v.EventLink.prototype.setContext = function(meicontext) {
+    this.meicontext = meicontext;
+  }
+  
+  m2v.EventLink.prototype.getFirstId = function () {
+      return this.first_ref.getId( { meicontext:this.meicontext } );  
+  }
+  
+  m2v.EventLink.prototype.getLastId = function () {
+      return this.last_ref.getId( { meicontext:this.meicontext } );
+  }
+  
+  return m2v;
 
-MEI2VF.EventLink.prototype.init = function(first_id, last_id) {
-  this.first_ref = new MEI2VF.EventReference(first_id);
-  this.last_ref = new MEI2VF.EventReference(last_id);
-  this.params = {};
-}
-/**
- * @param params is an object. for ties and slurs { linkCond } to indicate the linking condition when 
- *               parsing from attributes (pitch name for ties, nesting level for slurs); for hairpins
- *               params it is an object { place, form }
- */
-MEI2VF.EventLink.prototype.setParams = function (params) {
-  this.params = params;
-}
-
-MEI2VF.EventLink.prototype.setFirstRef = function (first_ref) {
-  this.first_ref = first_ref;
-}
-
-MEI2VF.EventLink.prototype.setLastRef = function (last_ref) {
-  this.last_ref = last_ref;
-}
-
-MEI2VF.EventLink.prototype.setFirstId = function(id) {
-  this.first_ref.setId(id);
-}
-
-MEI2VF.EventLink.prototype.setLastId = function(id) {
-  this.last_ref.setId(id);
-}
-
-MEI2VF.EventLink.prototype.setFirstTStamp = function (tstamp) {
-  this.first_ref.setTStamp(tstamp);
-}
-
-MEI2VF.EventLink.prototype.setLastTStamp = function (tstamp2) {
-  this.last_ref.setTStamp(tstamp2);
-}
-
-MEI2VF.EventLink.prototype.setContext = function(meicontext) {
-  this.meicontext = meicontext;
-}
-
-MEI2VF.EventLink.prototype.getFirstId = function () {
-    return this.first_ref.getId( { meicontext:this.meicontext } );  
-}
-
-MEI2VF.EventLink.prototype.getLastId = function () {
-    return this.last_ref.getId( { meicontext:this.meicontext } );
-}
+}(MEI2VF || {}));  
 
