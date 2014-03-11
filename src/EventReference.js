@@ -25,7 +25,7 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF = (function(m2v) {
+MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.EventReference = function(xmlid) {
     this.xmlid = xmlid;
@@ -79,4 +79,4 @@ MEI2VF = (function(m2v) {
 
   return m2v;
 
-}(MEI2VF || {}));
+}(MEI2VF || {}, Vex.Flow, jQuery));

@@ -22,7 +22,7 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF = (function(m2v) {
+MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.StaffVoice = function(voice, staff_n) {
     this.voice = voice;
@@ -48,7 +48,7 @@ MEI2VF = (function(m2v) {
     var voices = $.map(this.all_voices, function(staffVoice, i) {
       return staffVoice.voice;
     });
-    new Vex.Flow.Formatter().format(voices, width);
+    new VF.Formatter().format(voices, width);
   }
   
   m2v.StaveVoices.prototype.draw = function (context, staves) {
@@ -60,20 +60,6 @@ MEI2VF = (function(m2v) {
     }
   }
 
-
+  return m2v;
   
-  /**
-   * ####################### TO BE USED IN THE LAST FILE INSTEAD OF return m2v: ######################
-   */
-  
-  m2v.getRenderedMeasures = function() {
-  	return m2v.rendered_measures;
-  }
-  
-  return {
-    render_notation: m2v.render_notation,
-    getRenderedMeasures: m2v.getRenderedMeasures
-  };
-
-  
-}(MEI2VF || {}));
+}(MEI2VF || {}, Vex.Flow, jQuery));

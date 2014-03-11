@@ -21,7 +21,7 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF = (function(m2v) {
+MEI2VF = (function(m2v, VF, $, undefined) {
 
 
   m2v.StaffInfo = function(staffdef, w_clef, w_keysig, w_timesig) {
@@ -72,4 +72,4 @@ MEI2VF = (function(m2v) {
 
   return m2v;
 
-}(MEI2VF || {}));
+}(MEI2VF || {}, Vex.Flow, jQuery));

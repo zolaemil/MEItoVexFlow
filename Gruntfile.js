@@ -33,7 +33,8 @@ module.exports = function(grunt) {
               'src/EventReference.js',
               'src/StaffInfo.js',
               'src/StaveConnector.js',
-              'src/StaveVoices.js'],
+              'src/StaveVoices.js',
+              'src/main.js'],
         dest: 'dist/meitovexflow.js'
       }
     },

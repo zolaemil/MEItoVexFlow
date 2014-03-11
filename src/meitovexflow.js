@@ -24,9 +24,9 @@
 
 
 //// * support for 8va treble clefs (using the regular treble clef glyph) *
-//Vex.Flow.clefProperties.values.octave = { line_shift: 3.5 };
+//VF.clefProperties.values.octave = { line_shift: 3.5 };
 //// currently, there's no 8va treble clef in VexFlow; I set the regular treble clef instead as a workaround:
-//Vex.Flow.Clef.types.octave = { code: "v83", point: 40, line: 3 };
+//VF.Clef.types.octave = { code: "v83", point: 40, line: 3 };
 
 
 Node.prototype.attrs = function() {
@@ -60,7 +60,7 @@ Array.prototype.any = function(test) {
 
 MEI2VF = {};
 
-MEI2VF = (function(m2v) {
+MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.RUNTIME_ERROR = function(error_code, message) {
     this.error_code = error_code;
@@ -253,7 +253,7 @@ MEI2VF = (function(m2v) {
       mei_dur = String(mei_dur);
       //if (mei_dur === 'long') return ;
       if (mei_dur === 'breve') {
-        if (Vex.Flow.durationToTicks.durations['0'] != undefined) return '0';
+        if (VF.durationToTicks.durations['0'] != undefined) return '0';
         return 'w';
       } 
       if (mei_dur === '1') return 'w';
@@ -313,18 +313,18 @@ MEI2VF = (function(m2v) {
     // undefined, which will let VexFlow's autostem feature figure out the direction
     var mei_note_stem_dir = function(mei_note) {
       var given_dir = $(mei_note).attr('stem.dir');
-      if (given_dir === 'down') return Vex.Flow.StaveNote.STEM_DOWN;
-      if (given_dir === 'up') return Vex.Flow.StaveNote.STEM_UP;
+      if (given_dir === 'down') return VF.StaveNote.STEM_DOWN;
+      if (given_dir === 'up') return VF.StaveNote.STEM_UP;
   //    if (given_dir !== undefined) {
-  //      return (given_dir === 'up') ? Vex.Flow.StaveNote.STEM_UP : (given_dir === 'down') ? Vex.Flow.StaveNote.STEM_DOWN : undefined;
+  //      return (given_dir === 'up') ? VF.StaveNote.STEM_UP : (given_dir === 'down') ? VF.StaveNote.STEM_DOWN : undefined;
   //    } else {
   //      var clef = staff_clef($(parent_staff_element).attr('n'));
   //      if (clef === 'treble') {
-  //        return (vex_key_cmp('a/5', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
+  //        return (vex_key_cmp('a/5', mei_note2vex_key(mei_note)) === 1) ? VF.StaveNote.STEM_UP : VF.StaveNote.STEM_DOWN;
   //      } else if (clef === 'octave') {
-  //        return (vex_key_cmp('a/4', mei_note2vex_key(mei_note)) === 1) ? Vex.Flow.StaveNote.STEM_UP : Vex.Flow.StaveNote.STEM_DOWN;
+  //        return (vex_key_cmp('a/4', mei_note2vex_key(mei_note)) === 1) ? VF.StaveNote.STEM_UP : VF.StaveNote.STEM_DOWN;
   //      } else if (clef === 'bass') {
-  //        return (vex_key_cmp('c/3', mei_note2vex_key(mei_note)) === -1) ? Vex.Flow.StaveNote.STEM_DOWN : Vex.Flow.StaveNote.STEM_UP;
+  //        return (vex_key_cmp('c/3', mei_note2vex_key(mei_note)) === -1) ? VF.StaveNote.STEM_DOWN : VF.StaveNote.STEM_UP;
   //      } 
   //    }
     };
@@ -356,7 +356,7 @@ MEI2VF = (function(m2v) {
       var clef_dis = get_attr_value_opt(mei_staffdef, 'clef.dis');
       var clef_dis_place = get_attr_value_opt(mei_staffdef, 'clef.dis.place');
       if (clef_shape === 'G' && (!clef_line || clef_line === '2')) {
-        if (clef_dis === '8' && clef_dis_place === 'below' && Vex.Flow.clefProperties.values['octave'] != undefined) return 'octave';
+        if (clef_dis === '8' && clef_dis_place === 'below' && VF.clefProperties.values['octave'] != undefined) return 'octave';
         return 'treble';
       } else if (clef_shape === 'F' && (!clef_line || clef_line === '4') ) {
         return 'bass';
@@ -383,7 +383,7 @@ MEI2VF = (function(m2v) {
     };
   
     var initialise_score = function(target) {
-      var renderer = new Vex.Flow.Renderer(target, backend || Vex.Flow.Renderer.Backends.CANVAS);
+      var renderer = new VF.Renderer(target, backend || VF.Renderer.Backends.CANVAS);
       context = renderer.getContext();
     };
   
@@ -432,7 +432,7 @@ MEI2VF = (function(m2v) {
       //removed because it's an insufficient solution, and when system breaks are supported it would introduce new problems:
       //if (staffInfoArray[staff_n].renderWith.clef || staffInfoArray[staff_n].renderWith.keysig || staffInfoArray[staff_n].renderWith.timesig) width += 30;
       
-      var staff = new Vex.Flow.Stave(measure_left, staff_top_abs(staff_n), width);
+      var staff = new VF.Stave(measure_left, staff_top_abs(staff_n), width);
       if (staffInfoArray[staff_n].renderWith.clef) {
         if ($(staffdef).attr('clef.visible') === 'true' || $(staffdef).attr('clef.visible') === undefined) {
           staff.addClef(mei_staffdef2vex_clef(staffdef));
@@ -486,7 +486,7 @@ MEI2VF = (function(m2v) {
         
         var f_vexNote; if (f_note) f_vexNote = f_note.vexNote;
         var l_vexNote; if (l_note) l_vexNote = l_note.vexNote;
-        new Vex.Flow.StaveTie({
+        new VF.StaveTie({
           first_note: f_vexNote,
           last_note: l_vexNote}).setContext(context).draw();
       });
@@ -507,7 +507,7 @@ MEI2VF = (function(m2v) {
         var r_ho = 0;
         var hairpin_options = {height: 10, y_shift:0, left_shift_px:l_ho, r_shift_px:r_ho};
     
-        new Vex.Flow.StaveHairpin({
+        new VF.StaveHairpin({
           first_note: f_vexNote,
           last_note: l_vexNote,
         }, type).setContext(context).setRenderOptions(hairpin_options).setPosition(place).draw();
@@ -521,7 +521,7 @@ MEI2VF = (function(m2v) {
         var top_staff = staves_by_n[staveConn.top_staff_n];
         var bottom_staff = staves_by_n[staveConn.bottom_staff_n];
         if (vexType && top_staff && bottom_staff) {
-          var vexConnector = new Vex.Flow.StaveConnector(top_staff, bottom_staff);
+          var vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
           vexConnector.setType(staveConn.vexType());
           vexConnector.setContext(context);
           vexConnector.draw();
@@ -902,11 +902,11 @@ MEI2VF = (function(m2v) {
   
       //Support for annotations (lyrics, directions, etc.)
       var make_annot_below = function(text) {
-        return (new Vex.Flow.Annotation(text)).setFont("Times", ANNOT_FONT_SIZE).setBottom(true);
+        return (new VF.Annotation(text)).setFont("Times", ANNOT_FONT_SIZE).setBottom(true);
       };
   
       var make_annot_above = function(text) {
-        return (new Vex.Flow.Annotation(text)).setFont("Times", ANNOT_FONT_SIZE);
+        return (new VF.Annotation(text)).setFont("Times", ANNOT_FONT_SIZE);
       };
   
       try {
@@ -921,7 +921,7 @@ MEI2VF = (function(m2v) {
         } else {
           note_opts.auto_stem = true;
         }
-        var note = new Vex.Flow.StaveNote(note_opts); 
+        var note = new VF.StaveNote(note_opts); 
   
         note.addAnnotation(2, make_annot_below(mei_syl2vex_annot(element)));
         var annot = mei_dir2vex_annot(parent_measure, element);
@@ -939,10 +939,10 @@ MEI2VF = (function(m2v) {
         }
         var mei_accid = $(element).attr('accid');
         if (mei_accid) {
-          note.addAccidental(0, new Vex.Flow.Accidental(mei_accid2vex_accid(mei_accid)));
+          note.addAccidental(0, new VF.Accidental(mei_accid2vex_accid(mei_accid)));
         }
         $.each($(element).find('artic'), function(i, ar){
-          note.addArticulation(0, new Vex.Flow.Articulation(mei2vexflowTables.articulations[$(ar).attr('artic')]).setPosition(mei2vexflowTables.positions[$(ar).attr('place')]));
+          note.addArticulation(0, new VF.Articulation(mei2vexflowTables.articulations[$(ar).attr('artic')]).setPosition(mei2vexflowTables.positions[$(ar).attr('place')]));
         });
         // FIXME For now, we'll remove any child nodes of <note>
         $.each($(element).children(), function(i, child) { $(child).remove(); });
@@ -1002,12 +1002,12 @@ MEI2VF = (function(m2v) {
         if (visible) {
           var dur = mei_note2vex_dur(element, false);
           // assign whole rests to the fourth line, all others to the middle line:
-          var rest = new Vex.Flow.StaveNote({keys: [(dur === 'w') ? 'd/5' : 'b/4'], duration: dur + 'r'});
+          var rest = new VF.StaveNote({keys: [(dur === 'w') ? 'd/5' : 'b/4'], duration: dur + 'r'});
           if ($(element).attr('dots') === '1') {
             rest.addDotToAll();
           }
         } else {
-          var rest = new Vex.Flow.GhostNote({ duration: mei_note2vex_dur(element, false) + 'r' });
+          var rest = new VF.GhostNote({ duration: mei_note2vex_dur(element, false) + 'r' });
         }
         return rest;
       } catch (x) {
@@ -1019,7 +1019,7 @@ MEI2VF = (function(m2v) {
     var make_mrest = function(element, parent_layer, parent_staff_element, parent_measure) {
   
       try {
-        var mrest = new Vex.Flow.StaveNote({keys: ['d/5'], duration: 'wr'});
+        var mrest = new VF.StaveNote({keys: ['d/5'], duration: 'wr'});
         return mrest;
       } catch (x) {
         throw new Vex.RuntimeError('BadArguments',
@@ -1035,7 +1035,7 @@ MEI2VF = (function(m2v) {
         return proc_element.vexNote ? proc_element.vexNote : proc_element;
       }).get();
   
-      beams.push(new Vex.Flow.Beam(elements));
+      beams.push(new VF.Beam(elements));
   
       return elements;
     };
@@ -1067,7 +1067,7 @@ MEI2VF = (function(m2v) {
           chord_opts.auto_stem = true;
         }
         
-        var chord = new Vex.Flow.StaveNote(chord_opts);
+        var chord = new VF.StaveNote(chord_opts);
         //stem_direction: stem_direction: mei_note_stem_dir(mei_note, parent_staff)});
   
         if (dotted === true) { chord.addDotToAll(); }
@@ -1075,7 +1075,7 @@ MEI2VF = (function(m2v) {
         $(element).children().each(function(i, note) { 
           var mei_accid = $(note).attr('accid');
           if (mei_accid !== undefined) { 
-            chord.addAccidental(i, new Vex.Flow.Accidental(mei_accid2vex_accid(mei_accid))); 
+            chord.addAccidental(i, new VF.Accidental(mei_accid2vex_accid(mei_accid))); 
           }
         });
   
@@ -1112,9 +1112,9 @@ MEI2VF = (function(m2v) {
     var make_voice = function(i, voice_contents) {
       if (!$.isArray(voice_contents)) { throw new Vex.RuntimeError('BadArguments', 'make_voice() voice_contents argument must be an array.');  }
   
-      var voice = new Vex.Flow.Voice({num_beats: Number($(score).find('staffDef').attr('meter.count')),
+      var voice = new VF.Voice({num_beats: Number($(score).find('staffDef').attr('meter.count')),
       beat_value: Number($(score).find('staffDef').attr('meter.unit')),
-      resolution: Vex.Flow.RESOLUTION});
+      resolution: VF.RESOLUTION});
   
       voice.setStrict(false);
       voice.addTickables(voice_contents);
@@ -1129,5 +1129,5 @@ MEI2VF = (function(m2v) {
 
   return m2v;
 
-}(MEI2VF || {}));
+}(MEI2VF || {}, Vex.Flow, jQuery));
 

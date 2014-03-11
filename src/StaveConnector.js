@@ -22,7 +22,7 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF = (function(m2v) {
+MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.StaveConnector = function(symbol, top_staff_n, bottom_staff_n) {
     this.init(symbol, top_staff_n, bottom_staff_n);
@@ -36,14 +36,14 @@ MEI2VF = (function(m2v) {
   
   m2v.StaveConnector.prototype.vexType = function() {
     switch (this.symbol) {
-      case 'line': return Vex.Flow.StaveConnector.type.SINGLE;
-      case 'brace': return Vex.Flow.StaveConnector.type.BRACE;
-      case 'bracket': return Vex.Flow.StaveConnector.type.BRACKET;
+      case 'line': return VF.StaveConnector.type.SINGLE;
+      case 'brace': return VF.StaveConnector.type.BRACE;
+      case 'bracket': return VF.StaveConnector.type.BRACKET;
       case 'none': return null;
-      default: return Vex.Flow.StaveConnector.type.SINGLE;
+      default: return VF.StaveConnector.type.SINGLE;
     }
   }
 
   return m2v;
 
-}(MEI2VF || {}));
+}(MEI2VF || {}, Vex.Flow, jQuery));
