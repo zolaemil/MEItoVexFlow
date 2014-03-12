@@ -1,5 +1,5 @@
 
-MEI2VF = (function(m2v, VF, $, undefined) {
+var MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.getRenderedMeasures = function() {
     return m2v.rendered_measures;

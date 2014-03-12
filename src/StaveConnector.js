@@ -22,7 +22,7 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF = (function(m2v, VF, $, undefined) {
+var MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.StaveConnector = function(symbol, top_staff_n, bottom_staff_n) {
     this.init(symbol, top_staff_n, bottom_staff_n);

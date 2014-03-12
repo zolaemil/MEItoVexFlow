@@ -58,7 +58,7 @@ Array.prototype.any = function(test) {
   return false;
 };
 
-MEI2VF = (function(m2v, VF, $, undefined) {
+var MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.RUNTIME_ERROR = function(error_code, message) {
     this.error_code = error_code;

@@ -24,7 +24,7 @@
 * permissions and limitations under the License.
 */
 
-MEI2VF = (function(m2v, VF, $, undefined) {
+var MEI2VF = (function(m2v, VF, $, undefined) {
   
   m2v.EventLink = function(first_id, last_id) {
     this.init(first_id, last_id);
