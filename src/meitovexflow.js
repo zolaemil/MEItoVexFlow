@@ -58,8 +58,6 @@ Array.prototype.any = function(test) {
   return false;
 };
 
-MEI2VF = {};
-
 MEI2VF = (function(m2v, VF, $, undefined) {
 
   m2v.RUNTIME_ERROR = function(error_code, message) {
@@ -453,10 +451,10 @@ MEI2VF = (function(m2v, VF, $, undefined) {
       }
       
       if (left_barline) {
-        staff.setBegBarType(mei2vexflowTables.barlines[left_barline]);
+        staff.setBegBarType(m2v.tables.barlines[left_barline]);
       }
       if (right_barline) {
-        staff.setEndBarType(mei2vexflowTables.barlines[right_barline]);
+        staff.setEndBarType(m2v.tables.barlines[right_barline]);
       }
       
       staff.setContext(context).draw();
@@ -501,8 +499,8 @@ MEI2VF = (function(m2v, VF, $, undefined) {
         var f_vexNote; if (f_note) f_vexNote = f_note.vexNote;
         var l_vexNote; if (l_note) l_vexNote = l_note.vexNote;
         
-        var place = mei2vexflowTables.positions[link.params.place];
-        var type = mei2vexflowTables.hairpins[link.params.form];        
+        var place = m2v.tables.positions[link.params.place];
+        var type = m2v.tables.hairpins[link.params.form];        
         var l_ho = 0;
         var r_ho = 0;
         var hairpin_options = {height: 10, y_shift:0, left_shift_px:l_ho, r_shift_px:r_ho};
@@ -942,7 +940,7 @@ MEI2VF = (function(m2v, VF, $, undefined) {
           note.addAccidental(0, new VF.Accidental(mei_accid2vex_accid(mei_accid)));
         }
         $.each($(element).find('artic'), function(i, ar){
-          note.addArticulation(0, new VF.Articulation(mei2vexflowTables.articulations[$(ar).attr('artic')]).setPosition(mei2vexflowTables.positions[$(ar).attr('place')]));
+          note.addArticulation(0, new VF.Articulation(m2v.tables.articulations[$(ar).attr('artic')]).setPosition(m2v.tables.positions[$(ar).attr('place')]));
         });
         // FIXME For now, we'll remove any child nodes of <note>
         $.each($(element).children(), function(i, child) { $(child).remove(); });
