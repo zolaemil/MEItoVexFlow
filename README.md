@@ -7,10 +7,13 @@ rendering library.
 
 ## Build
 
-To build MEItoVexFlow, you'll need Node.js and npm. In the main directory run:
+To build MEItoVexFlow, you'll need Node.js and npm. In the main directory run (skip the first step if you have bower and grunt already installed globally):
 
-`$ npm install`
-`$ bower install`
+```
+$ npm install -g bower grunt-cli
+$ npm install
+$ bower install
+```
 
 ...and you're set! Now, to build run:
 
