@@ -21,65 +21,64 @@
 
 var MEI2VF = (function(m2v, VF, $, undefined) {
 
-  m2v.tables = {
+	m2v.tables = {
 
-    positions : {
-      'above' : VF.Modifier.Position.ABOVE,
-      'below' : VF.Modifier.Position.BELOW
-    },
+		positions : {
+			'above' : VF.Modifier.Position.ABOVE,
+			'below' : VF.Modifier.Position.BELOW
+		},
 
-    hairpins : {
-      'cres' : VF.StaveHairpin.type.CRESC,
-      'dim' : VF.StaveHairpin.type.DECRESC
-    },
+		hairpins : {
+			'cres' : VF.StaveHairpin.type.CRESC,
+			'dim' : VF.StaveHairpin.type.DECRESC
+		},
 
-    articulations : {
-      'acc' : 'a>',
-      'stacc' : 'a.',
-      'ten' : 'a-',
-      'stacciss' : 'av',
-      'marc' : 'a^',
-      // 'marc-stacc':
-      // 'spicc':
-      // 'doit':
-      // 'rip':
-      // 'plop':
-      // 'fall':
-      // 'bend':
-      // 'flip':
-      // 'smear':
-      'dnbow' : 'am',
-      'upbow' : 'a|',
-      // 'harm':
-      'snap' : 'ao',
-      // 'fingernail':
-      // 'ten-stacc':
-      // 'damp':
-      // 'dampall':
-      // 'open':
-      // 'stop':
-      // 'dbltongue':
-      // 'trpltongue':
-      // 'heel':
-      // 'toe':
-      // 'tap':
-      'lhpizz' : 'a+',
-      'dot' : 'a.',
-      'stroke' : 'a|'
-    },
+		articulations : {
+			'acc' : 'a>',
+			'stacc' : 'a.',
+			'ten' : 'a-',
+			'stacciss' : 'av',
+			'marc' : 'a^',
+			// 'marc-stacc':
+			// 'spicc':
+			// 'doit':
+			// 'rip':
+			// 'plop':
+			// 'fall':
+			// 'bend':
+			// 'flip':
+			// 'smear':
+			'dnbow' : 'am',
+			'upbow' : 'a|',
+			// 'harm':
+			'snap' : 'ao',
+			// 'fingernail':
+			// 'ten-stacc':
+			// 'damp':
+			// 'dampall':
+			// 'open':
+			// 'stop':
+			// 'dbltongue':
+			// 'trpltongue':
+			// 'heel':
+			// 'toe':
+			// 'tap':
+			'lhpizz' : 'a+',
+			'dot' : 'a.',
+			'stroke' : 'a|'
+		},
 
-    barlines : {
-      'single' : VF.Barline.type.SINGLE,
-      'dbl' : VF.Barline.type.DOUBLE,
-      'end' : VF.Barline.type.END,
-      'rptstart' : VF.Barline.type.REPEAT_BEGIN,
-      'rptend' : VF.Barline.type.REPEAT_END,
-      'rptboth' : VF.Barline.type.REPEAT_BOTH,
-      'invis' : VF.Barline.type.NONE
-    }
+		barlines : {
+			'single' : VF.Barline.type.SINGLE,
+			'dbl' : VF.Barline.type.DOUBLE,
+			'end' : VF.Barline.type.END,
+			'rptstart' : VF.Barline.type.REPEAT_BEGIN,
+			'rptend' : VF.Barline.type.REPEAT_END,
+			'rptboth' : VF.Barline.type.REPEAT_BOTH,
+			'invis' : VF.Barline.type.NONE
+		}
+	};
 
-  };
+	return m2v;
 
-  return m2v;
-
-}(MEI2VF || {}, Vex.Flow, jQuery));
+}(MEI2VF || {}, Vex.Flow, jQuery));  
