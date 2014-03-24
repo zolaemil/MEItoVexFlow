@@ -505,13 +505,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       getNext : function(currentElement) {
-        var me=this, parentElement, next;
+        var me = this, parentElement, next;
         if (currentElement.nextSibling) {
           return currentElement.nextSibling;
         }
         parentElement = currentElement.parentNode;
         next = me.getNextElement(parentElement);
-        console.log(next);
         if (next) {
           return next.firstChild;
         }
@@ -571,7 +570,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       processSections : function(xmlDoc) {
         var me = this, i, j, sectionChildElements;
-        sectionChildElements = $(xmlDoc).find('section').children();
+        sectionChildElements = $(xmlDoc).find('section, ending').children();
         for ( i = 0, j = sectionChildElements.length; i < j; i += 1) {
           me.processSectionChildElement(sectionChildElements[i]);
         }
@@ -980,10 +979,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         mei_ho = atts.ho;
         pname = atts.pname;
         oct = atts.oct;
-        xml_id = atts['xml:id'];
         mei_tie = atts.tie;
         mei_slur = atts.slur;
         note_staff_n = +atts.staff || staff_n;
+
+        xml_id = atts['xml:id'];
+        // If xml:id is missing, create it
+        if (!xml_id) {
+          xml_id = MeiLib.createPseudoUUID();
+          $(element).attr('xml:id', xml_id);
+        }
 
         try {
 
@@ -1055,12 +1060,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
           }
 
-          // If xml:id is missing, create it
-          if (!xml_id) {
-            xml_id = MeiLib.createPseudoUUID();
-            $(element).attr('xml:id', xml_id);
-          }
-
           if (mei_tie) {
             me.processAttrTie(mei_tie, xml_id, pname, oct, me.currentSystem);
           }
@@ -1090,8 +1089,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, i, j, hasDots, $children, dots = [], keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_tie, mei_slur, mei_ho, chord, chord_opts;
 
         $children = $(element).children();
-        durAtt = $(element).attr('dur');
-        mei_ho = $(element).attr('ho');
+
+        atts = m2v.attsToObj(element);
+        durAtt = atts.dur;
+        mei_ho = atts.ho;
+        // mei_tie = atts.tie;
+        // mei_slur = atts.slur;
+
+        var xml_id = atts['xml:id'];
+        // If xml:id is missing, create it
+        if (!xml_id) {
+          xml_id = MeiLib.createPseudoUUID();
+          $(element).attr('xml:id', xml_id);
+        }
 
         hasDots = !!$(element).attr('dots');
 
@@ -1128,7 +1138,34 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           chord = new VF.StaveNote(chord_opts);
           chord.setStave(staff);
 
+          var allNoteIndices = [];
+
           $children.each(function(i, mei_note) {
+
+            note_atts = m2v.attsToObj(mei_note);
+
+            allNoteIndices.push(i);
+            var note_mei_tie = note_atts.tie;
+            var note_mei_slur = note_atts.slur;
+            var note_xml_id = note_atts['xml:id'];
+            // If xml:id is missing, create it
+            if (!note_xml_id) {
+              note_xml_id = MeiLib.createPseudoUUID();
+              $(mei_note).attr('xml:id', note_xml_id);
+            }
+
+            if (note_mei_tie) {
+              me.processAttrTie(note_mei_tie, note_xml_id, note_atts.pname, note_atts.oct, me.currentSystem);
+            }
+            if (mei_slur) {
+              me.processAttrSlur(note_mei_slur, note_xml_id, note_atts.pname, note_atts.oct, me.currentSystem);
+            }
+            me.notes_by_id[note_xml_id] = {
+              meiNote : element,
+              vexNote : chord,
+              index : [i]
+            };
+
             mei_accid = $(mei_note).attr('accid');
             if (mei_accid) {
               me.processAttrAccid(mei_accid, chord, i);
@@ -1142,6 +1179,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           if (mei_ho) {
             me.processAttrHo(mei_ho, chord);
           }
+
+          // TODO add support for chord/@tie and chord/@slur
+
+          me.notes_by_id[xml_id] = {
+            meiNote : element,
+            vexNote : chord,
+            index : allNoteIndices
+          };
 
           return chord;
         } catch (e) {

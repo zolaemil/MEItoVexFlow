@@ -420,6 +420,7 @@ Vex.Flow.StaveTie = (function() {
       // ADDITION:
       if (this.curvedir) {
         params.direction = (this.curvedir === 'above') ? -1 : 1;
+        console.log(params.direction);
       }
 
       var ctx = this.context;

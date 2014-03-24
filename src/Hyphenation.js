@@ -77,6 +77,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                   endFirst = first.x + me.ctx.measureText(first.text).width;
                 }
 
+                // TODO check for first
                 if ( typeof second === 'number' || typeof second === 'undefined') {
                   second = {
                     x : me.rightSystemBound,

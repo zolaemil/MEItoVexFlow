@@ -111,9 +111,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           } else {
             vexTie = new VF.StaveTie({
               first_note : (f_note) ? f_note.vexNote : undefined,
-              last_note : (l_note) ? l_note.vexNote : undefined
+              last_note : (l_note) ? l_note.vexNote : undefined,
+              first_indices: (f_note) ? f_note.index : undefined,
+              last_indices: (l_note) ? l_note.index : undefined
             });
+            
             vexTie.setDir(link.params.curvedir);
+            console.log(link.params.curvedir);
           }
           me.allVexTies.push(vexTie);
         });
