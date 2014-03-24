@@ -3,7 +3,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
     m2v.render_notation = function(data, target, width, height, backend, options) {
 
       var opts = $.extend(true, {
-
         page_scale : 1,
         page_height : height,
         page_width : width,
@@ -13,11 +12,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         defaultSystemSpacing : 50,
         defaultStaveHeight : 50, // without spacing
         defaultStaveSpacing : 50
-        // ,
-        // staff : {
-        // space_above_staff_ln : 4,
-        // space_below_staff_ln : 4
-        // }
       }, options);
 
       var r = new m2v.Renderer(opts);
@@ -169,12 +163,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       }
     };
 
-    // return {
-    // render_notation : m2v.render_notation,
-    // getRenderedMeasures : m2v.getRenderedMeasures,
-    // util : util
-    // };
+    return {
+      render_notation : m2v.render_notation,
+      getRenderedMeasures : m2v.getRenderedMeasures
+    };
 
-    return m2v;
+    // return m2v;
 
   }(MEI2VF || {}, Vex.Flow, jQuery));

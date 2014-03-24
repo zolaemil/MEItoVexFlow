@@ -225,10 +225,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         me.hyphenation.setContext(ctx).draw();
 
-        // me.exportRenderedMeasures(me.allVexMeasureStaffs);
+        me.exportRenderedMeasures(me.allVexMeasureStaffs);
 
-        window.ctx = ctx;
-        window.m = me;
+        // window.ctx = ctx;
+        // window.m = me;
 
         // m2v.util.drawBoundingBoxes(ctx, {
         // frame : false,
@@ -982,13 +982,17 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             if (otherStaff) {
               // TODO: the note is correctly assigned to the new staff here, but
               // in the end it has the old staff assigned to it -> fix that!
+              // REASON PROBABLY: all notes get assigned to the old staff when
+              // the voices are drawn in StaveVoices.js
+              // ALSO: Vex.Flow.Voice seems to assign all voice tickables to only one staff
+              // n = note;
               note.setStave(otherStaff);
-              console.log(note);
+              // console.log(note);
               // throw null;
               // console.log(measure_n);
               // console.log(note_staff_n + '###############' + staff_n);
-              console.log(otherStaff);
-              console.log(me.allVexMeasureStaffs[measure_n]);
+              // console.log(otherStaff);
+              // console.log(me.allVexMeasureStaffs[measure_n]);
             } else {
               throw new m2v.RUNTIME_ERROR('Error', 'Note has staff attribute "' + note_staff_n + '", but the staff does not exist.');
             }
