@@ -76,7 +76,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         autoStaveConnectorLine : true,
         autoMeasureNumbers : true,
         // TODO: add feature
-        autoSystemBreakSections : true,
+        autoSystemBreakSections : false,
         // NB the weight properties can be used to specify style, weight or both
         // (space separated);
         // some of the objects are passed directly to vexFlow (which requires
@@ -498,9 +498,31 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             case 'sb' :
               return widths;
           }
-          currentElement = currentElement.nextSibling;
+          currentElement = me.getNext(currentElement);
+          // currentElement = currentElement.nextSibling;
         }
         return widths;
+      },
+
+      getNext : function(currentElement) {
+        var me=this, parentElement, next;
+        if (currentElement.nextSibling) {
+          return currentElement.nextSibling;
+        }
+        parentElement = currentElement.parentNode;
+        next = me.getNextElement(parentElement);
+        console.log(next);
+        if (next) {
+          return next.firstChild;
+        }
+      },
+
+      getNextElement : function(element) {
+        var n = element;
+        do
+          n = n.nextSibling;
+        while (n && n.nodeType != 1);
+        return n;
       },
 
       /**
@@ -609,7 +631,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         me.directionsInCurrentMeasure = me.getDirectionsInElement(element);
 
-        // TODO create *all* staffs before processing the notes!?
         $(element).find('staff').each(function() {
           me.processStaffInMeasure(this, measure_n, left_barline, right_barline, atSystemStart, currentStaveVoices, currentMeasureWidth);
         });
@@ -984,7 +1005,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               // in the end it has the old staff assigned to it -> fix that!
               // REASON PROBABLY: all notes get assigned to the old staff when
               // the voices are drawn in StaveVoices.js
-              // ALSO: Vex.Flow.Voice seems to assign all voice tickables to only one staff
+              // ALSO: Vex.Flow.Voice seems to assign all voice tickables to only
+              // one staff
               // n = note;
               note.setStave(otherStaff);
               // console.log(note);

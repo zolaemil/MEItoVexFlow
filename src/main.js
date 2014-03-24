@@ -165,7 +165,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return {
       render_notation : m2v.render_notation,
-      getRenderedMeasures : m2v.getRenderedMeasures
+      getRenderedMeasures : m2v.getRenderedMeasures,
+      Renderer: m2v.Renderer
     };
 
     // return m2v;

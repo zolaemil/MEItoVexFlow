@@ -121,7 +121,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       bezierStringToCps : function(str) {
-        var cps = [], bezierArray = str.split(' ');
+        var cps = [], xy, bezierArray = str.split(' ');
         while (bezierArray[0]) {
           xy = bezierArray.splice(0, 2);
           cps.push({
