@@ -118,18 +118,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, firstScoreDef;
 
         if (!config) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.NoConfig', 'No config passed to init().');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NoConfig', 'No config passed to init().');
         }
 
         if (!config.data) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingData', 'No XML data passed to init().');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingData', 'No XML data passed to init().');
         }
 
         me.xmlDoc = me.initXmlDoc(config.data);
 
         firstScoreDef = $(me.xmlDoc).find('scoreDef')[0];
         if (!firstScoreDef) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadMEIFile', 'No <scoreDef> found in config.data.');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadMEIFile', 'No <scoreDef> found in config.data.');
         }
 
         /**
@@ -309,7 +309,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.processPgHead(element);
             break;
           default :
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + children[i].localName + '> is not supported in <scoreDef>');
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + children[i].localName + '> is not supported in <scoreDef>');
         }
       },
 
@@ -406,7 +406,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           case 'staffGrp' :
             return me.processStaffGrp(element, true);
           default :
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <staffGrp>');
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <staffGrp>');
         }
       },
 
@@ -569,7 +569,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (fn) {
           me[fn](element);
         } else {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <section>');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <section>');
         }
       },
 
@@ -609,6 +609,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         me.directionsInCurrentMeasure = me.getDirectionsInElement(element);
 
+        // TODO create *all* staffs before processing the notes!?
         $(element).find('staff').each(function() {
           me.processStaffInMeasure(this, measure_n, left_barline, right_barline, atSystemStart, currentStaveVoices, currentMeasureWidth);
         });
@@ -633,11 +634,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         // groupwise?
       },
 
-      // TODO handle tempo directions in the course of measures
+      // TODO handle timestamps!
       processTempoChildren : function(element, measure) {
         var me = this, staff_n, staff, text, offsetX, vexTempo;
         $(element).find('tempo').each(function(i, tempoElement) {
           staff_n = $(tempoElement).attr('staff');
+          ho = $(tempoElement).attr('ho');
+          vo = $(tempoElement).attr('vo');
           staff = measure[staff_n];
           text = $(tempoElement).text();
           vexTempo = new Vex.Flow.StaveTempo({
@@ -647,7 +650,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             // dots: +$(tempoElement).attr('dots'),
             // bpm: $(tempoElement).attr('mm'),
           }, staff.x, 5);
+          if (vo) {
+            vexTempo.setShiftY(+vo * me.halfLineDistance);
+          }
           offsetX = (staff.hasTimeSignature) ? -40 : 10;
+          if (ho) {
+            offsetX += +ho * me.halfLineDistance;
+          }
           vexTempo.setShiftX(offsetX);
           vexTempo.font = me.cfg.tempoFont;
           staff.modifiers.push(vexTempo);
@@ -665,6 +674,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         staff = me.createVexStaff(staff_n, left_barline, right_barline, measureNumberToRender, currentMeasureWidth);
 
+        if (me.allVexMeasureStaffs[measure_n] === undefined) {
+          me.allVexMeasureStaffs[measure_n] = [];
+        }
+        me.allVexMeasureStaffs[measure_n][staff_n] = staff;
+
         anchoredTexts = $(staff_element).children('anchoredText').each(function(i, anchoredText) {
           me.processAnchoredStaffText(anchoredText, staff);
         });
@@ -681,7 +695,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         layers = $(staff_element).find('layer');
 
         readEvents = function(i, element) {
-          var event = me.processElement(element, this, staff_element, staff);
+          var event = me.processElement(element, this, measure_n, staff_n, staff);
           return event.vexNote || event;
         };
 
@@ -691,10 +705,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           currentStaveVoices.addVoice(me.createVexVoice(layer_events, staff_n), staff_n);
         });
 
-        if (me.allVexMeasureStaffs[measure_n] === undefined) {
-          me.allVexMeasureStaffs[measure_n] = [];
-        }
-        me.allVexMeasureStaffs[measure_n][staff_n] = staff;
       },
 
       /**
@@ -709,7 +719,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       createVexStaff : function(staff_n, left_barline, right_barline, measure_n, currentMeasureWidth) {
         var me = this, staffdef, staff, renderWith, currentStaffInfo;
         if (!staff_n) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
         }
 
         currentStaffInfo = me.currentStaffInfos[staff_n];
@@ -748,7 +758,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       createVexVoice : function(voice_contents, staff_n) {
         var me = this, voice, meter;
         if (!$.isArray(voice_contents)) {
-          throw m2v.RUNTIME_ERROR('BadArguments', 'me.createVexVoice() voice_contents argument must be an array.');
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'me.createVexVoice() voice_contents argument must be an array.');
         }
         meter = me.currentStaffInfos[staff_n].meter;
         voice = new VF.Voice({
@@ -782,7 +792,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         // check if there's an unresolved TStamp2 reference to this location
         // (measure, staff, layer):
         if (!measure_n) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.me.extract_events:', '<measure> must have @n specified');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.me.extract_events:', '<measure> must have @n specified');
         }
         staff_n = staff_n || 1;
         refLocationIndex = measure_n + ':' + staff_n + ':' + ($(layer).attr('n') || '1');
@@ -824,14 +834,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             if (layer_candid && !layer_candid.attr('n'))
               layer = layer_candid;
             if (!layer)
-              throw m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E01', 'Cannot find layer');
+              throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E01', 'Cannot find layer');
           }
           var staffdef = me.currentStaffInfos[stffinf.staff_n];
           if (!staffdef)
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E02', 'Cannot determine staff definition.');
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E02', 'Cannot determine staff definition.');
           var meter = staffdef.meter;
           if (!meter.count || !meter.unit)
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E03', "Cannot determine meter; missing or incorrect @meter.count or @meter.unit.");
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E03', "Cannot determine meter; missing or incorrect @meter.count or @meter.unit.");
           return MeiLib.tstamp2id(tstamp, layer, meter);
         };
 
@@ -846,48 +856,43 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var link_elements = $(measure).find(element_name);
 
         $.each(link_elements, function(i, lnkelem) {
-          var eventLink = new m2v.EventLink(null, null);
-          if (element_name === 'hairpin') {
-            var form = $(lnkelem).attr('form');
-            if (!form) {
-              throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:extract_linkingElements', '@form is mandatory in <hairpin> - make sure the xml is valid.');
-            }
-            eventLink.setParams({
-              form : form,
-              place : $(lnkelem).attr('place')
-            });
-          } else {
-            eventLink.setParams({
-              bezier : $(lnkelem).attr('bezier'),
-              y_shift_start : +$(lnkelem).attr('startvo'),
-              y_shift_end : +$(lnkelem).attr('endvo')
-            });
+          var eventLink, atts, startid, tstamp, endid, tstamp2, measures_ahead;
+
+          eventLink = new m2v.EventLink(null, null);
+
+          atts = m2v.attsToObj(lnkelem);
+
+          if (element_name === 'hairpin' && !atts.form) {
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:extract_linkingElements', '@form is mandatory in <hairpin> - make sure the xml is valid.');
           }
+
+          eventLink.setParams(m2v.attsToObj(lnkelem));
+
           // find startid for eventLink. if tstamp is provided in the
           // element,
           // tstamp will be calculated.
-          var startid = $(lnkelem).attr('startid');
+          startid = atts.startid;
           if (startid) {
             eventLink.setFirstId(startid);
           } else {
-            var tstamp = $(lnkelem).attr('tstamp');
+            tstamp = atts.tstamp;
             if (tstamp) {
               startid = local_tstamp2id(tstamp, lnkelem, measure);
               eventLink.setFirstId(startid);
-            } else {
-              // no @startid, no @tstamp ==> eventLink.first_ref
-              // remains empty.
             }
+            // else {
+            //// no @startid, no @tstamp ==> eventLink.first_ref remains empty.
+            // }
           }
 
           // find end reference value (id/tstamp) of eventLink:
-          var endid = $(lnkelem).attr('endid');
+          endid = atts.endid;
           if (endid) {
             eventLink.setLastId(endid);
           } else {
-            var tstamp2 = $(lnkelem).attr('tstamp2');
+            tstamp2 = atts.tstamp2;
             if (tstamp2) {
-              var measures_ahead = +measure_partOf(tstamp2);
+              measures_ahead = +measure_partOf(tstamp2);
               if (measures_ahead > 0) {
                 eventLink.setLastTStamp(beat_partOf(tstamp2));
                 // register that eventLink needs context;
@@ -903,22 +908,21 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                 endid = local_tstamp2id(beat_partOf(tstamp2), lnkelem, measure);
                 eventLink.setLastId(endid);
               }
-            } else {
-              // TODO no @endid, no @tstamp2 ==> eventLink.last_ref
-              // remains
-              // empty.
             }
+            // else {
+            //// TODO no @endid, no @tstamp2 ==> eventLink.last_ref remains empty.
+            // }
           }
           eventlink_container.add(eventLink);
         });
       },
 
-      processElement : function(element, parent_layer, parent_staff_element, staff) {
+      processElement : function(element, parent_layer, measure_n, staff_n, staff) {
         var me = this, fn = me.elementFnMap[element.localName];
         if (fn) {
-          return me[fn](element, staff, parent_layer, parent_staff_element);
+          return me[fn](element, staff, parent_layer, measure_n, staff_n);
         }
-        throw m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element_type + '" is not supported.');
+        throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element_type + '" is not supported.');
       },
 
       elementFnMap : {
@@ -932,23 +936,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       processAnchoredText : function() {
-        return;
         // TODO
+        return;
       },
 
       getClefForStaffNr : function(staff_n) {
         var me = this, staff_info;
         staff_info = me.currentStaffInfos[staff_n];
         if (!staff_info) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.getClefForStaffNr():E01', 'No staff definition for staff n=' + staff_n);
+          throw new m2v.RUNTIME_ERROR('MEI2VF.getClefForStaffNr():E01', 'No staff definition for staff n=' + staff_n);
         }
         return staff_info.getClef();
       },
 
-      processNote : function(element, staff, parent_layer, parent_staff_element) {
-        var me = this, dots, mei_acci, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, i;
+      processNote : function(element, staff, parent_layer, measure_n, staff_n) {
+        var me = this, dots, mei_acci, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, i, atts, note_opts, note;
 
-        var atts = m2v.attsToObj(element);
+        atts = m2v.attsToObj(element);
 
         dots = +atts.dots;
         mei_accid = atts.accid;
@@ -958,19 +962,37 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         xml_id = atts['xml:id'];
         mei_tie = atts.tie;
         mei_slur = atts.slur;
+        note_staff_n = +atts.staff || staff_n;
 
         try {
-          var staff_n = $(parent_staff_element).attr('n');
 
-          var note_opts = {
+          note_opts = {
             keys : [me.processAttsPitch(element)],
             clef : me.getClefForStaffNr(staff_n),
             duration : me.processAttsDuration(element)
           };
 
           me.setStemDir(element, note_opts);
-          var note = new VF.StaveNote(note_opts);
-          note.setStave(staff);
+          note = new VF.StaveNote(note_opts);
+
+          if (note_staff_n === staff_n) {
+            note.setStave(staff);
+          } else {
+            var otherStaff = me.allVexMeasureStaffs[measure_n][note_staff_n];
+            if (otherStaff) {
+              // TODO: the note is correctly assigned to the new staff here, but
+              // in the end it has the old staff assigned to it -> fix that!
+              note.setStave(otherStaff);
+              console.log(note);
+              // throw null;
+              // console.log(measure_n);
+              // console.log(note_staff_n + '###############' + staff_n);
+              console.log(otherStaff);
+              console.log(me.allVexMeasureStaffs[measure_n]);
+            } else {
+              throw new m2v.RUNTIME_ERROR('Error', 'Note has staff attribute "' + note_staff_n + '", but the staff does not exist.');
+            }
+          }
 
           me.processSyllables(note, element, staff_n);
           me.addDirections(note, xml_id);
@@ -980,7 +1002,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               note.addDotToAll();
             }
           } catch (e) {
-            throw m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the dots of <note>: ' + m2v.util.listAttrs(element));
+            throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the dots of <note>: ' + m2v.util.listAttrs(element));
           }
 
           if (mei_accid) {
@@ -1001,10 +1023,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           // Build a note object that keeps the xml:id
 
           if (!pname) {
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have pname attribute');
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have pname attribute');
           }
           if (!oct) {
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
           }
 
           // If xml:id is missing, create it
@@ -1032,18 +1054,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           };
 
         } catch (e1) {
-          throw m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <note>: ' + m2v.util.listAttrs(element));
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <note>: ' + m2v.util.listAttrs(element));
         }
       },
 
       // TODO add support for features found in me.processNote (annot etc.)
       // extract functions!?
-      processChord : function(element, staff, parent_layer, parent_staff_element) {
-        var me = this, i, j, hasDottedNote = false, $children, dots = [], keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_tie, mei_slur, mei_ho;
+      processChord : function(element, staff, parent_layer, measure_n, staff_n) {
+        var me = this, i, j, hasDots, $children, dots = [], keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_tie, mei_slur, mei_ho, chord, chord_opts;
 
         $children = $(element).children();
         durAtt = $(element).attr('dur');
         mei_ho = $(element).attr('ho');
+
+        hasDots = !!$(element).attr('dots');
 
         try {
           if (durAtt) {
@@ -1059,23 +1083,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             keys.push(me.processAttsPitch($children[i]));
             // dots.push(+$children[i].getAttribute('dots'));
             if ($children[i].getAttribute('dots') === '1') {
-              hasDottedNote = true;
+              hasDots = true;
             }
           }
 
           // TODO handle dots with ledger lines (has to be fixed in VexFlow)
-          if (hasDottedNote || $(element).attr('dots')) {
+          if (hasDots) {
             duration += 'd';
           }
 
-          var chord_opts = {
+          chord_opts = {
             keys : keys,
-            clef : me.getClefForStaffNr($(parent_staff_element).attr('n')),
+            clef : me.getClefForStaffNr(staff_n),
             duration : duration
           };
 
           me.setStemDir(element, chord_opts);
-          var chord = new VF.StaveNote(chord_opts);
+          chord = new VF.StaveNote(chord_opts);
           chord.setStave(staff);
 
           $children.each(function(i, mei_note) {
@@ -1085,7 +1109,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             }
           });
 
-          if (hasDottedNote || $(element).attr('dots')) {
+          if (hasDots) {
             chord.addDotToAll();
           }
 
@@ -1095,7 +1119,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
           return chord;
         } catch (e) {
-          throw m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <chord>:' + e.toString());
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <chord>:' + e.toString());
           // 'A problem occurred processing the <chord>: ' +
           // JSON.stringify($.each($(element).children(), function(i,
           // element) {
@@ -1104,7 +1128,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
-      processRest : function(element, staff, parent_layer, parent_staff_element) {
+      processRest : function(element, staff, parent_layer, measure_n, staff_n) {
         var me = this, dur, rest, mei_ho, xml_id;
         try {
           dur = me.processAttsDuration(element, true);
@@ -1130,11 +1154,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           }
           return rest;
         } catch (e) {
-          throw m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <rest>: ' + m2v.util.listAttrs(element));
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <rest>: ' + m2v.util.listAttrs(element));
         }
       },
 
-      processmRest : function(element, staff, parent_layer, parent_staff_element) {
+      processmRest : function(element, staff, parent_layer, measure_n, staff_n) {
         var me = this, mRest, mei_ho;
 
         try {
@@ -1149,11 +1173,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           mRest.setStave(staff);
           return mRest;
         } catch (x) {
-          throw m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <mRest>: ' + m2v.util.listAttrs(element));
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <mRest>: ' + m2v.util.listAttrs(element));
         }
       },
 
-      processSpace : function(element, staff) {
+      processSpace : function(element, staff, parent_layer, measure_n, staff_n) {
         var me = this, space;
         try {
           space = new VF.GhostNote({
@@ -1162,15 +1186,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           space.setStave(staff);
           return space;
         } catch (e) {
-          throw m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <space>: ' + m2v.util.listAttrs(element));
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <space>: ' + m2v.util.listAttrs(element));
         }
       },
 
-      processBeam : function(element, staff, parent_layer, parent_staff_element) {
+      processBeam : function(element, staff, parent_layer, measure_n, staff_n) {
         var me = this, elements;
         elements = $(element).children().map(function(i, note) {
           // make sure to get vexNote out of wrapped note objects
-          var proc_element = me.processElement(note, parent_layer, parent_staff_element, staff);
+          var proc_element = me.processElement(note, parent_layer, measure_n, staff_n, staff);
           return proc_element.vexNote || proc_element;
         }).get();
         me.allBeams.push(new VF.Beam(elements));
@@ -1188,7 +1212,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       processAttrAccid : function(mei_accid, vexObject, i) {
         var me = this, val = me.accidentalMap[mei_accid];
         if (!val) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadAttributeValue', 'Invalid attribute value: ' + mei_accid);
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadAttributeValue', 'Invalid attribute value: ' + mei_accid);
         }
         vexObject.addAccidental(i, new VF.Accidental(val));
       },
@@ -1259,14 +1283,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           } else if (numbered_token.length === 2) {
             num = +numbered_token[1];
             if (!num) {
-              throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:ParseSlur01', "badly formed slur attribute");
+              throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:ParseSlur01', "badly formed slur attribute");
             }
             result.push({
               letter : numbered_token[0],
               nesting_level : num
             });
           } else {
-            throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:ParseSlur01', "badly formed slur attribute");
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:ParseSlur01', "badly formed slur attribute");
           }
         }
         return result;
@@ -1283,7 +1307,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         pname = $(mei_note).attr('pname');
         oct = $(mei_note).attr('oct');
         if (!pname || !oct) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingAttribute', 'pname and oct attributes must be specified for <note>');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingAttribute', 'pname and oct attributes must be specified for <note>');
         }
         return pname + '/' + oct;
       },
@@ -1368,7 +1392,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, result;
         result = $(element).attr(attribute);
         if (!result) {
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingAttribute', 'Attribute ' + attribute + ' is mandatory.');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingAttribute', 'Attribute ' + attribute + ' is mandatory.');
         }
         return result;
       },
@@ -1410,7 +1434,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           }
           return 'w';
         }
-        throw m2v.RUNTIME_ERROR('BadArguments', 'The MEI duration "' + mei_dur + '" is not supported.');
+        throw new m2v.RUNTIME_ERROR('BadArguments', 'The MEI duration "' + mei_dur + '" is not supported.');
       },
 
       processAttsDuration : function(mei_note, noDots) {

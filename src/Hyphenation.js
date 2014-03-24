@@ -1,6 +1,6 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    // TODO: remove staffDef & make everything a normal object
+    // TODO add support for multiple layers in one staff
 
     m2v.Hyphenation = function(cfg) {
       var me = this;

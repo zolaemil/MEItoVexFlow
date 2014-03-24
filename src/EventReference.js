@@ -49,7 +49,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         tstamp = this.tstamp;
         meicontext = this.meicontext;
         if (!tstamp) {
-          throw m2v.RUNTIME_ERROR('MEI2VF:RERR:BADARG:EventRef001', 'EventReference: tstamp must be set in order to resolve reference.');
+          throw new m2v.RUNTIME_ERROR('MEI2VF:RERR:BADARG:EventRef001', 'EventReference: tstamp must be set in order to resolve reference.');
         }
         if (this.meicontext) {
           // look up event corresponding to the given tstamp (strictly or

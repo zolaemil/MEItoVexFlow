@@ -1,4 +1,4 @@
-var MEI2VF = (function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Ties = function(config) {
       this.init();
@@ -37,7 +37,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
         };
 
         if (!linkCond.pname || !linkCond.oct)
-          throw m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:TermTie01', 'no pitch or octave specified for the tie');
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:TermTie01', 'no pitch or octave specified for the tie');
         found = false;
         for ( i = 0; !found && i < allTies.length; ++i) {
           tie = allTies[i];
@@ -105,14 +105,15 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
             cps = me.bezierStringToCps(bezier);
             vexTie = new VF.Curve((f_note) ? f_note.vexNote : undefined, (l_note) ? l_note.vexNote : undefined, {
               cps : cps,
-              y_shift_start : link.params.y_shift_start,
-              y_shift_end : link.params.y_shift_end
+              y_shift_start : +link.params.startvo,
+              y_shift_end : +link.params.endvo
             });
           } else {
             vexTie = new VF.StaveTie({
               first_note : (f_note) ? f_note.vexNote : undefined,
               last_note : (l_note) ? l_note.vexNote : undefined
             });
+            vexTie.setDir(link.params.curvedir);
           }
           me.allVexTies.push(vexTie);
         });
