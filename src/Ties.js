@@ -115,9 +115,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               first_indices: (f_note) ? f_note.index : undefined,
               last_indices: (l_note) ? l_note.index : undefined
             });
-            
             vexTie.setDir(link.params.curvedir);
-            console.log(link.params.curvedir);
           }
           me.allVexTies.push(vexTie);
         });

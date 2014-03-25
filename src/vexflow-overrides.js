@@ -1,4 +1,31 @@
 
+Vex.Flow.clefProperties.values.octave = { line_shift: 3.5 };
+Vex.Flow.Clef.types.octave = { code: "v83", point: 40, line: 3 };
+
+
+Vex.Flow.ModifierContext.prototype.formatAnnotations = function() {
+      var annotations = this.modifiers['annotations'];
+      if (!annotations || annotations.length === 0) return this;
+
+      var text_line = this.state.text_line;
+      var max_width = 0;
+
+      // Format Annotations
+      var width;
+      for (var i = 0; i < annotations.length; ++i) {
+        var annotation = annotations[i];
+        annotation.setTextLine(text_line);
+        width = annotation.getWidth() > max_width ?
+          annotation.getWidth() : max_width;
+          // COMMENTED OUT (TODO: find a proper solution not to increase the text line between staffs!)
+        // text_line++;
+      }
+      this.state.left_shift += width / 2;
+      this.state.right_shift += width / 2;
+      // No need to update text_line because we leave lots of room on the same
+      // line.
+      return this;
+  };
 
 
 Vex.Flow.Curve.prototype.renderCurve = function(params) {

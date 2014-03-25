@@ -4,11 +4,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Hyphenation = function(cfg) {
       var me = this;
-
       me.allSyllables = [];
-
       me.rightSystemBound = cfg.page_width / cfg.page_scale - cfg.page_margin_right;
       me.font = cfg.lyricsFont;
+      me.maxHyphenDistance = cfg.maxHyphenDistance;
     };
 
     m2v.Hyphenation.prototype = {
@@ -51,8 +50,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         // me.ctx.fillText('*', me.rightSystemBound, 100);
 
-        var maxHyphenDistance = 75;
-
         me.ctx.setFont(me.font.family, me.font.size, me.font.weight);
 
         hyphenWidth = me.ctx.measureText('-').width;
@@ -92,11 +89,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
                 if (first && second) {
                   if (distance > hyphenWidth) {
-                    hyphenCount = Math.ceil(distance / maxHyphenDistance);
+                    hyphenCount = Math.ceil(distance / me.maxHyphenDistance);
                     singleWidth = distance / (hyphenCount + 1);
                     hyphenStart = endFirst;
                     while (hyphenCount--) {
                       hyphenStart += singleWidth;
+                      // me.ctx.fillStyle = '#fff';
+                      // me.ctx.beginPath();
+                      // me.ctx.arc(hyphenStart, hyphenY - hyphenWidth * 0.7, hyphenWidth, 0, 2 * Math.PI);
+                      // me.ctx.fill();
+                      // me.ctx.fillStyle = '#000';
                       me.ctx.fillText('-', hyphenStart - halfHyphenWidth, hyphenY);
                     }
                   }

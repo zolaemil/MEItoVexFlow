@@ -75,7 +75,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         measurePaddingRight : 10, // originally 20
         autoStaveConnectorLine : true,
         autoMeasureNumbers : true,
-        // TODO: add feature
+        maxHyphenDistance : 75, // TODO: add feature
         autoSystemBreakSections : false,
         // NB the weight properties can be used to specify style, weight or both
         // (space separated);
@@ -450,17 +450,22 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           updateFn = 'forceStaveStartInfo';
         }
         for ( i = 1, j = me.currentStaffInfos.length; i < j; i += 1) {
-          me.currentStaffInfos[i][updateFn]();
+          if (me.currentStaffInfos[i]) {
+            me.currentStaffInfos[i][updateFn]();
+          }
         }
       },
 
       initStaffYs : function() {
-        var me = this, currentSystemY, currentStaffY, lowestYCandidate, i, j;
+        var me = this, currentSystemY, currentStaffY, lowestYCandidate, i, j, isFirstStaff = true;
         currentSystemY = (me.currentSystem === 1) ? me.cfg.page_margin_top : me.currentLowestY + me.cfg.systemSpacing;
         currentStaffY = 0;
         for ( i = 1, j = me.currentStaffInfos.length; i < j; i += 1) {
-          currentStaffY += (i === 1) ? 0 : me.currentStaffInfos[i].spacing || me.cfg.staveHeight + me.cfg.staveSpacingAbove;
-          me.currentStaffInfos[i].absoluteY = currentSystemY + currentStaffY;
+          if (me.currentStaffInfos[i]) {
+            currentStaffY += (isFirstStaff) ? 0 : me.currentStaffInfos[i].spacing || me.cfg.staveHeight + me.cfg.staveSpacingAbove;
+            me.currentStaffInfos[i].absoluteY = currentSystemY + currentStaffY;
+            isFirstStaff = false;
+          }
         }
         lowestYCandidate = currentSystemY + currentStaffY + me.cfg.staveHeight;
         if (lowestYCandidate > me.currentLowestY) {
@@ -1079,7 +1084,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           };
 
         } catch (e1) {
-          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <note>: ' + m2v.util.listAttrs(element));
+          throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <note>: ' + m2v.util.listAttrs(element) + '\nORIGINAL ERROR MESSAGE: ' + e1.toString());
         }
       },
 
@@ -1420,7 +1425,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
           }
         } else {
-          // currently, *syllables* are added to the vexNote even if
+          // TODO currently, *syllables* are added to the vexNote even if
           // there are no acutal mei_syl elements. This seems to improve spacing
           // in VexFlow but should be changed eventually
           annot = me.createAnnot('', me.cfg.lyricsFont).setBottom(true);
@@ -1617,11 +1622,25 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
+      // NB checks only once for the first defined staff; this has to be changed
+      // when the number of staffs changes in the course of a piece
+      getFirstDefinedStaff : function(staffsInMeasure) {
+        var i = staffsInMeasure.length;
+        while (i--) {
+          if (staffsInMeasure[i])
+            return i;
+        }
+        throw new m2v.RUNTIME_ERROR('ERROR', 'getFirstDefinedStaff(): no staff found in the current measure.');
+      },
+
       drawVexVoices : function(allStaffVoices, ctx) {
-        var me = this, i, j, start_x, staffsInMeasure;
+        var me = this, i, j, start_x, staffsInMeasure, firstDefined;
         for ( i = 0, j = allStaffVoices.length; i < j; i += 1) {
           staffsInMeasure = allStaffVoices[i].measureStaffs;
-          allStaffVoices[i].staveVoices.format(staffsInMeasure[1].getNoteEndX() - staffsInMeasure[1].getNoteStartX() - me.cfg.measurePaddingRight);
+          if (!firstDefined) {
+            firstDefined = me.getFirstDefinedStaff(staffsInMeasure);
+          }
+          allStaffVoices[i].staveVoices.format(staffsInMeasure[firstDefined].getNoteEndX() - staffsInMeasure[firstDefined].getNoteStartX() - me.cfg.measurePaddingRight);
           allStaffVoices[i].staveVoices.draw(ctx, staffsInMeasure);
         }
       },

@@ -10,7 +10,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         target : target,
         backend : backend,
         defaultSystemSpacing : 50,
-        defaultStaveHeight : 50, // without spacing
+        defaultStaveHeight : 50,
         defaultStaveSpacing : 50
       }, options);
 
