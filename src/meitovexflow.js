@@ -23,26 +23,6 @@
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    m2v.RUNTIME_ERROR = function(error_code, message) {
-      this.error_code = error_code;
-      this.message = message;
-    };
-
-    m2v.RUNTIME_ERROR.prototype.toString = function() {
-      return "MEI2VF.RUNTIME_ERROR: " + this.error_code + ': ' + this.message;
-    };
-
-    m2v.attsToObj = function(element) {
-      var i, j, obj;
-      if (element.attributes) {
-        obj = {};
-        for ( i = 0, j = element.attributes.length; i < j; i += 1) {
-          obj[element.attributes[i].nodeName] = element.attributes[i].nodeValue;
-        }
-      }
-      return obj;
-    };
-
     m2v.Renderer = function(config) {
       if (config) {
         this.init(config).process().draw();
@@ -52,22 +32,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Renderer.prototype = {
 
-      /**
-       * default options (read only)
-       *
-       * @type Object
-       */
       defaults : {
-        page_scale : 0.6,
-        // NB page_height and page_width are the only absolute (non-scaled)
-        // values; all other measurements will be scaled; => change width and
-        // height to
-        // relative values, too?
-        page_height : 350,
-        page_width : 800,
-        page_margin_top : 60,
-        page_margin_left : 20,
-        page_margin_right : 20,
         systemLeftMar : 100,
         systemSpacing : 70,
         staveSpacingAbove : 40,
@@ -75,12 +40,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         measurePaddingRight : 10, // originally 20
         autoStaveConnectorLine : true,
         autoMeasureNumbers : true,
-        maxHyphenDistance : 75, // TODO: add feature
-        autoSystemBreakSections : false,
+        maxHyphenDistance : 75,
+        autoSystemBreakSections : false, // TODO: add feature
         // NB the weight properties can be used to specify style, weight or both
         // (space separated);
         // some of the objects are passed directly to vexFlow (which requires
-        // 'weight'), so I didn't change the name
+        // the name 'weight'), so I didn't change the name
         lyricsFont : {
           family : 'Times',
           size : 15
@@ -115,30 +80,22 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       init : function(config) {
-        var me = this, firstScoreDef;
+        var me = this;
 
-        if (!config) {
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NoConfig', 'No config passed to init().');
-        }
-
-        if (!config.data) {
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingData', 'No XML data passed to init().');
-        }
-
-        me.xmlDoc = me.initXmlDoc(config.data);
-
-        firstScoreDef = $(me.xmlDoc).find('scoreDef')[0];
-        if (!firstScoreDef) {
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadMEIFile', 'No <scoreDef> found in config.data.');
-        }
+        // TODO create separate config object for the page
+        
+        me.xmlDoc = config.xmlDoc;
 
         /**
          * init config: properties in the config object override MEI staffDef
          * attributes which override the defaults
          */
-        me.cfg = $.extend(true, {}, me.defaults, me.getMEIPageConfig(firstScoreDef), config);
+        me.cfg = $.extend(true, {}, me.defaults, config);
 
+        // TODO move this to main
         me.printSpaceW = Math.floor(me.cfg.page_width / me.cfg.page_scale - me.cfg.page_margin_left - me.cfg.page_margin_right) - 1;
+        
+        
         me.halfLineDistance = me.cfg.staff.spacing_between_lines_px / 2;
 
         VF.STAVE_LINE_THICKNESS = me.cfg.staff.line_thickness;
@@ -166,9 +123,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          *      vexNote: val
          *    }
          */
-
-        me.directionsInCurrentMeasure = [];
-
         me.notes_by_id = {};
         me.currentSystem = 0;
         me.currentSystemMarginLeft = me.cfg.systemLeftMar;
@@ -181,6 +135,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * contains the currently effective MEI2VF.StaffInfo objects
          */
         me.currentStaffInfos = [];
+        me.directionsInCurrentMeasure = [];
 
         return me;
       },
@@ -189,7 +144,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this;
         me.processScoreDef($(me.xmlDoc).find('scoreDef')[0]);
         me.processSections(me.xmlDoc);
-
         me.ties.createVexFromLinks(me.notes_by_id);
         me.slurs.createVexFromLinks(me.notes_by_id);
         me.hairpins.createVexFromLinks(me.notes_by_id);
@@ -197,81 +151,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       draw : function() {
-        var me = this, canvas, ctx;
-
-        canvas = me.createCanvas(me.cfg.target, me.cfg.backend);
-        ctx = me.createContext(canvas, me.cfg.backend);
-
-        if (+me.cfg.backend === VF.Renderer.Backends.RAPHAEL) {
-          me.scaleContextRaphael(canvas, ctx, me.cfg.page_scale);
-        } else {
-          me.scaleContext(ctx, me.cfg.page_scale);
-        }
-
+        var me = this, ctx = me.cfg.ctx;
         me.drawVexStaffs(me.allVexMeasureStaffs, ctx);
-
         me.startConnectors.setContext(ctx).draw();
         me.inlineConnectors.setContext(ctx).draw();
-
         me.drawVexVoices(me.allStaffVoices, ctx);
         me.drawVexBeams(me.allBeams, ctx);
-
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
         me.hairpins.setContext(ctx).draw();
         me.texts.setContext(ctx).draw();
-
         me.drawAnchoredTexts(me.allAnchoredTexts, me.halfLineDistance, ctx);
-
         me.hyphenation.setContext(ctx).draw();
-
-        me.exportRenderedMeasures(me.allVexMeasureStaffs);
-
-        // window.ctx = ctx;
-        // window.m = me;
-
-        // m2v.util.drawBoundingBoxes(ctx, {
-        // frame : false,
-        // staffs : {
-        // data : me.allVexMeasureStaffs,
-        // // drawModifiers : true,
-        // drawNoteArea : true
-        // // },
-        // // voices : {
-        // // data : me.allStaffVoices,
-        // // drawTickables : true,
-        // // drawFrame : true
-        // }
-        // });
-
         return me;
-
-      },
-
-      /**
-       * initializes the xml document; if a string is passed, it gets parsed
-       *
-       * @param xmlDoc {string|document} the input string or input document
-       * @return {document} the xml document ready to be transformed
-       */
-      initXmlDoc : function(xmlDoc) {
-        if ( typeof xmlDoc === 'string') {
-          // xmlDoc = m2v.util.createXMLDoc(xmlDoc);
-          xmlDoc = $.parseXML(xmlDoc);
-        }
-        return xmlDoc[0] || xmlDoc;
-      },
-
-      getMEIPageConfig : function(firstScoreDef) {
-        var obj = m2v.attsToObj(firstScoreDef);
-        return {
-          page_scale : parseInt(obj['page.scale'], 10) / 100 || undefined,
-          page_height : obj['page.height'],
-          page_width : obj['page.width'],
-          page_margin_top : (isNaN(+obj['page.topmar'])) ? undefined : +obj['page.topmar'],
-          page_margin_left : (isNaN(+obj['page.leftmar'])) ? undefined : +obj['page.leftmar'],
-          page_margin_right : (isNaN(+obj['page.rightmar'])) ? undefined : +obj['page.rightmar']
-        };
       },
 
       processScoreDef : function(scoredef) {
@@ -1474,6 +1366,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       durMap : {
+        'breve' : '0',
         '1' : 'w',
         '2' : 'h',
         '4' : 'q',
@@ -1502,13 +1395,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         result = me.durMap[mei_dur];
         if (result) {
           return result;
-        }
-        // if (mei_dur === 'long') return ;
-        if (mei_dur === 'breve') {
-          if (VF.durationToTicks.durations['0'] != undefined) {
-            return '0';
-          }
-          return 'w';
         }
         throw new m2v.RUNTIME_ERROR('BadArguments', 'The MEI duration "' + mei_dur + '" is not supported.');
       },
@@ -1542,57 +1428,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         } else {
           optionsObj.auto_stem = true;
         }
-      },
-
-      // TODO change canvas width and height when a target canvas is passed!
-      // TODO handle jQuery target objects, too!?
-      createCanvas : function(target, backend) {
-        var me = this, h, w;
-        h = me.cfg.page_height;
-        w = me.cfg.page_width;
-        if (target.localName === 'canvas' || target.localName === 'svg') {
-          return target;
-        }
-        if (+backend === VF.Renderer.Backends.RAPHAEL) {
-          w /= me.cfg.page_scale;
-          h /= me.cfg.page_scale;
-          return $('<svg width="' + w + '" height="' + h + '"></svg>').appendTo(target).get(0);
-        }
-        return $('<canvas width="' + w + '" height="' + h + '"></canvas>').appendTo(target).get(0);
-      },
-
-      /**
-       * creates the renderer context
-       *
-       * @param target {} the target element
-       * @param backend {} the backend
-       * @returns the canvas context
-       */
-      createContext : function(canvas, backend) {
-        return new VF.Renderer(canvas, backend || VF.Renderer.Backends.CANVAS).getContext();
-      },
-
-      /**
-       * scales the current context
-       *
-       * @param ctx {} the canvas context
-       * @param scale {Number} the scale ratio. 1 means 100%
-       */
-      scaleContext : function(ctx, scale) {
-        ctx.scale(scale, scale);
-      },
-
-      // FIXME display errors
-      // TODO simplify raphael scaling
-      scaleContextRaphael : function(canvas, ctx, scale) {
-        var me = this, paper, h, w;
-        // paper = ctx.paper;
-        // h = me.cfg.page_height;
-        // w = me.cfg.page_width;
-        // paper.setViewBox(0, 0, w / scale, h / scale);
-        // paper.canvas.setAttribute('preserveAspectRatio', 'none');
-        // $(canvas).find('svg').attr('width', w).attr('height', h);
-        // $(canvas).attr('width', w).attr('height', h);
       },
 
       // TODO align start modifiers (changes in vexflow necessary??)
@@ -1664,10 +1499,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           }
           ctx.fillText(obj.text, x, y);
         });
-      },
-
-      exportRenderedMeasures : function(measures) {
-        m2v.rendered_measures = measures;
       }
     };
 
