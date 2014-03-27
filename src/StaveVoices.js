@@ -24,48 +24,48 @@
 
 var MEI2VF = (function(m2v, VF, $, undefined) {
 
-	m2v.StaffVoice = function(voice, staff_n) {
-		this.voice = voice;
-		this.staff_n = staff_n;
-	};
+  m2v.StaffVoice = function(voice, staff_n) {
+    this.voice = voice;
+    this.staff_n = staff_n;
+  };
 
-	m2v.StaveVoices = function() {
-		this.all_voices = [];
-	};
+  m2v.StaveVoices = function() {
+    this.all_voices = [];
+  };
 
-	m2v.StaveVoices.prototype = {
-		addStaffVoice : function(staffVoice) {
-			this.all_voices.push(staffVoice);
-		},
+  m2v.StaveVoices.prototype = {
+    addStaffVoice : function(staffVoice) {
+      this.all_voices.push(staffVoice);
+    },
 
-		addVoice : function(voice, staff_n) {
-			this.addStaffVoice(new m2v.StaffVoice(voice, staff_n));
-		},
+    addVoice : function(voice, staff_n) {
+      this.addStaffVoice(new m2v.StaffVoice(voice, staff_n));
+    },
 
-		// AL no more in use
-		reset : function() {
-			this.all_voices = [];
-		},
+    // AL no more in use
+    reset : function() {
+      this.all_voices = [];
+    },
 
-		format : function(width) {
-			var voices = $.map(this.all_voices, function(staffVoice, i) {
-						return staffVoice.voice;
-					});
-			// new VF.Formatter().format(voices, width);
-			// new VF.Formatter().joinVoices(voices).format(voices, width,
-			// {align_rests: true});
-			new VF.Formatter().joinVoices(voices).format(voices, width);
-		},
+    format : function(width) {
+      var voices = $.map(this.all_voices, function(staffVoice, i) {
+            return staffVoice.voice;
+          });
+      // new VF.Formatter().format(voices, width);
+      // new VF.Formatter().joinVoices(voices).format(voices, width,
+      // {align_rests: true});
+      new VF.Formatter().joinVoices(voices).format(voices, width);
+    },
 
-		draw : function(context, staves) {
-			var i, staffVoice, all_voices = this.all_voices;
-			for (i = 0; i < all_voices.length; ++i) {
-				staffVoice = all_voices[i];
-				staffVoice.voice.draw(context, staves[staffVoice.staff_n]);
-			}
-		}
-	};
+    draw : function(context, staves) {
+      var i, staffVoice, all_voices = this.all_voices;
+      for (i = 0; i < all_voices.length; ++i) {
+        staffVoice = all_voices[i];
+        staffVoice.voice.draw(context, staves[staffVoice.staff_n]);
+      }
+    }
+  };
 
-	return m2v;
+  return m2v;
 
 }(MEI2VF || {}, Vex.Flow, jQuery));
