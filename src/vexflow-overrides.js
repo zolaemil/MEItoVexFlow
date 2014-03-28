@@ -42,7 +42,7 @@ if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
 }
 // fallback: remove when the octave g clef is implemented in VexFlow
 Vex.Flow.clefProperties.values.octave = {
-  line_shift : 3.5
+  line_shift : 0 // 0: pitches in a G clef; 3.5: pitches in a transposed G clef 
 };
 // fallback: remove when the octave g clef is implemented in VexFlow
 Vex.Flow.Clef.types.octave = {
