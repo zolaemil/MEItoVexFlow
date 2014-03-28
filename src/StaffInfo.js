@@ -29,9 +29,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       keysig : w_keysig,
       timesig : w_timesig
     };
-
     me.spacing = 0;
-
     me.staffDefObj = m2v.attsToObj(staffdef);
     me.updateMeter();
     me.updateStaveLabels();
@@ -55,21 +53,15 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
     updateStaveLabels : function() {
       var me = this, label, labelAbbr;
       label = me.staffDefObj.label;
-      if (typeof label === 'string') {
-        me.label = label;
-      }
+      if (typeof label === 'string') me.label = label;
       labelAbbr = me.staffDefObj['label.abbr'];
-      if (typeof labelAbbr === 'string') {
-        me.labelAbbr = labelAbbr;
-      }
+      if (typeof labelAbbr === 'string') me.labelAbbr = labelAbbr;
     },
 
     updateSpacing : function() {
       var me = this, spacingAttr;
       spacing = +me.staffDefObj.spacing;
-      if (spacing) {
-        me.spacing = spacing;
-      }
+      if (spacing) me.spacing = spacing;
       return me.spacing;
     },
 
@@ -88,8 +80,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
 
     showClefCheck : function() {
       var me = this;
-      if (me.renderWith.clef
-          && me.staffDefObj['clef.visible'] !== 'false') {
+      if (me.renderWith.clef && me.staffDefObj['clef.visible'] !== 'false') {
         me.renderWith.clef = false;
         return true;
       }
@@ -99,9 +90,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       var me = this;
       if (me.renderWith.keysig) {
         me.renderWith.keysig = false;
-        if (me.staffDefObj['key.sig.show'] !== 'false') {
-          return true;
-        }
+        if (me.staffDefObj['key.sig.show'] !== 'false') return true;
       }
     },
 
@@ -133,18 +122,12 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
         }
         return 'treble';
       }
-      if (clef_shape === 'F' && (!clef_line || clef_line === '4')) {
-        return 'bass';
-      }
-      if (clef_shape === 'C' && clef_line === '3') {
-        return 'alto';
-      }
-      if (clef_shape === 'C' && clef_line === '4') {
-        return 'tenor';
-      }
+      if (clef_shape === 'F' && (!clef_line || clef_line === '4')) return 'bass';
+      if (clef_shape === 'C' && clef_line === '3') return 'alto';
+      if (clef_shape === 'C' && clef_line === '4') return 'tenor';
       throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported',
           'Clef definition is not supported: [ clef.shape="'
-              + clef_shape
+              + clef_shape 
               + '" '
               + (clef_line
                   ? ('clef.line="' + clef_line + '"')
@@ -175,9 +158,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
           }
         }
         key_mode = me.staffDefObj['key.mode'];
-        if (key_mode !== undefined) {
-          keyname += (key_mode === 'major') ? '' : 'm';
-        }
+        if (key_mode !== undefined) keyname += (key_mode === 'major') ? '' : 'm';
         return keyname;
       }
       return 'C';
@@ -191,9 +172,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
     getTimeSig : function() {
       var me = this, symbol, count, unit;
       symbol = me.staffDefObj['meter.sym'];
-      if (symbol) {
-        return (symbol === 'cut') ? 'C|' : 'C';
-      }
+      if (symbol) return (symbol === 'cut') ? 'C|' : 'C';
       count = me.staffDefObj['meter.count'];
       unit = me.staffDefObj['meter.unit'];
       return (count && unit) ? count + '/' + unit : undefined;

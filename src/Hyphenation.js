@@ -5,8 +5,8 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
   m2v.Hyphenation = function(cfg) {
     var me = this;
     me.allSyllables = [];
-    me.rightSystemBound = cfg.page_width / cfg.page_scale
-        - cfg.page_margin_right;
+    // TODO move to main.js
+    me.rightSystemBound = cfg.page_width / cfg.page_scale - cfg.page_margin_right;
     me.font = cfg.lyricsFont;
     me.maxHyphenDistance = cfg.maxHyphenDistance;
   };
@@ -17,24 +17,16 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
 
     addSyllable : function(annot, wordpos, staff_n) {
       var me = this;
-      if (!me.allSyllables[staff_n]) {
-        me.allSyllables[staff_n] = [];
-      }
-      if (wordpos === 'i') {
-        me.allSyllables[staff_n].push(me.WORDBOUND);
-      }
+      if (!me.allSyllables[staff_n]) me.allSyllables[staff_n] = [];
+      if (wordpos === 'i') me.allSyllables[staff_n].push(me.WORDBOUND);
       me.allSyllables[staff_n].push(annot);
-      if (wordpos === 't') {
-        me.allSyllables[staff_n].push(me.WORDBOUND);
-      }
+      if (wordpos === 't') me.allSyllables[staff_n].push(me.WORDBOUND);
     },
 
     addLineBreaks : function(staffInfos, measureX) {
       var me = this, i, j;
       for (i = 1, j = staffInfos.length; i < j; i += 1) {
-        if (!me.allSyllables[i]) {
-          me.allSyllables[i] = [];
-        }
+        if (!me.allSyllables[i]) me.allSyllables[i] = [];
         me.allSyllables[i].push(measureX);
       }
     },
@@ -93,8 +85,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
 
               if (first && second) {
                 if (distance > hyphenWidth) {
-                  hyphenCount = Math.ceil(distance
-                      / me.maxHyphenDistance);
+                  hyphenCount = Math.ceil(distance / me.maxHyphenDistance);
                   singleWidth = distance / (hyphenCount + 1);
                   hyphenStart = endFirst;
                   while (hyphenCount--) {
@@ -106,9 +97,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
                     // * Math.PI);
                     // me.ctx.fill();
                     // me.ctx.fillStyle = '#000';
-                    me.ctx.fillText('-', hyphenStart
-                            - halfHyphenWidth,
-                        hyphenY);
+                    me.ctx.fillText('-', hyphenStart - halfHyphenWidth, hyphenY);
                   }
                 }
               }

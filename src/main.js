@@ -233,17 +233,13 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       var me = this, h, w;
       h = cfg.page_height;
       w = cfg.page_width;
-      if (target.localName === 'canvas' || target.localName === 'svg') {
-        return target;
-      }
+      if (target.localName === 'canvas' || target.localName === 'svg') return target;
       if (+backend === VF.Renderer.Backends.RAPHAEL) {
         w /= cfg.page_scale;
         h /= cfg.page_scale;
-        return $('<svg width="' + w + '" height="' + h + '"></svg>')
-            .appendTo(target).get(0);
+        return $('<svg width="' + w + '" height="' + h + '"></svg>').appendTo(target).get(0);
       }
-      return $('<canvas width="' + w + '" height="' + h + '"></canvas>')
-          .appendTo(target).get(0);
+      return $('<canvas width="' + w + '" height="' + h + '"></canvas>').appendTo(target).get(0);
     },
 
     /**
@@ -256,8 +252,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
      * @returns the canvas context
      */
     createContext : function(canvas, backend) {
-      return new VF.Renderer(canvas, backend
-              || VF.Renderer.Backends.CANVAS).getContext();
+      return new VF.Renderer(canvas, backend || VF.Renderer.Backends.CANVAS).getContext();
     },
 
     /**
@@ -307,8 +302,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
                 // m.height);
 
                 // ############### NOTEAREA ##############
-                y = (y === m.getYForLine(0)) ? m.getYForLine(0)
-                    + 10 : m.getYForLine(0);
+                y = (y === m.getYForLine(0)) ? m.getYForLine(0) + 10 : m.getYForLine(0);
                 coords = {
                   x : m.getNoteStartX(),
                   y : y - 20,
@@ -321,23 +315,20 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
                 // y:'
                 // + coords.y + ', w:' + coords.w + ', h:'
                 // + coords.h);
-                me.drawRectangle(coords, '120, 80, 200', ctx,
-                    options.frame);
+                me.drawRectangle(coords, '120, 80, 200', ctx, options.frame);
 
                 // ############### MODIFIERS ##############
                 coords = {
                   x : m.x,
                   y : m.getYForLine(0) - 30,
                   w : m.getModifierXShift(),
-                  h : m.getYForLine(4) - m.getYForLine(0)
-                      + 60
+                  h : m.getYForLine(4) - m.getYForLine(0) + 60
                 };
                 // console.log('ModifierXShift. ' + 'x:' +
                 // coords.x
                 // + ', y:' + coords.y + ', w:' + coords.w
                 // + ', h:' + coords.h);
-                me.drawRectangle(coords, '100, 100, 0', ctx,
-                    options.frame);
+                me.drawRectangle(coords, '100, 100, 0', ctx, options.frame);
               }
             }
           }
@@ -354,18 +345,13 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
 
                   if (voice && voice.voice) {
 
-                    if (voice.voice.boundingBox
-                        && options.voices.drawFrame) {
-                      voice.voice.getBoundingBox()
-                          .draw(ctx);
+                    if (voice.voice.boundingBox && options.voices.drawFrame) {
+                      voice.voice.getBoundingBox().draw(ctx);
                     }
 
                     if (options.voices.drawTickables) {
-                      $.each(voice.voice.tickables,
-                          function(i, tickable) {
-                            tickable
-                                .getBoundingBox()
-                                .draw(ctx);
+                      $.each(voice.voice.tickables, function(i, tickable) {
+                            tickable.getBoundingBox().draw(ctx);
                           });
                     }
                   }

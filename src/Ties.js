@@ -68,9 +68,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       // if no tie object found that is uncomplete and with the same
       // pitch,
       // then create a tie that has only endid set.
-      if (!found) {
-        this.add(new m2v.EventLink(null, endid));
-      }
+      if (!found) this.add(new m2v.EventLink(null, endid));
     },
 
     terminate_slur : function(endid, linkCond) {
@@ -79,23 +77,19 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       var allTieInfos = this.getAll();
 
       cmpLinkCond = function(lc1, lc2) {
-        return lc1.nesting_level === lc2.nesting_level
-            && lc1.system === lc2.system;
+        return lc1.nesting_level === lc2.nesting_level && lc1.system === lc2.system;
       };
 
       found = false;
       for (i = 0; i < allTieInfos.length; ++i) {
         slur = allTieInfos[i];
-        if (slur && !slur.getLastId()
-            && cmpLinkCond(slur.params.linkCond, linkCond)) {
+        if (slur && !slur.getLastId() && cmpLinkCond(slur.params.linkCond, linkCond)) {
           slur.setLastId(endid);
           found = true;
           break;
         }
       }
-      if (!found) {
-        me.add(new m2v.EventLink(null, endid));
-      }
+      if (!found) me.add(new m2v.EventLink(null, endid));
     },
 
     createVexFromLinks : function(notes_by_id) {

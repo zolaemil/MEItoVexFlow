@@ -86,26 +86,20 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
         bottom_staff = currentMeasure[model.bottom_staff_n];
 
         if (typeof vexType === 'number' && top_staff && bottom_staff) {
-          vexConnector = new VF.StaveConnector(top_staff,
-              bottom_staff);
+          vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
           vexConnector.setType(vexType);
           me.addToVexConnectors(vexConnector);
 
           label = (currentSystem === 1)
               ? model.label
               : model.labelAbbr;
-          if (label) {
-            vexConnector.setText(label);
-          }
-
+          if (label) vexConnector.setText(label);
         }
 
         if (barline_l) {
           vexType = me.vexTypesBarlineLeft[barline_l];
-          if (typeof vexType === 'number' && top_staff
-              && bottom_staff) {
-            vexConnector = new VF.StaveConnector(top_staff,
-                bottom_staff);
+          if (typeof vexType === 'number' && top_staff && bottom_staff) {
+            vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
             vexConnector.setType(vexType);
             if (vexType === VF.StaveConnector.type.BOLD_DOUBLE_LEFT) {
               vexConnector.checkShift = true;
@@ -128,11 +122,8 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
         conn = this.allVexConnectors[i];
         if (conn.checkShift) {
           shift = conn.top_stave.getModifierXShift();
-          if (shift > 0) {
-            conn.setXShift(shift);
-          }
+          if (shift > 0) conn.setXShift(shift);
         }
-
         conn.setContext(this.ctx).draw();
       }
     }

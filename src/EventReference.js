@@ -39,9 +39,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
 
     setTStamp : function(tstamp) {
       this.tstamp = tstamp;
-      if (this.xmlid) {
-        this.tryResolveReference(true);
-      }
+      if (this.xmlid) this.tryResolveReference(true);
     },
 
     tryResolveReference : function(strict) {
@@ -70,12 +68,8 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
      * 
      */
     getId : function(params) {
-      if (params && params.meicontext) {
-        this.setContext(params.meicontext);
-      }
-      if (this.xmlid) {
-        return this.xmlid;
-      }
+      if (params && params.meicontext) this.setContext(params.meicontext);
+      if (this.xmlid) return this.xmlid;
       if (this.tstamp) {
         if (this.meicontext) {
           // look up the closest event to tstamp within
