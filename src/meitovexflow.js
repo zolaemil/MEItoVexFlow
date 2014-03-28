@@ -38,7 +38,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       staveHeight : 60, // spacing not included
       measurePaddingRight : 10, // originally 20
       autoStaveConnectorLine : true,
-      autoMeasureNumbers : true,
+      autoMeasureNumbers : false,
       maxHyphenDistance : 75,
       autoSystemBreakSections : false, // TODO: add feature
       // NB the weight properties can be used to specify style, weight or
