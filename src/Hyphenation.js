@@ -1,123 +1,90 @@
-var MEI2VF = (function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-  // TODO add support for multiple layers in one staff
+    // TODO add support for multiple layers in one staff
 
-  m2v.Hyphenation = function(cfg) {
-    var me = this;
-    me.allSyllables = [];
-    // TODO move to main.js
-    me.printSpaceRight = cfg.printSpaceRight;
-    me.font = cfg.lyricsFont;
-    me.maxHyphenDistance = cfg.maxHyphenDistance;
-  };
-
-  m2v.Hyphenation.prototype = {
-
-    WORDBOUND : null,
-
-    addSyllable : function(annot, wordpos, staff_n) {
+    m2v.Hyphenation = function(cfg) {
       var me = this;
-      if (!me.allSyllables[staff_n]) me.allSyllables[staff_n] = [];
-      if (wordpos === 'i') me.allSyllables[staff_n].push(me.WORDBOUND);
-      me.allSyllables[staff_n].push(annot);
-      if (wordpos === 't') me.allSyllables[staff_n].push(me.WORDBOUND);
-    },
+      me.allSyllables = [];
+      // TODO move to main.js
+      me.printSpaceRight = cfg.printSpaceRight;
+      me.font = cfg.lyricsFont;
+      me.maxHyphenDistance = cfg.maxHyphenDistance;
+    };
 
-    addLineBreaks : function(staffInfos, measureX) {
-      var me = this, i, j;
-      for (i = 1, j = staffInfos.length; i < j; i += 1) {
-        if (!me.allSyllables[i]) me.allSyllables[i] = [];
-        me.allSyllables[i].push(measureX);
-      }
-    },
+    m2v.Hyphenation.prototype = {
 
-    setContext : function(ctx) {
-      this.ctx = ctx;
-      return this;
-    },
+      WORDBOUND : null,
 
-    // TODO add support for hyphens in lines where neither the first nor the
-    // second syllable occur
-    draw : function() {
-      var me = this, i, k, first, second, hyphenCount, hyphenWidth, halfHyphenWidth, endFirst, hyphenY, distance, hyphenCount, singleWidth, hyphenStart;
+      addSyllable : function(annot, wordpos, staff_n) {
+        var me = this;
+        if (!me.allSyllables[staff_n])
+          me.allSyllables[staff_n] = [];
+        if (wordpos === 'i')
+          me.allSyllables[staff_n].push(me.WORDBOUND);
+        me.allSyllables[staff_n].push(annot);
+        if (wordpos === 't')
+          me.allSyllables[staff_n].push(me.WORDBOUND);
+      },
 
-      // me.ctx.fillText('*', me.printSpaceRight, 100);
+      addLineBreaks : function(staffInfos, measureX) {
+        var me = this, i, j;
+        for ( i = 1, j = staffInfos.length; i < j; i += 1) {
+          if (!me.allSyllables[i])
+            me.allSyllables[i] = [];
+          me.allSyllables[i].push(measureX);
+        }
+      },
 
-      me.ctx.setFont(me.font.family, me.font.size, me.font.weight);
+      setContext : function(ctx) {
+        this.ctx = ctx;
+        return this;
+      },
 
-      hyphenWidth = me.ctx.measureText('-').width;
-      halfHyphenWidth = hyphenWidth / 2;
+      // TODO add support for hyphens in lines where neither the first nor the
+      // second syllable occur
+      draw : function() {
+        var me = this, i, k, first, second, hyphenCount, halfHyphenWidth, endFirst, hyphenY, distance, hyphenCount, singleWidth, hyphenStart;
 
-      i = me.allSyllables.length;
-      while (i--) {
-        if (me.allSyllables[i]) {
-          k = me.allSyllables[i].length;
-          while (k--) {
-            first = me.allSyllables[i][k];
-            second = me.allSyllables[i][k + 1];
+        var maxHyphenDistance = me.maxHyphenDistance;
 
-            if (first !== me.WORDBOUND && second !== me.WORDBOUND) {
+        me.ctx.setFont(me.font.family, me.font.size, me.font.weight);
 
-              if (typeof first === 'number' && second) {
-                endFirst = first;
-                first = {
-                  y : second.y
+        hyphenWidth = me.ctx.measureText('-').width;
+
+        i = me.allSyllables.length;
+        while (i--) {
+          if (me.allSyllables[i]) {
+            k = me.allSyllables[i].length;
+            while (k--) {
+              first = me.allSyllables[i][k];
+              second = me.allSyllables[i][k + 1];
+
+              if (first !== me.WORDBOUND && second !== me.WORDBOUND) {
+                var opts = {
+                  hyphen_width : hyphenWidth,
+                  max_hyphen_distance: maxHyphenDistance
                 };
-              } else {
-                endFirst = first.x
-                    + me.ctx.measureText(first.text).width;
-              }
-
-              // TODO check for first
-              if (typeof second === 'number'
-                  || typeof second === 'undefined') {
-                second = {
-                  x : me.printSpaceRight,
-                  y : first.y
-                };
-                hyphenY = (first.y + second.y) / 2;
-                distance = Math.max(second.x - endFirst,
-                    hyphenWidth + 1);
-              } else {
-                hyphenY = (first.y + second.y) / 2;
-                distance = second.x - endFirst;
-              }
-
-              if (first && second) {
-                if (distance > hyphenWidth) {
-                  hyphenCount = Math.ceil(distance / me.maxHyphenDistance);
-                  singleWidth = distance / (hyphenCount + 1);
-                  hyphenStart = endFirst;
-                  while (hyphenCount--) {
-                    hyphenStart += singleWidth;
-                    // me.ctx.fillStyle = '#fff';
-                    // me.ctx.beginPath();
-                    // me.ctx.arc(hyphenStart, hyphenY -
-                    // hyphenWidth * 0.7, hyphenWidth, 0, 2
-                    // * Math.PI);
-                    // me.ctx.fill();
-                    // me.ctx.fillStyle = '#000';
-                    me.ctx.fillText('-', hyphenStart - halfHyphenWidth, hyphenY);
-                  }
+                if ( typeof first === 'number') {
+                  opts.start_x = first;
+                } else {
+                  opts.first_annot = first;
+                }
+                if ( typeof second === 'number' || second === undefined) {
+                  opts.end_x = me.printSpaceRight;
+                } else {
+                  opts.last_annot = second;
+                }
+                if (opts.first_annot || opts.last_annot) {
+                  var h = new VF.Hyphen(opts);
+                  h.setContext(me.ctx).renderHyphen();
                 }
               }
             }
-
-            // me.ctx.fillRect(first.x, first.y,
-            // me.ctx.measureText(first.text).width,
-            // 20);
-            // me.ctx.fillRect(second.x, second.y,
-            // me.ctx.measureText(second.text).width,
-            // 20);
-            // console.log(first);
-            // console.log(second);
-
           }
         }
       }
-    }
-  };
+    };
 
-  return m2v;
+    return m2v;
 
-}(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, Vex.Flow, jQuery));
