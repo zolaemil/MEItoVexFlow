@@ -15,13 +15,13 @@
 		<body>
 			<mdiv>
 				<score>
-					<scoreDef>
+					<scoreDef page.width="1200" page.scale="80%">
 						<staffGrp symbol="none">
 							<staffDef n="1" lines="5" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4" meter.rend="invis" key.pname="c" key.mode="major"/>
 						</staffGrp>
 					</scoreDef>
 					<section>
-						<measure n="3" width="270" unit="px" right="dbl">
+						<measure n="3" width="320" unit="px" right="dbl">
 							<staff n="1">
 								<layer>
 									<note xml:id="n02" pname="c" oct="5" dur="4" dots="1" accid="n">
@@ -119,7 +119,7 @@
 						</measure>
 						<sb/>
 						
-						<measure n="7" width="280">
+						<measure n="7" width="340">
 							<staff n="1">
 								<layer>
 									<note xml:id="n28" pname="c" accid="s" oct="5" dur="4" dots="1">
@@ -194,7 +194,7 @@
 							</staff>
 						</measure>
 						
-						<measure n="10" width="80">
+						<measure n="10" width="120">
 							<staff n="1">
 								<layer>
 									<note xml:id="asd" dur="1" pname="f" accid="s" oct="5">
@@ -203,7 +203,7 @@
 								</layer>
 							</staff>
 						</measure>
-						<measure n="11" width="80">
+						<measure n="11" width="120">
 							<staff n="1">
 								<layer>
 									<note xml:id="asdf" dur="1" pname="e" accid="s" oct="5">
@@ -212,7 +212,7 @@
 							</staff>
 						</measure>
 						
-						<measure n="12" right="invis" width="50">
+						<measure n="12" right="invis" width="70">
 							<staff n="1">
 								<anchoredText ho="2">etc.</anchoredText>
 								<layer>

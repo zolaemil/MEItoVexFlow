@@ -6,7 +6,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
     var me = this;
     me.allSyllables = [];
     // TODO move to main.js
-    me.rightSystemBound = cfg.page_width / cfg.page_scale - cfg.page_margin_right;
+    me.printSpaceRight = cfg.printSpaceRight;
     me.font = cfg.lyricsFont;
     me.maxHyphenDistance = cfg.maxHyphenDistance;
   };
@@ -41,7 +41,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
     draw : function() {
       var me = this, i, k, first, second, hyphenCount, hyphenWidth, halfHyphenWidth, endFirst, hyphenY, distance, hyphenCount, singleWidth, hyphenStart;
 
-      // me.ctx.fillText('*', me.rightSystemBound, 100);
+      // me.ctx.fillText('*', me.printSpaceRight, 100);
 
       me.ctx.setFont(me.font.family, me.font.size, me.font.weight);
 
@@ -72,7 +72,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
               if (typeof second === 'number'
                   || typeof second === 'undefined') {
                 second = {
-                  x : me.rightSystemBound,
+                  x : me.printSpaceRight,
                   y : first.y
                 };
                 hyphenY = (first.y + second.y) / 2;
