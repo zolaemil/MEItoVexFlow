@@ -61,7 +61,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
     updateSpacing : function() {
       var me = this, spacingAttr;
       spacing = +me.staffDefObj.spacing;
-      if (spacing) me.spacing = spacing;
+      if (!isNaN(spacing)) me.spacing = spacing;
       return me.spacing;
     },
 

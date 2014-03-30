@@ -4,7 +4,7 @@
  * @constructor
  */
 Vex.Flow.Hyphen = ( function() {
-    function Hyphen(config, text) {
+    function Hyphen(config) {
       if (arguments.length > 0)
         this.init(config);
     };
@@ -46,7 +46,7 @@ Vex.Flow.Hyphen = ( function() {
       },
 
       isPartial: function() {
-        return (!this.config.first_annot || !this.last_annot);
+        return (!this.config.first_annot || !this.config.last_annot);
       },
 
       renderHyphen : function(ctx) {
@@ -89,47 +89,47 @@ Vex.Flow.Hyphen = ( function() {
   }());
 
 // fallback: remove when the breve is implemented in VexFlow
-if (!Vex.Flow.durationToTicks.durations['0']) {
-  Vex.Flow.durationToTicks.durations['0'] = Vex.Flow.RESOLUTION / 0.5;
-}
-// fallback: remove when the breve is implemented in VexFlow
-if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
-  Vex.Flow.durationToGlyph.duration_codes['0'] = {
-    common : {
-      head_width : 16,
-      stem : false,
-      stem_offset : 0,
-      flag : false,
-      dot_shiftY : 0,
-      line_above : 0,
-      line_below : 0
-    },
-    type : {
-      "n" : {// Whole note
-        code_head : "v1d"
-      },
-      "h" : {// Whole note harmonic
-        code_head : "v46"
-      },
-      "m" : {// Whole note muted
-        code_head : "v92",
-        stem_offset : -3
-      },
-      "r" : {// Whole rest
-        code_head : "v5c",
-        head_width : 12,
-        rest : true,
-        position : "D/5",
-        dot_shiftY : 0.5
-      },
-      "s" : {// Whole note slash
-        // Drawn with canvas primitives
-        head_width : 15,
-        position : "B/4"
-      }
-    }
-  };
-}
+// if (!Vex.Flow.durationToTicks.durations['0']) {
+  // Vex.Flow.durationToTicks.durations['0'] = Vex.Flow.RESOLUTION / 0.5;
+// }
+// // fallback: remove when the breve is implemented in VexFlow
+// if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
+  // Vex.Flow.durationToGlyph.duration_codes['0'] = {
+    // common : {
+      // head_width : 16,
+      // stem : false,
+      // stem_offset : 0,
+      // flag : false,
+      // dot_shiftY : 0,
+      // line_above : 0,
+      // line_below : 0
+    // },
+    // type : {
+      // "n" : {// Whole note
+        // code_head : "v1d"
+      // },
+      // "h" : {// Whole note harmonic
+        // code_head : "v46"
+      // },
+      // "m" : {// Whole note muted
+        // code_head : "v92",
+        // stem_offset : -3
+      // },
+      // "r" : {// Whole rest
+        // code_head : "v5c",
+        // head_width : 12,
+        // rest : true,
+        // position : "D/5",
+        // dot_shiftY : 0.5
+      // },
+      // "s" : {// Whole note slash
+        // // Drawn with canvas primitives
+        // head_width : 15,
+        // position : "B/4"
+      // }
+    // }
+  // };
+// }
 // fallback: remove when the octave g clef is implemented in VexFlow
 Vex.Flow.clefProperties.values.octave = {
   line_shift : 0 // 0: pitches in a G clef; 3.5: pitches in a transposed G clef

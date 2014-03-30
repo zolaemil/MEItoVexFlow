@@ -298,12 +298,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       initStaffYs : function() {
-        var me = this, currentSystemY, currentStaffY, lowestYCandidate, i, j, isFirstStaff = true;
+        var me = this, currentSystemY, currentStaffY, lowestYCandidate, i, j, isFirstStaff = true, infoSpacing;
         currentSystemY = (me.currentSystem === 1) ? me.cfg.page_margin_top : me.currentLowestY + me.cfg.systemSpacing;
         currentStaffY = 0;
         for ( i = 1, j = me.currentStaffInfos.length; i < j; i += 1) {
           if (me.currentStaffInfos[i]) {
-            currentStaffY += (isFirstStaff) ? 0 : me.currentStaffInfos[i].spacing || me.STAVE_HEIGHT + me.cfg.staveSpacing;
+            infoSpacing = me.currentStaffInfos[i].spacing;
+            currentStaffY += (isFirstStaff) ? 0 : (infoSpacing !== undefined) ? me.STAVE_HEIGHT + me.currentStaffInfos[i].spacing : me.STAVE_HEIGHT + me.cfg.staveSpacing;
             me.currentStaffInfos[i].absoluteY = currentSystemY + currentStaffY;
             isFirstStaff = false;
           }
