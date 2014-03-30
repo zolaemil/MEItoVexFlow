@@ -29,7 +29,7 @@ var MEI2VF = (function(m2v, VF, $, undefined) {
       keysig : w_keysig,
       timesig : w_timesig
     };
-    me.spacing = 0;
+    me.spacing = null;
     me.staffDefObj = m2v.attsToObj(staffdef);
     me.updateMeter();
     me.updateStaveLabels();

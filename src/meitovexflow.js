@@ -304,7 +304,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         for ( i = 1, j = me.currentStaffInfos.length; i < j; i += 1) {
           if (me.currentStaffInfos[i]) {
             infoSpacing = me.currentStaffInfos[i].spacing;
-            currentStaffY += (isFirstStaff) ? 0 : (infoSpacing !== undefined) ? me.STAVE_HEIGHT + me.currentStaffInfos[i].spacing : me.STAVE_HEIGHT + me.cfg.staveSpacing;
+            currentStaffY += (isFirstStaff) ? 0 : (infoSpacing !== null) ? me.STAVE_HEIGHT + me.currentStaffInfos[i].spacing : me.STAVE_HEIGHT + me.cfg.staveSpacing;
             me.currentStaffInfos[i].absoluteY = currentSystemY + currentStaffY;
             isFirstStaff = false;
           }
