@@ -833,6 +833,12 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
   }
 
   var app_xml_id = alt_inst_update.appXmlID;
+  var parent = $(this.sectionview_score).find('[xml\\:id=' + this.ALTs[app_xml_id].parentID +']')[0];
+  if (typeof parent === 'undefined') {
+    return;
+  }
+  var children = parent.childNodes;
+
   var nodes2insert = [];
   var this_rich_score = this.rich_score;
   if (alt_inst_update.replaceWith) {
@@ -851,8 +857,6 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
     return data1 === data2;
   }
   
-  var parent = $(this.sectionview_score).find('[xml\\:id=' + this.ALTs[app_xml_id].parentID +']')[0];
-  var children = parent.childNodes;
   var inside_inst = false;
   var found = false;
   var insert_before_this = null;
