@@ -741,7 +741,10 @@ MeiLib.MeiDoc.prototype.initSectionView  = function(altReplacements) {
     parent.insertBefore(PIEnd, alt);
     parent.removeChild(alt);
 
-    this_sectionplane[alt_xml_id] = this_ALTs[alt_xml_id].altitems[alt_item_xml_id];
+    this_sectionplane[alt_xml_id] = [];
+    if (this_ALTs[alt_xml_id].altitems[alt_item_xml_id]) {
+      this_sectionplane[alt_xml_id].push(this_ALTs[alt_xml_id].altitems[alt_item_xml_id]);
+    }
   })
 
   return this.sectionview_score;
@@ -786,6 +789,11 @@ MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
   }
 
   for (altID in sectionplaneUpdate) {
+    var this_ALTs = this.ALTs;
+    var altitems2insert = [];
+    $(sectionplaneUpdate[altID]).each(function(){
+      altitems2insert.push(this_ALTs[altID].altitems[this]);
+    });
     var alt_instance2insert = this.ALTs[altID].altitems[sectionplaneUpdate[altID]];
     altgroup = this.altgroups[altID];
     if (altgroup) {
@@ -794,12 +802,15 @@ MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
       var i;
       for (i=0; i<altgroup.length; i++) {
         altID__ = altgroup[i];
-        alt_instance2insert__ = corresponding_alt_item(this.ALTs[altID__].altitems, alt_instance2insert);
-        this.replaceAltInstance({appXmlID:altID__, replaceWith:alt_instance2insert__});
+        var altitems2insert__ = [];
+        $(altitems2insert).each(function(){
+          altitems2insert__.push(corresponding_alt_item(this_ALTs[altID__].altitems, this))
+        });
+        this.replaceAltInstance({appXmlID:altID__, replaceWith:altitems2insert__});
       }
     } else {
       // otherwise just replace alt[xml:id=altID]
-      this.replaceAltInstance({appXmlID:altID, replaceWith:alt_instance2insert});      
+      this.replaceAltInstance({appXmlID:altID, replaceWith:altitems2insert});
     }
   }
 }
@@ -812,13 +823,27 @@ MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
  */
 MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
   
-  var app_xml_id = alt_inst_update.appXmlID;
-  var alt_instance2insert = [];
-  if (alt_inst_update.replaceWith) {
-    var replaceWith_xmlID = alt_inst_update.replaceWith.xmlID;
-    var var_inst_elem = $(this.rich_score).find(alt_inst_update.replaceWith.tagname + '[xml\\:id="' + replaceWith_xmlID +'"]')[0];
-    alt_instance2insert = var_inst_elem.childNodes;
+  var extendWithNodeList = function(nodeArray, nodeList) {
+    var res = nodeArray;
+    var i;
+    for (i=0; i<nodeList.length; ++i) {
+        res.push(nodeList[i]);
+    }
+    return res;
   }
+
+  var app_xml_id = alt_inst_update.appXmlID;
+  var nodes2insert = [];
+  var this_rich_score = this.rich_score;
+  if (alt_inst_update.replaceWith) {
+    $(alt_inst_update.replaceWith).each(function() {
+      var replaceWith_item = this;
+      var replaceWith_xmlID = replaceWith_item.xmlID;
+      var var_inst_elem = $(this_rich_score).find(replaceWith_item.tagname + '[xml\\:id="' + replaceWith_xmlID +'"]')[0];
+      nodes2insert = extendWithNodeList(nodes2insert, var_inst_elem.childNodes);
+    });
+  }
+  console.log(nodes2insert)
   
   var match_pseudo_attrValues = function(data1, data2) {
     data1 = data1.replace("'", '"');
@@ -856,7 +881,7 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
     insert_method = function (elem) { parent.appendChild(elem) };
   }
 
-  $.each(alt_instance2insert, function () { 
+  $.each(nodes2insert, function () {
      insert_method(this.cloneNode(true)); 
   });  
    
