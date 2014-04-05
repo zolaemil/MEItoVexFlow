@@ -22,6 +22,8 @@
  ******************************************************************************/
 
 // TODO make compatible with Google Closure Compiler?
+// TODO das mit dem loglevel noch einrichten!!
+
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Renderer = function(config) {
@@ -34,6 +36,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       STAVE_HEIGHT : 40, // this.cfg.staff.spacing_between_lines_px * 4;
       HALF_LINE_DISTANCE : 5, // this.cfg.staff.spacing_between_lines_px / 2;
+      BOTTOM: VF.Annotation.VerticalJustify.BOTTOM,
 
       initConfig : function(config) {
         this.cfg = config;
@@ -172,7 +175,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, range = {};
         $(staffGrp).children().each(function(i, childElement) {
           var childRange = me.processStaffGrp_child(childElement);
-          Vex.LogDebug('processStaffGrp() {1}.{a}: ' + 'childRange.first_n:' + childRange.first_n + ' childRange.last_n:' + childRange.last_n);
+          m2v.L('Renderer.processStaffGrp() {1}.{a}', 'childRange.first_n: ' + childRange.first_n, ' childRange.last_n: ' + childRange.last_n);
           if (i === 0)
             range.first_n = childRange.first_n;
           range.last_n = childRange.last_n;
@@ -189,8 +192,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         symbol = $(staffGrp).attr('symbol');
         barthru = $(staffGrp).attr('barthru');
 
-        Vex.LogDebug('setConnectorModels() {2}: symbol:' + symbol + ' range.first_n:' + first_n + ' range.last_n:' + last_n);
-
+        m2v.L('Renderer.setConnectorModels() {2}', 'symbol: ' + symbol, ' range.first_n: ' + first_n, ' range.last_n: ' + last_n);
 
         // # left connectors specified in the MEI file
         me.startConnectors.setModelForStaveRange({
@@ -201,7 +203,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           labelAbbr : $(staffGrp).attr('label.abbr')
         });
 
-        // # left auto line, only attached - if at all - to
+        // # left auto line, only (if at all) attached to
         // //staffGrp[not(ancestor::staffGrp)]
         if (!isChild && me.cfg.autoStaveConnectorLine) {
           me.startConnectors.setModelForStaveRange({
@@ -276,7 +278,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       startSystem : function(measure) {
         var me = this, i, currentSystemY, currentStaffY, lowestYCandidate, updateFn, spacing;
 
-        Vex.LogDebug('me.startSystem() {enter}');
+        m2v.L('Renderer.startSystem() {enter}');
 
         me.pendingSystemBreak = false;
         me.currentSystem += 1;
@@ -325,7 +327,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       getMeasureWidths : function(startMeasure) {
         var me = this, widths;
         widths = me.addMissingMeasureWidths(me.getMEIWidthsTillSb(startMeasure));
-        Vex.LogDebug('me.getMeasureWidths(): #' + widths.length);
+        m2v.L('Renderer.getMeasureWidths()', '#' + widths.length);
         return widths;
       },
 
@@ -337,7 +339,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        */
       getMEIWidthsTillSb : function(startElement) {
         var me = this, currentElement = startElement, specifiedWidths = [];
-        Vex.Log('me.getMEIWidthsTillSb() {}');
+        m2v.L('Renderer.getMEIWidthsTillSb() {}');
         while (currentElement) {
           switch (currentElement.localName) {
             case 'measure' :
@@ -412,10 +414,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         if (previous_measure) {
           me.currentMeasureX = previous_measure.x + previous_measure.width;
-          Vex.LogDebug('setNewMeasureX(): currentMeasureX:' + me.currentMeasureX);
+          m2v.L('Renderer.setNewMeasureX()', 'currentMeasureX: ' + me.currentMeasureX);
         } else {
           me.currentMeasureX = me.cfg.page_margin_left + me.currentSystemMarginLeft;
-          Vex.LogDebug('setNewMeasureX(): NO PREVIOUS MEASURE FOUND (!)');
+          m2v.L('Renderer.setNewMeasureX()', ' NO PREVIOUS MEASURE FOUND (!)');
         }
       },
 
@@ -500,7 +502,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         currentMeasureWidth = me.measureWidthsInSystem.shift();
 
-        Vex.LogDebug('me.processMeasure() {enter}' + ', currentMeasureWidth: ' + currentMeasureWidth);
+        m2v.L('Renderer.processMeasure() {enter}', 'currentMeasureWidth: ' + currentMeasureWidth);
 
         currentStaveVoices = new m2v.StaveVoices();
 
@@ -1296,7 +1298,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         while (i--) {
           thisDir = me.directionsInCurrentMeasure[i];
           if (thisDir.startid === xml_id) {
-            note.addAnnotation(2, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setBottom(true) : me.createAnnot(thisDir.text, me.cfg.annotFont));
+            note.addAnnotation(0, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setVerticalJustification(me.BOTTOM) : me.createAnnot(thisDir.text, me.cfg.annotFont));
           }
         }
       },
@@ -1305,7 +1307,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, annot, syl;
         syl = me.processSyllable(element);
         if (syl) {
-          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setBottom(true);
+          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
           // TODO handle justification
           // .setJustification(VF.Annotation.Justify.LEFT);
 
@@ -1316,9 +1318,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           // there are no acutal mei_syl elements. This seems to improve
           // spacing
           // in VexFlow but should be changed eventually
-          annot = me.createAnnot('', me.cfg.lyricsFont).setBottom(true);
+          annot = me.createAnnot('', me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
         }
-        note.addAnnotation(2, annot);
+        note.addAnnotation(0, annot);
       },
 
       // Add annotation (lyrics)

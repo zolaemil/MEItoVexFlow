@@ -63,7 +63,7 @@ MeiLibTest = function(){
   var score = xmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'score');
   console.log('Start');
 
-  Vex.LogLevel = 5;
+  MEI2VF.setLogging(true);
 
   console.log('********* TEST: id2tstamp() **************************************');
   start_test('IDtoTStamp');

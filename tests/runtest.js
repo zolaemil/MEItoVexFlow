@@ -10,19 +10,19 @@ MEI2VF.RunTest = function(test_case, canvas, titleElem, backend){
   var score_height = canvas_height; // - 50;
 
   //load the xml file...
-  Vex.LogInfo("Running Test Case Title: '" + test_case.title + "' MEI-XML: '" + test_case.mei_xml + "'");
+  Vex.L("Running Test Case Title: '" + test_case.title + "' MEI-XML: '" + test_case.mei_xml + "'");
   xmlDoc=loadXMLDoc(test_case.mei_xml);
   if (xmlDoc) { 
-    Vex.LogInfo('MEI-XML loaded.'); 
+    Vex.L('MEI-XML loaded.'); 
   } else {
     //TODO: throw exception
   }
 
   //... and render it onto the canvas
   var MEI = xmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'score');
-  Vex.LogInfo('Rendering... ');
+  Vex.L('Rendering... ');
   MEI2VF.render_notation(MEI, canvas, score_width, score_height, backend, test_case.options);
-  Vex.LogInfo('Done (' + test_case.title + ')');
+  Vex.L('Done (' + test_case.title + ')');
 	
 }
 

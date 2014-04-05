@@ -88,48 +88,48 @@ Vex.Flow.Hyphen = ( function() {
     return Hyphen;
   }());
 
+//fallback: remove when the breve is implemented in VexFlow
+if (!Vex.Flow.durationToTicks.durations['0']) {
+  Vex.Flow.durationToTicks.durations['0'] = Vex.Flow.RESOLUTION / 0.5;
+}
 // fallback: remove when the breve is implemented in VexFlow
-// if (!Vex.Flow.durationToTicks.durations['0']) {
-  // Vex.Flow.durationToTicks.durations['0'] = Vex.Flow.RESOLUTION / 0.5;
-// }
-// // fallback: remove when the breve is implemented in VexFlow
-// if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
-  // Vex.Flow.durationToGlyph.duration_codes['0'] = {
-    // common : {
-      // head_width : 16,
-      // stem : false,
-      // stem_offset : 0,
-      // flag : false,
-      // dot_shiftY : 0,
-      // line_above : 0,
-      // line_below : 0
-    // },
-    // type : {
-      // "n" : {// Whole note
-        // code_head : "v1d"
-      // },
-      // "h" : {// Whole note harmonic
-        // code_head : "v46"
-      // },
-      // "m" : {// Whole note muted
-        // code_head : "v92",
-        // stem_offset : -3
-      // },
-      // "r" : {// Whole rest
-        // code_head : "v5c",
-        // head_width : 12,
-        // rest : true,
-        // position : "D/5",
-        // dot_shiftY : 0.5
-      // },
-      // "s" : {// Whole note slash
-        // // Drawn with canvas primitives
-        // head_width : 15,
-        // position : "B/4"
-      // }
-    // }
-  // };
-// }
+if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
+  Vex.Flow.durationToGlyph.duration_codes['0'] = {
+    common : {
+      head_width : 16,
+      stem : false,
+      stem_offset : 0,
+      flag : false,
+      dot_shiftY : 0,
+      line_above : 0,
+      line_below : 0
+    },
+    type : {
+      "n" : {// Whole note
+        code_head : "v1d"
+      },
+      "h" : {// Whole note harmonic
+        code_head : "v46"
+      },
+      "m" : {// Whole note muted
+        code_head : "v92",
+        stem_offset : -3
+      },
+      "r" : {// Whole rest
+        code_head : "v5c",
+        head_width : 12,
+        rest : true,
+        position : "D/5",
+        dot_shiftY : 0.5
+      },
+      "s" : {// Whole note slash
+        // Drawn with canvas primitives
+        head_width : 15,
+        position : "B/4"
+      }
+    }
+  };
+}
 // fallback: remove when the octave g clef is implemented in VexFlow
 Vex.Flow.clefProperties.values.octave = {
   line_shift : 0 // 0: pitches in a G clef; 3.5: pitches in a transposed G clef
@@ -141,10 +141,10 @@ Vex.Flow.Clef.types.octave = {
   line : 3
 };
 
+
 Vex.Flow.ModifierContext.prototype.formatAnnotations = function() {
   var annotations = this.modifiers['annotations'];
-  if (!annotations || annotations.length === 0)
-    return this;
+  if (!annotations || annotations.length === 0) return this;
 
   var text_line = this.state.text_line;
   var max_width = 0;
@@ -154,18 +154,21 @@ Vex.Flow.ModifierContext.prototype.formatAnnotations = function() {
   for (var i = 0; i < annotations.length; ++i) {
     var annotation = annotations[i];
     annotation.setTextLine(text_line);
-    width = annotation.getWidth() > max_width ? annotation.getWidth() : max_width;
-    // COMMENTED OUT (TODO: find a proper solution to prevent the text lines
-    // from
-    // being increased between staffs!)
-    // text_line++;
+    width = annotation.getWidth() > max_width ?
+      annotation.getWidth() : max_width;
+        // COMMENTED OUT (TODO: find a proper solution to prevent the text lines
+// from
+// being increased between staffs!)
+// text_line++;
   }
+
   this.state.left_shift += width / 2;
   this.state.right_shift += width / 2;
   // No need to update text_line because we leave lots of room on the same
   // line.
   return this;
 };
+
 
 Vex.Flow.Curve.prototype.renderCurve = function(params) {
   var ctx = this.context;
@@ -197,505 +200,506 @@ Vex.Flow.Curve.prototype.renderCurve = function(params) {
 };
 
 // ################################ BARLINE ####################################
-
-Vex.Flow.Barline = ( function() {
-    function Barline(type, x) {
-      if (arguments.length > 0)
-        this.init(type, x);
-    };
-
-    Barline.type = {
-      SINGLE : 1,
-      DOUBLE : 2,
-      END : 3,
-      REPEAT_BEGIN : 4,
-      REPEAT_END : 5,
-      REPEAT_BOTH : 6,
-      NONE : 7
-    };
-
-    var THICKNESS = Vex.Flow.STAVE_LINE_THICKNESS;
-
-    Vex.Inherit(Barline, Vex.Flow.StaveModifier, {
-      init : function(type, x) {
-        Barline.superclass.init.call(this);
-        this.barline = type;
-        this.x = x;
-        // Left most x for the stave
-      },
-
-      getCategory : function() {
-        return "barlines";
-      },
-      setX : function(x) {
-        this.x = x;
-        return this;
-      },
-
-      // Draw barlines
-      draw : function(stave, x_shift) {
-        x_shift = typeof x_shift !== 'number' ? 0 : x_shift;
-
-        switch (this.barline) {
-          case Barline.type.SINGLE :
-            this.drawVerticalBar(stave, this.x, false);
-            break;
-          case Barline.type.DOUBLE :
-            this.drawVerticalBar(stave, this.x, true);
-            break;
-          case Barline.type.END :
-            this.drawVerticalEndBar(stave, this.x);
-            break;
-          case Barline.type.REPEAT_BEGIN :
-            // If the barline is shifted over (in front of
-            // clef/time/key)
-            // Draw vertical bar at the beginning.
-            if (x_shift > 0) {
-              this.drawVerticalBar(stave, this.x);
-            }
-            this.drawRepeatBar(stave, this.x + x_shift, true);
-            break;
-          case Barline.type.REPEAT_END :
-            this.drawRepeatBar(stave, this.x, false);
-            break;
-          case Barline.type.REPEAT_BOTH :
-            this.drawRepeatBar(stave, this.x, false);
-            this.drawRepeatBar(stave, this.x, true);
-            break;
-          default :
-            // Default is NONE, so nothing to draw
-            break;
-        }
-      },
-
-      drawVerticalBar : function(stave, x, double_bar) {
-        if (!stave.context)
-          throw new Vex.RERR("NoCanvasContext", "Can't draw stave without canvas context.");
-        var top_line = stave.getYForLine(0);
-
-        // ################## ADDED -1 AT THE END OF THE LINE:
-        // var bottom_line =
-        // stave.getYForLine(stave.options.num_lines - 1) +
-        // (THICKNESS / 2);
-        var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) - 1;
-
-        if (double_bar)
-          stave.context.fillRect(x - 3, top_line, 1, bottom_line - top_line + 1);
-        stave.context.fillRect(x, top_line, 1, bottom_line - top_line + 1);
-      },
-
-      drawVerticalEndBar : function(stave, x) {
-        if (!stave.context)
-          throw new Vex.RERR("NoCanvasContext", "Can't draw stave without canvas context.");
-
-        var top_line = stave.getYForLine(0);
-
-        // ################## ADDED -1 AT THE END OF THE LINE:
-        // var bottom_line =
-        // stave.getYForLine(stave.options.num_lines - 1) +
-        // (THICKNESS / 2);
-        var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) - 1;
-
-        stave.context.fillRect(x - 5, top_line, 1, bottom_line - top_line + 1);
-        stave.context.fillRect(x - 2, top_line, 3, bottom_line - top_line + 1);
-      },
-
-      drawRepeatBar : function(stave, x, begin) {
-        if (!stave.context)
-          throw new Vex.RERR("NoCanvasContext", "Can't draw stave without canvas context.");
-
-        var top_line = stave.getYForLine(0);
-
-        // ################## ADDED -1 AT THE END OF THE LINE:
-        // var bottom_line =
-        // stave.getYForLine(stave.options.num_lines - 1) +
-        // (THICKNESS / 2);
-        var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) - 1;
-
-        var x_shift = 3;
-
-        if (!begin) {
-          x_shift = -5;
-        }
-
-        stave.context.fillRect(x + x_shift, top_line, 1, bottom_line - top_line + 1);
-        stave.context.fillRect(x - 2, top_line, 3, bottom_line - top_line + 1);
-
-        var dot_radius = 2;
-
-        // Shift dots left or right
-        if (begin) {
-          x_shift += 4;
-        } else {
-          x_shift -= 4;
-        }
-
-        var dot_x = (x + x_shift) + (dot_radius / 2);
-
-        // calculate the y offset based on number of stave lines
-        var y_offset = (stave.options.num_lines - 1) * stave.options.spacing_between_lines_px;
-        y_offset = (y_offset / 2) - (stave.options.spacing_between_lines_px / 2);
-        var dot_y = top_line + y_offset + (dot_radius / 2);
-
-        // draw the top repeat dot
-        stave.context.beginPath();
-        stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
-        stave.context.fill();
-
-        // draw the bottom repeat dot
-        dot_y += stave.options.spacing_between_lines_px;
-        stave.context.beginPath();
-        stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
-        stave.context.fill();
-      }
-    });
-
-    return Barline;
-  }());
-
-// VexFlow - Music Engraving for HTML5
-// Copyright Mohit Muthanna 2010
+// Vex Flow Notation
+// Author Larry Kuhns 2011
+// Implements barlines (single, double, repeat, end)
 //
-// This class implements text annotations.
+// Requires vex.js.
 
 /**
  * @constructor
  */
-Vex.Flow.Annotation = ( function() {
-    function Annotation(text) {
-      if (arguments.length > 0)
-        this.init(text);
+Vex.Flow.Barline = (function() {
+  function Barline(type, x) {
+    if (arguments.length > 0) this.init(type, x);
+  }
+
+  Barline.type = {
+    SINGLE: 1,
+    DOUBLE: 2,
+    END: 3,
+    REPEAT_BEGIN: 4,
+    REPEAT_END: 5,
+    REPEAT_BOTH: 6,
+    NONE: 7
+  };
+
+  var THICKNESS = Vex.Flow.STAVE_LINE_THICKNESS;
+
+  Vex.Inherit(Barline, Vex.Flow.StaveModifier, {
+    init: function(type, x) {
+      Barline.superclass.init.call(this);
+      this.barline = type;
+      this.x = x;    // Left most x for the stave
+    },
+
+    getCategory: function() { return "barlines"; },
+    setX: function(x) { this.x = x; return this; },
+
+    // Draw barlines
+    draw: function(stave, x_shift) {
+      x_shift = typeof x_shift !== 'number' ? 0 : x_shift;
+
+      switch (this.barline) {
+        case Barline.type.SINGLE:
+          this.drawVerticalBar(stave, this.x, false);
+          break;
+        case Barline.type.DOUBLE:
+          this.drawVerticalBar(stave, this.x, true);
+          break;
+        case Barline.type.END:
+          this.drawVerticalEndBar(stave, this.x);
+          break;
+        case Barline.type.REPEAT_BEGIN:
+          // If the barline is shifted over (in front of clef/time/key)
+          // Draw vertical bar at the beginning.
+          if (x_shift > 0) {
+            this.drawVerticalBar(stave, this.x);
+          }
+          this.drawRepeatBar(stave, this.x + x_shift, true);
+          break;
+        case Barline.type.REPEAT_END:
+          this.drawRepeatBar(stave, this.x, false);
+          break;
+        case Barline.type.REPEAT_BOTH:
+          this.drawRepeatBar(stave, this.x, false);
+          this.drawRepeatBar(stave, this.x, true);
+          break;
+        default:
+          // Default is NONE, so nothing to draw
+          break;
+      }
+    },
+
+    drawVerticalBar: function(stave, x, double_bar) {
+      if (!stave.context) throw new Vex.RERR("NoCanvasContext",
+          "Can't draw stave without canvas context.");
+      var top_line = stave.getYForLine(0);
+      
+      // ################## ADDED -1 AT THE END OF THE LINE:
+      var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) -1;
+      if (double_bar)
+        stave.context.fillRect(x - 3, top_line, 1, bottom_line - top_line + 1);
+      stave.context.fillRect(x, top_line, 1, bottom_line - top_line + 1);
+    },
+
+    drawVerticalEndBar: function(stave, x) {
+      if (!stave.context) throw new Vex.RERR("NoCanvasContext",
+          "Can't draw stave without canvas context.");
+
+      var top_line = stave.getYForLine(0);
+      
+      // ################## ADDED -1 AT THE END OF THE LINE:
+      var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) -1;
+      stave.context.fillRect(x - 5, top_line, 1, bottom_line - top_line + 1);
+      stave.context.fillRect(x - 2, top_line, 3, bottom_line - top_line + 1);
+    },
+
+    drawRepeatBar: function(stave, x, begin) {
+      if (!stave.context) throw new Vex.RERR("NoCanvasContext",
+          "Can't draw stave without canvas context.");
+
+      var top_line = stave.getYForLine(0);
+      
+      // ################## ADDED -1 AT THE END OF THE LINE:
+      var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2)-1;
+      var x_shift = 3;
+
+      if (!begin) {
+        x_shift = -5;
+      }
+
+      stave.context.fillRect(x + x_shift, top_line, 1, bottom_line - top_line + 1);
+      stave.context.fillRect(x - 2, top_line, 3, bottom_line - top_line + 1);
+
+      var dot_radius = 2;
+
+      // Shift dots left or right
+      if (begin) {
+        x_shift += 4;
+      } else {
+        x_shift -= 4;
+      }
+
+      var dot_x = (x + x_shift) + (dot_radius / 2);
+
+      // calculate the y offset based on number of stave lines
+      var y_offset = (stave.options.num_lines -1) *
+        stave.options.spacing_between_lines_px;
+      y_offset = (y_offset / 2) -
+                 (stave.options.spacing_between_lines_px / 2);
+      var dot_y = top_line + y_offset + (dot_radius / 2);
+
+      // draw the top repeat dot
+      stave.context.beginPath();
+      stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
+      stave.context.fill();
+
+      //draw the bottom repeat dot
+      dot_y += stave.options.spacing_between_lines_px;
+      stave.context.beginPath();
+      stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
+      stave.context.fill();
     }
+  });
+
+  return Barline;
+}());
 
 
-    Annotation.Justify = {
-      LEFT : 1,
-      CENTER : 2,
-      RIGHT : 3,
-      CENTER_STEM : 4
-    };
+// [VexFlow](http://vexflow.com) - Copyright (c) Mohit Muthanna 2010.
+//
+// ## Description
+//
+// This file implements text annotations as modifiers that can be attached to
+// notes.
+//
+// See `tests/annotation_tests.js` for usage examples.
 
-    Annotation.VerticalJustify = {
-      TOP : 1,
-      CENTER : 2,
-      BOTTOM : 3,
-      CENTER_STEM : 4
-    };
+Vex.Flow.Annotation = (function() {
+  function Annotation(text) {
+    if (arguments.length > 0) this.init(text);
+  }
 
-    var Modifier = Vex.Flow.Modifier;
-    Vex.Inherit(Annotation, Modifier, {
-      init : function(text) {
-        Annotation.superclass.init.call(this);
+  // To enable logging for this class. Set `Vex.Flow.Annotation.DEBUG` to `true`.
+  function L() { if (Annotation.DEBUG) Vex.L("Vex.Flow.Annotation", arguments); }
 
-        this.note = null;
-        this.index = null;
-        this.text_line = 0;
-        this.text = text;
-        this.justification = Annotation.Justify.CENTER;
-        this.vert_justification = Annotation.VerticalJustify.TOP;
-        this.font = {
-          family : "Arial",
-          size : 10,
-          weight : ""
-        };
+  // Text annotations can be positioned and justified relative to the note.
+  Annotation.Justify = {
+    LEFT: 1,
+    CENTER: 2,
+    RIGHT: 3,
+    CENTER_STEM: 4
+  };
 
-        this.setWidth(Vex.Flow.textWidth(text));
-      },
+  Annotation.VerticalJustify = {
+    TOP: 1,
+    CENTER: 2,
+    BOTTOM: 3,
+    CENTER_STEM: 4
+  };
 
-      getCategory : function() {
-        return "annotations";
-      },
+  // ## Prototype Methods
+  //
+  // Annotations inherit from `Modifier` and is positioned correctly when
+  // in a `ModifierContext`.
+  var Modifier = Vex.Flow.Modifier;
+  Vex.Inherit(Annotation, Modifier, {
+    // Create a new `Annotation` with the string `text`.
+    init: function(text) {
+      Annotation.superclass.init.call(this);
 
-      setTextLine : function(line) {
-        this.text_line = line;
-        return this;
-      },
+      this.note = null;
+      this.index = null;
+      this.text_line = 0;
+      this.text = text;
+      this.justification = Annotation.Justify.CENTER;
+      this.vert_justification = Annotation.VerticalJustify.TOP;
+      this.font = {
+        family: "Arial",
+        size: 10,
+        weight: ""
+      };
 
-      setFont : function(family, size, weight) {
-        this.font = {
-          family : family,
-          size : size,
-          weight : weight
-        };
-        return this;
-      },
+      // The default width is calculated from the text.
+      this.setWidth(Vex.Flow.textWidth(text));
+    },
 
-      setBottom : function(bottom) {
-        if (bottom) {
-          this.vert_justification = Annotation.VerticalJustify.BOTTOM;
-        } else {
-          this.vert_justification = Annotation.VerticalJustify.TOP;
-        }
-        return this;
-      },
+    // Return the modifier type. Used by the `ModifierContext` to calculate
+    // layout.
+    getCategory: function() { return "annotations"; },
 
-      setVerticalJustification : function(vert_justification) {
-        this.vert_justification = vert_justification;
-        return this;
-      },
+    // Set the vertical position of the text relative to the stave.
+    setTextLine: function(line) { this.text_line = line; return this; },
 
-      getJustification : function() {
-        return this.justification;
-      },
+    // Set font family, size, and weight. E.g., `Arial`, `10pt`, `Bold`.
+    setFont: function(family, size, weight) {
+      this.font = { family: family, size: size, weight: weight };
+      return this;
+    },
 
-      setJustification : function(justification) {
-        this.justification = justification;
-        return this;
-      },
+    // Set vertical position of text (above or below stave). `just` must be
+    // a value in `Annotation.VerticalJustify`.
+    setVerticalJustification: function(just) {
+      this.vert_justification = just;
+      return this;
+    },
 
-      draw : function() {
-        if (!this.context)
-          throw new Vex.RERR("NoContext", "Can't draw text annotation without a context.");
-        if (!this.note)
-          throw new Vex.RERR("NoNoteForAnnotation", "Can't draw text annotation without an attached note.");
+    // Get and set horizontal justification. `justification` is a value in
+    // `Annotation.Justify`.
+    getJustification: function() { return this.justification; },
+    setJustification: function(justification) {
+      this.justification = justification; return this; },
 
-        var start = this.note.getModifierStartXY(Modifier.Position.ABOVE, this.index);
+    // Render text beside the note.
+    draw: function() {
+      if (!this.context) throw new Vex.RERR("NoContext",
+        "Can't draw text annotation without a context.");
+      if (!this.note) throw new Vex.RERR("NoNoteForAnnotation",
+        "Can't draw text annotation without an attached note.");
 
-        this.context.save();
-        this.context.setFont(this.font.family, this.font.size, this.font.weight);
-        var text_width = this.context.measureText(this.text).width;
+      var start = this.note.getModifierStartXY(Modifier.Position.ABOVE,
+          this.index);
 
-        // Estimate text height to be the same as the width of an 'm'.
-        //
-        // This is a hack to work around the inability to measure text
-        // height
-        // in HTML5 Canvas.
-        var text_height = this.context.measureText("m").width;
-        var x, y;
+      // We're changing context parameters. Save current state.
+      this.context.save();
+      this.context.setFont(this.font.family, this.font.size, this.font.weight);
+      var text_width = this.context.measureText(this.text).width;
 
-        if (this.justification == Annotation.Justify.LEFT) {
-          x = start.x;
-        } else if (this.justification == Annotation.Justify.RIGHT) {
-          x = start.x - text_width;
-        } else if (this.justification == Annotation.Justify.CENTER) {
-          x = start.x - text_width / 2;
-        } else/* CENTER_STEM */
-        {
-          x = this.note.getStemX() - text_width / 2;
-        }
+      // Estimate text height to be the same as the width of an 'm'.
+      //
+      // This is a hack to work around the inability to measure text height
+      // in HTML5 Canvas (and SVG).
+      var text_height = this.context.measureText("m").width;
+      var x, y;
 
-        var stem_ext, spacing;
-        var stemless = !this.note.hasStem();
-        var has_stem = !stemless;
+      if (this.justification == Annotation.Justify.LEFT) {
+        x = start.x;
+      } else if (this.justification == Annotation.Justify.RIGHT) {
+        x = start.x - text_width;
+      } else if (this.justification == Annotation.Justify.CENTER) {
+        x = start.x - text_width / 2;
+      } else /* CENTER_STEM */ {
+        x = this.note.getStemX() - text_width / 2;
+      }
 
+      var stem_ext, spacing;
+      var has_stem = this.note.hasStem();
+      var stave = this.note.getStave();
+
+      // The position of the text varies based on whether or not the note
+      // has a stem.
+      if (has_stem) {
+        stem_ext = this.note.getStemExtents();
+        spacing = stave.getSpacingBetweenLines();
+      }
+
+      if (this.vert_justification == Annotation.VerticalJustify.BOTTOM) {
+        y = stave.getYForBottomText(this.text_line);
         if (has_stem) {
-          stem_ext = this.note.getStemExtents();
-          spacing = this.note.getStave().options.spacing_between_lines_px;
+          var stem_base = (this.note.getStemDirection() === 1 ? stem_ext.baseY : stem_ext.topY);
+          y = Math.max(y, stem_base + (spacing * (this.text_line + 2)));
         }
-
-        if (this.vert_justification == Annotation.VerticalJustify.BOTTOM) {
-          y = this.note.stave.getYForBottomText(this.text_line);
-          if (has_stem) {
-            var stem_base = (this.note.stem_direction === 1 ? stem_ext.baseY : stem_ext.topY);
-            y = Vex.Max(y, stem_base + (spacing * (this.text_line + 2)));
-          }
-        } else if (this.vert_justification == Annotation.VerticalJustify.CENTER) {
-          var yt = this.note.getYForTopText(this.text_line) - 1;
-          var yb = this.note.stave.getYForBottomText(this.text_line);
-          y = yt + (yb - yt) / 2 + text_height / 2;
-        } else if (this.vert_justification == Annotation.VerticalJustify.TOP) {
-          y = Vex.Min(this.note.stave.getYForTopText(this.text_line), this.note.ys[0] - 10);
-          if (has_stem) {
-            y = Vex.Min(y, (stem_ext.topY - 5) - (spacing * this.text_line));
-          }
-        } else/* CENTER_STEM */
-        {
-          var extents = this.note.getStemExtents();
-          y = extents.topY + (extents.baseY - extents.topY) / 2 + text_height / 2;
+      } else if (this.vert_justification ==
+                 Annotation.VerticalJustify.CENTER) {
+        var yt = this.note.getYForTopText(this.text_line) - 1;
+        var yb = stave.getYForBottomText(this.text_line);
+        y = yt + ( yb - yt ) / 2 + text_height / 2;
+      } else if (this.vert_justification ==
+                 Annotation.VerticalJustify.TOP) {
+        y = Math.min(stave.getYForTopText(this.text_line), this.note.getYs()[0] - 10);
+        if (has_stem) {
+          y = Math.min(y, (stem_ext.topY - 5) - (spacing * this.text_line));
         }
+      } else /* CENTER_STEM */{
+        var extents = this.note.getStemExtents();
+        y = extents.topY + (extents.baseY - extents.topY) / 2 +
+          text_height / 2;
+      }
 
         // ############# ADDITON #############
         this.x = x;
         this.y = y;
 
-        this.context.fillText(this.text, x, y);
-        this.context.restore();
-      }
-    });
-
-    return Annotation;
-  }());
-
-Vex.Flow.StaveTie = ( function() {
-    function StaveTie(notes, text) {
-      if (arguments.length > 0)
-        this.init(notes, text);
+      L("Rendering annotation: ", this.text, x, y);
+      this.context.fillText(this.text, x, y);
+      this.context.restore();
     }
+  });
+
+  return Annotation;
+}());
 
 
-    StaveTie.prototype = {
-      init : function(notes, text) {
-        /**
-         * Notes is a struct that has:
-         *  { first_note: Note, last_note: Note, first_indices: [n1, n2,
-         * n3], last_indices: [n1, n2, n3] }
-         *
-         */
-        this.notes = notes;
-        this.context = null;
-        this.text = text;
+// VexFlow - Music Engraving for HTML5
+// Copyright Mohit Muthanna 2010
+//
+// This class implements varies types of ties between contiguous notes. The
+// ties include: regular ties, hammer ons, pull offs, and slides.
 
-        this.render_options = {
-          cp1 : 8, // Curve control point 1
-          cp2 : 12, // Curve control point 2
-          text_shift_x : 0,
-          first_x_shift : 0,
-          last_x_shift : 0,
-          y_shift : 7,
-          tie_spacing : 0,
-          font : {
-            family : "Arial",
-            size : 10,
-            style : ""
-          }
+/**
+ * Create a new tie from the specified notes. The notes must
+ * be part of the same line, and have the same duration (in ticks).
+ *
+ * @constructor
+ * @param {!Object} context The canvas context.
+ * @param {!Object} notes The notes to tie up.
+ * @param {!Object} Options
+ */
+Vex.Flow.StaveTie = (function() {
+  function StaveTie(notes, text) {
+    if (arguments.length > 0) this.init(notes, text);
+  }
+
+  StaveTie.prototype = {
+    init: function(notes, text) {
+      /**
+       * Notes is a struct that has:
+       *
+       *  {
+       *    first_note: Note,
+       *    last_note: Note,
+       *    first_indices: [n1, n2, n3],
+       *    last_indices: [n1, n2, n3]
+       *  }
+       *
+       **/
+      this.notes = notes;
+      this.context = null;
+      this.text = text;
+
+      this.render_options = {
+          cp1: 8,      // Curve control point 1
+          cp2: 12,      // Curve control point 2
+          text_shift_x: 0,
+          first_x_shift: 0,
+          last_x_shift: 0,
+          y_shift: 7,
+          tie_spacing: 0,
+          font: { family: "Arial", size: 10, style: "" }
         };
 
-        this.font = this.render_options.font;
-        this.setNotes(notes);
-      },
+      this.font = this.render_options.font;
+      this.setNotes(notes);
+    },
 
-      setContext : function(context) {
-        this.context = context;
-        return this;
-      },
-      setFont : function(font) {
-        this.font = font;
-        return this;
-      },
+    setContext: function(context) { this.context = context; return this; },
+    setFont: function(font) { this.font = font; return this; },
 
-      /**
-       * Set the notes to attach this tie to.
-       *
-       * @param {!Object}
-       *            notes The notes to tie up.
-       */
-      setNotes : function(notes) {
-        if (!notes.first_note && !notes.last_note)
-          throw new Vex.RuntimeError("BadArguments", "Tie needs to have either first_note or last_note set.");
+    /**
+     * Set the notes to attach this tie to.
+     *
+     * @param {!Object} notes The notes to tie up.
+     */
+    setNotes: function(notes) {
+      if (!notes.first_note && !notes.last_note)
+        throw new Vex.RuntimeError("BadArguments",
+            "Tie needs to have either first_note or last_note set.");
 
-        if (!notes.first_indices)
-          notes.first_indices = [0];
-        if (!notes.last_indices)
-          notes.last_indices = [0];
+      if (!notes.first_indices) notes.first_indices = [0];
+      if (!notes.last_indices) notes.last_indices = [0];
 
-        if (notes.first_indices.length != notes.last_indices.length)
-          throw new Vex.RuntimeError("BadArguments", "Tied notes must have similar" + " index sizes");
+      if (notes.first_indices.length != notes.last_indices.length)
+        throw new Vex.RuntimeError("BadArguments", "Tied notes must have similar" +
+          " index sizes");
 
-        // Success. Lets grab 'em notes.
-        this.first_note = notes.first_note;
-        this.first_indices = notes.first_indices;
-        this.last_note = notes.last_note;
-        this.last_indices = notes.last_indices;
-        return this;
-      },
+      // Success. Lets grab 'em notes.
+      this.first_note = notes.first_note;
+      this.first_indices = notes.first_indices;
+      this.last_note = notes.last_note;
+      this.last_indices = notes.last_indices;
+      return this;
+    },
 
-      /**
-       * @return {boolean} Returns true if this is a partial bar.
-       */
-      isPartial : function() {
-        return (!this.first_note || !this.last_note);
-      },
+    /**
+     * @return {boolean} Returns true if this is a partial bar.
+     */
+    isPartial: function() {
+      return (!this.first_note || !this.last_note);
+    },
 
       // ADDITION:
       setDir : function(dir) {
         this.curvedir = dir;
       },
 
-      renderTie : function(params) {
-        if (params.first_ys.length === 0 || params.last_ys.length === 0)
-          throw new Vex.RERR("BadArguments", "No Y-values to render");
+    renderTie: function(params) {
+      if (params.first_ys.length === 0 || params.last_ys.length === 0)
+        throw new Vex.RERR("BadArguments", "No Y-values to render");
 
         // ADDITION:
         if (this.curvedir) {
           params.direction = (this.curvedir === 'above') ? -1 : 1;
         }
 
-        var ctx = this.context;
-        var cp1 = this.render_options.cp1;
-        var cp2 = this.render_options.cp2;
+      var ctx = this.context;
+      var cp1 = this.render_options.cp1;
+      var cp2 = this.render_options.cp2;
 
-        if (Math.abs(params.last_x_px - params.first_x_px) < 10) {
-          cp1 = 2;
-          cp2 = 8;
-        }
-
-        var first_x_shift = this.render_options.first_x_shift;
-        var last_x_shift = this.render_options.last_x_shift;
-        var y_shift = this.render_options.y_shift * params.direction;
-
-        for (var i = 0; i < this.first_indices.length; ++i) {
-          var cp_x = ((params.last_x_px + last_x_shift) + (params.first_x_px + first_x_shift)) / 2;
-          var first_y_px = params.first_ys[this.first_indices[i]] + y_shift;
-          var last_y_px = params.last_ys[this.last_indices[i]] + y_shift;
-
-          if (isNaN(first_y_px) || isNaN(last_y_px))
-            throw new Vex.RERR("BadArguments", "Bad indices for tie rendering.");
-
-          var top_cp_y = ((first_y_px + last_y_px) / 2) + (cp1 * params.direction);
-          var bottom_cp_y = ((first_y_px + last_y_px) / 2) + (cp2 * params.direction);
-
-          ctx.beginPath();
-          ctx.moveTo(params.first_x_px + first_x_shift, first_y_px);
-          ctx.quadraticCurveTo(cp_x, top_cp_y, params.last_x_px + last_x_shift, last_y_px);
-          ctx.quadraticCurveTo(cp_x, bottom_cp_y, params.first_x_px + first_x_shift, first_y_px);
-
-          ctx.closePath();
-          ctx.fill();
-        }
-
-      },
-
-      renderText : function(first_x_px, last_x_px) {
-        if (!this.text)
-          return;
-        var center_x = (first_x_px + last_x_px) / 2;
-        center_x -= this.context.measureText(this.text).width / 2;
-
-        this.context.save();
-        this.context.setFont(this.font.family, this.font.size, this.font.style);
-        this.context.fillText(this.text, center_x + this.render_options.text_shift_x, (this.first_note || this.last_note).getStave().getYForTopText() - 1);
-        this.context.restore();
-      },
-
-      draw : function() {
-        if (!this.context)
-          throw new Vex.RERR("NoContext", "No context to render tie.");
-        var first_note = this.first_note;
-        var last_note = this.last_note;
-        var first_x_px, last_x_px, first_ys, last_ys, stem_direction;
-
-        if (first_note) {
-          first_x_px = first_note.getTieRightX() + this.render_options.tie_spacing;
-          stem_direction = first_note.getStemDirection();
-          first_ys = first_note.getYs();
-        } else {
-          first_x_px = last_note.getStave().getTieStartX();
-          first_ys = last_note.getYs();
-          this.first_indices = this.last_indices;
-        }
-
-        if (last_note) {
-          last_x_px = last_note.getTieLeftX() + this.render_options.tie_spacing;
-          stem_direction = last_note.getStemDirection();
-          last_ys = last_note.getYs();
-        } else {
-          last_x_px = first_note.getStave().getTieEndX();
-          last_ys = first_note.getYs();
-          this.last_indices = this.first_indices;
-        }
-
-        this.renderTie({
-          first_x_px : first_x_px,
-          last_x_px : last_x_px,
-          first_ys : first_ys,
-          last_ys : last_ys,
-          direction : stem_direction
-        });
-
-        this.renderText(first_x_px, last_x_px);
-        return true;
+      if (Math.abs(params.last_x_px - params.first_x_px) < 10) {
+        cp1 = 2; cp2 = 8;
       }
-    };
 
-    return StaveTie;
-  }());
+      var first_x_shift = this.render_options.first_x_shift;
+      var last_x_shift = this.render_options.last_x_shift;
+      var y_shift = this.render_options.y_shift * params.direction;
+
+      for (var i = 0; i < this.first_indices.length; ++i) {
+        var cp_x = ((params.last_x_px + last_x_shift) +
+                    (params.first_x_px + first_x_shift)) / 2;
+        var first_y_px = params.first_ys[this.first_indices[i]] + y_shift;
+        var last_y_px = params.last_ys[this.last_indices[i]] + y_shift;
+
+        if (isNaN(first_y_px) || isNaN(last_y_px))
+          throw new Vex.RERR("BadArguments", "Bad indices for tie rendering.");
+
+        var top_cp_y = ((first_y_px + last_y_px) / 2) + (cp1 * params.direction);
+        var bottom_cp_y = ((first_y_px + last_y_px) / 2) + (cp2 * params.direction);
+
+        ctx.beginPath();
+        ctx.moveTo(params.first_x_px + first_x_shift, first_y_px);
+        ctx.quadraticCurveTo(cp_x, top_cp_y,
+                             params.last_x_px + last_x_shift, last_y_px);
+        ctx.quadraticCurveTo(cp_x, bottom_cp_y,
+                             params.first_x_px + first_x_shift, first_y_px);
+
+        ctx.closePath();
+        ctx.fill();
+      }
+    },
+
+    renderText: function(first_x_px, last_x_px) {
+      if (!this.text) return;
+      var center_x = (first_x_px + last_x_px) / 2;
+      center_x -= this.context.measureText(this.text).width / 2;
+
+      this.context.save();
+      this.context.setFont(this.font.family, this.font.size, this.font.style);
+      this.context.fillText(
+          this.text, center_x + this.render_options.text_shift_x,
+          (this.first_note || this.last_note).getStave().getYForTopText() - 1);
+      this.context.restore();
+    },
+
+    draw: function() {
+      if (!this.context)
+        throw new Vex.RERR("NoContext", "No context to render tie.");
+      var first_note = this.first_note;
+      var last_note = this.last_note;
+      var first_x_px, last_x_px, first_ys, last_ys, stem_direction;
+
+      if (first_note) {
+        first_x_px = first_note.getTieRightX() + this.render_options.tie_spacing;
+        stem_direction = first_note.getStemDirection();
+        first_ys = first_note.getYs();
+      } else {
+        first_x_px = last_note.getStave().getTieStartX();
+        first_ys = last_note.getYs();
+        this.first_indices = this.last_indices;
+      }
+
+      if (last_note) {
+        last_x_px = last_note.getTieLeftX() + this.render_options.tie_spacing;
+        stem_direction = last_note.getStemDirection();
+        last_ys = last_note.getYs();
+      } else {
+        last_x_px = first_note.getStave().getTieEndX();
+        last_ys = first_note.getYs();
+        this.last_indices = this.first_indices;
+      }
+
+      this.renderTie({
+        first_x_px: first_x_px,
+        last_x_px: last_x_px,
+        first_ys: first_ys,
+        last_ys: last_ys,
+        direction: stem_direction
+      });
+
+      this.renderText(first_x_px, last_x_px);
+      return true;
+    }
+  };
+
+  return StaveTie;
+}());

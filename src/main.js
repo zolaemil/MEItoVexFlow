@@ -2,12 +2,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     // TODO add setters (and getters?) for single config items / groups
 
+    m2v.DO_LOG = false;
+    
+    m2v.setLogging = function(value) {
+      m2v.DO_LOG = value;
+    };
+
     m2v.CONST = {
       LABELS_NONE : 0,
       LABELS_FULL : 1,
       LABELS_ABBR : 2
     };
 
+    m2v.L = function() { if (m2v.DO_LOG) Vex.L("MEItoVexFlow", arguments); };
+  
     // TODO handle auto left indent, auto labels
     // question: fallback when no attributes are specified!?!?
 
@@ -342,7 +350,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       Renderer : m2v.Renderer,
       Viewer : m2v.Viewer,
       CONST : m2v.CONST,
-      defaults : m2v.defaults
+      defaults : m2v.defaults,
+      setLogging: m2v.setLogging
     };
 
     // return m2v;

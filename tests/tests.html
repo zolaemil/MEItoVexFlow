@@ -120,7 +120,7 @@ version="HTML+RDFa 1.0" xml:lang="en">
 		
 		<script type="text/JavaScript">
 			var testItem_html = "<h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2><div class='a'><canvas width='1031' height='450' style='border: none'></canvas></div>"
-			Vex.LogLevel = 5;
+			MEI2VF.setLogging(true);
 			$(document).ready(function(){
 				var test_cases = new Array();
 				
@@ -218,11 +218,11 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				//render test cases
 				var i;
 				for (i=0;i<test_cases.length;i++) {
-					Vex.LogInfo('Starting Test Case #' + i.toString());
+					Vex.L('Starting Test Case #' + i.toString());
 					try {
 						MEI2VF.RunTest(test_cases[i], canvas_elements[i], title_elements[i]);
 					} catch(e) {
-						Vex.LogError('Error during rendering test case #' + i.toString() + " title: " + test_cases[i].title + ". Error Message: " +  e.toString());
+						Vex.L('Error during rendering test case #' + i.toString() + " title: " + test_cases[i].title + ". Error Message: " +  e.toString());
 					}
 				}
 			});
