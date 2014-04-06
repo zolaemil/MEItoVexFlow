@@ -111,8 +111,9 @@ version="HTML+RDFa 1.0" xml:lang="en">
 		<script type="text/JavaScript" src="../src/StaveConnector.js"></script>
 		<script type="text/JavaScript" src="../src/StaveVoices.js"></script>
 		<script type="text/JavaScript" src="../src/tables.js"></script>
+		<script type="text/JavaScript" src="../src/Renderer.js"></script>
+		<script type="text/JavaScript" src="../src/Util.js"></script>		
 		<script type="text/JavaScript" src="../src/meitovexflow.js"></script>
-		<script type="text/JavaScript" src="../src/main.js"></script>
 		<script type="text/JavaScript" src="../src/vexflow-overrides.js"></script>
 		
 		<script type="text/JavaScript" src="loadXMLDoc.js"></script>
@@ -218,7 +219,7 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				//render test cases
 				var i;
 				for (i=0;i<test_cases.length;i++) {
-					Vex.L('Starting Test Case #' + i.toString());
+					Vex.L('Starting Test Case #' + i);
 					try {
 						MEI2VF.RunTest(test_cases[i], canvas_elements[i], title_elements[i]);
 					} catch(e) {

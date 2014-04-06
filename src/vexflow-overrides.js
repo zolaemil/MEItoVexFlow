@@ -51,7 +51,6 @@ Vex.Flow.Hyphen = ( function() {
 
       renderHyphen : function(ctx) {
 
-        // TODO check if measureText is supported in Raphael!
         // TODO include checks for all necessary parameters
         var cfg = this.config;
         var ctx = this.context;

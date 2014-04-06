@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         },
         src: ['src/meilib.js',
               'src/tables.js',
-              'src/meitovexflow.js',
+              'src/Renderer.js',
               'src/Hairpins.js',
               'src/Ties.js',
               'src/EventLink.js',
@@ -39,7 +39,8 @@ module.exports = function(grunt) {
               'src/StaveConnector.js',
               'src/StaveVoices.js',
               'src/vexflow-overrides.js',
-              'src/main.js'],
+              'src/Util.js',
+              'src/meitovexflow.js'],
         dest: 'dist/meitovexflow.js'
       }
     },
