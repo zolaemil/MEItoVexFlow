@@ -73,7 +73,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           size : 17,
           weight : "bold"
         },
-        // TODO: check if these constants can be changed in the prototype
         staff : {
           vertical_bar_width : 20, // 10 // Width around vertical bar end-marker
           fill_style : "#000000",
