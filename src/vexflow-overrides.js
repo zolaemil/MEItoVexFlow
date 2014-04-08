@@ -137,6 +137,7 @@ Vex.Flow.Font.glyphs["gClef"] = {
   "ha" : 944,
   "o" : "0 0 117 0 1 1 560 560 1 -1 0 -1120 m 948 35 l 948 15 b 693 -328 948 -141 850 -269 b 728 -536 711 -454 728 -536 b 736 -633 734 -571 736 -603 b 489 -920 736 -853 588 -914 b 456 -921 477 -920 466 -921 b 190 -700 225 -921 190 -777 b 196 -650 190 -671 195 -650 b 323 -532 204 -587 259 -536 l 333 -532 b 476 -665 409 -532 469 -592 l 476 -675 b 378 -806 476 -738 435 -788 b 343 -815 365 -812 356 -812 b 330 -826 336 -818 330 -820 b 343 -841 330 -830 335 -836 b 459 -869 372 -862 412 -869 l 486 -869 b 673 -638 503 -869 673 -867 b 665 -543 673 -610 671 -578 l 633 -347 l 626 -347 b 531 -353 595 -351 563 -353 b 10 94 301 -353 36 -245 b 8 136 8 108 8 122 b 445 788 8 406 239 612 l 428 876 b 419 1019 421 925 419 973 b 645 1543 419 1273 511 1484 b 750 1410 645 1543 696 1534 b 811 1141 790 1319 811 1229 b 528 594 811 951 715 767 b 573 354 542 518 557 445 b 591 357 578 357 585 357 l 606 357 b 948 35 785 357 937 216 m 655 1320 b 477 948 545 1315 477 1092 b 480 897 477 930 477 913 b 491 829 480 889 486 862 b 745 1177 641 942 728 1061 b 748 1208 746 1189 748 1198 b 655 1320 748 1284 701 1320 m 120 22 l 120 11 b 531 -302 129 -234 378 -302 b 623 -291 570 -302 602 -298 l 547 157 b 382 -3 455 141 382 95 l 382 -17 b 476 -155 385 -74 448 -143 b 497 -181 487 -161 497 -172 b 480 -192 497 -186 491 -192 b 451 -186 473 -192 463 -190 b 300 0 385 -165 322 -95 b 291 62 294 20 291 41 b 517 344 291 188 391 307 l 482 563 b 120 22 298 427 120 256 m 683 -276 b 833 -64 781 -234 833 -162 l 833 -49 b 609 162 827 69 727 162 l 603 162 b 683 -276 633 4 661 -148 "
 };
+
 Vex.Flow.Font.glyphs["gClef8vb"] = {
   "x_min" : 0,
   "x_max" : 937,
@@ -170,34 +171,6 @@ Vex.Flow.Clef.types.treble = {
   code : "gClef", 
   point : 40, 
   line : 3
-};
-
-
-Vex.Flow.ModifierContext.prototype.formatAnnotations = function() {
-  var annotations = this.modifiers['annotations'];
-  if (!annotations || annotations.length === 0)
-    return this;
-
-  var text_line = this.state.text_line;
-  var max_width = 0;
-
-  // Format Annotations
-  var width;
-  for (var i = 0; i < annotations.length; ++i) {
-    var annotation = annotations[i];
-    annotation.setTextLine(text_line);
-    width = annotation.getWidth() > max_width ? annotation.getWidth() : max_width;
-    // COMMENTED OUT (TODO: find a proper solution to prevent the text lines
-    // from
-    // being increased between staffs!)
-    // text_line++;
-  }
-
-  this.state.left_shift += width / 2;
-  this.state.right_shift += width / 2;
-  // No need to update text_line because we leave lots of room on the same
-  // line.
-  return this;
 };
 
 Vex.Flow.Curve.prototype.renderCurve = function(params) {
