@@ -2,27 +2,26 @@
 MEI2VF.RunTest = function(test_case, canvas, titleElem, backend){
 
   $(titleElem).html(test_case.title);
-  var canvas_width = test_case.canvas_width ? test_case.canvas_width : 1031;
-  var canvas_height = test_case.canvas_height ? test_case.canvas_height : 200;
+  var canvas_width = test_case.canvas_width || 1031;
+  var canvas_height = test_case.canvas_height || 200;
   $(canvas).attr('width', canvas_width);
   $(canvas).attr('height', canvas_height);
-  var score_width = canvas_width - 50;
-  var score_height = canvas_height - 50;
+  var score_width = canvas_width; // - 50;
+  var score_height = canvas_height; // - 50;
 
   //load the xml file...
-  Vex.LogInfo("Running Test Case Title: '" + test_case.title + "' MEI-XML: '" + test_case.mei_xml + "'");
+  Vex.L("Running Test Case Title: '" + test_case.title + "' MEI-XML: '" + test_case.mei_xml + "'");
   xmlDoc=loadXMLDoc(test_case.mei_xml);
   if (xmlDoc) { 
-    Vex.LogInfo('MEI-XML loaded.'); 
+    Vex.L('MEI-XML loaded.'); 
   } else {
     //TODO: throw exception
   }
-
   //... and render it onto the canvas
   var MEI = xmlDoc.getElementsByTagNameNS("http://www.music-encoding.org/ns/mei", 'score');
-  Vex.LogInfo('Rendering... ');
-  MEI2VF.render_notation(MEI, canvas, score_width, score_height, backend);
-  Vex.LogInfo('Done (' + test_case.title + ')');
+  Vex.L('Rendering... ');
+  MEI2VF.render_notation(MEI, canvas, score_width, score_height, backend, test_case.options);
+  Vex.L('Done (' + test_case.title + ')');
 	
 }
 
