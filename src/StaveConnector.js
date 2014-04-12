@@ -2,9 +2,6 @@
  * StaveConnector.js Author: Zoltan Komives (zolaemil@gmail.com) Created:
  * 24.07.2013
  *
- * Contains information about a stave connector parsed from the staffGrp
- * elements and their @symbol attributes
- *
  * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
  * University of Maryland
  *
@@ -23,8 +20,15 @@
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    m2v.Connectors = function(labelScheme) {
-      this.labelScheme = labelScheme;
+    /**
+     * * Contains information about stave connectors parsed from the staffGrp
+     * elements and their @symbol attributes
+     *
+     * @param {Object} labelMode
+     * @constructor
+     */
+    m2v.Connectors = function(labelMode) {
+      this.labelMode = labelMode;
       this.allVexConnectors = [];
       this.currentModels = {};
     };
@@ -72,8 +76,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       createVexFromModels : function(currentMeasure, barline_l, barline_r, currentSystem) {
-        var me = this, vexType, top_staff, bottom_staff, vexConnector, label, labelScheme;
-        labelScheme = me.labelScheme;
+        var me = this, vexType, top_staff, bottom_staff, vexConnector, label, labelMode;
+        labelMode = me.labelMode;
         $.each(me.currentModels, function(i, model) {
 
           vexType = (barline_r) ? me.vexTypesBarlineRight[barline_r] : me.vexTypes[model.symbol];
@@ -84,23 +88,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
             vexConnector.setType(vexType);
             me.addToVexConnectors(vexConnector);
-
-            // switch (me.cfg.labelScheme) {
-            // case m2v.CONST.LABELS_FULL:
-            // labelText = (me.currentSystem === 1) ?
-            // me.currentStaffInfos[staff_n].label :
-            // (me.currentStaffInfos[staff_n].labelAbbr);
-            // break;
-            // case m2v.CONST.LABELS_ABBR:
-            // labelText = me.currentStaffInfos[staff_n].labelAbbr;
-            // break;
-            // default:
-            // return;
-            // }
-
-            if (labelScheme === 1) {
+            if (labelMode === 'full') {
               label = (currentSystem === 1) ? model.label : model.labelAbbr;
-            } else if (labelScheme === 2) {
+            } else if (labelMode === 'abbr') {
               label = model.labelAbbr;
             }
             if (label)

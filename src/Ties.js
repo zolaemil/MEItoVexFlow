@@ -1,5 +1,9 @@
 var MEI2VF = (function(m2v, VF, $, undefined) {
 
+/**
+ * @constructor 
+ */
+
   m2v.Ties = function(config) {
     this.init();
   };

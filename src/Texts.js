@@ -1,5 +1,8 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
+    /**
+     * @constructor
+     */
     m2v.Texts = function() {
       var me = this;
       me.complexTextModels = [];

@@ -1,5 +1,9 @@
 var MEI2VF = (function(m2v, VF, $, undefined) {
 
+/**
+ * @param {Object} config
+ * @constructor
+ */
   m2v.Hairpins = function(config) {
     this.init();
   };

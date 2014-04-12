@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         },
         src: ['src/meilib.js',
               'src/tables.js',
-              'src/Renderer.js',
+              'src/Converter.js',
               'src/Hairpins.js',
               'src/Ties.js',
               'src/EventLink.js',

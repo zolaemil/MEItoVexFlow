@@ -11,6 +11,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         Vex.L("MEItoVexFlow", arguments);
     };
 
+    /**
+     * @constructor
+     */
     m2v.RUNTIME_ERROR = function(error_code, message) {
       this.error_code = error_code;
       this.message = message;

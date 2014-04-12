@@ -15,10 +15,11 @@ Vex.Flow.Hyphen = ( function() {
          * config is a struct that has:
          *
          *  {
-         *    first_annot: Annotation,
-         *    last_annot: Annotation,
-         *    start_x: start x coordinate (alternative to first_annot),
-         *    end_x: end x coordinate (alternative to last_annot)
+         *    first_annot: Annotation or any other object with an x (and optional y) property,
+         *    last_annot: Annotation or any other object with an x (and optional y) property,
+         *    NOTE: either first_annot or last_annot must have an y property
+         *    (optional) max_hyphen_distance: the maximum distance between two hyphens
+         *    (optional) hyphen_width: 
          *  }
          *
          **/
@@ -44,25 +45,22 @@ Vex.Flow.Hyphen = ( function() {
         this.font = font;
         return this;
       },
-
-      isPartial : function() {
-        return (!this.config.first_annot || !this.config.last_annot);
-      },
-
+      
       renderHyphen : function(ctx) {
-
-        // TODO include checks for all necessary parameters
         var cfg = this.config;
         var ctx = this.context;
         var hyphen_width = cfg.hyphen_width || ctx.measureText('-').width;
+
         var first = cfg.first_annot;
         var last = cfg.last_annot;
-        var start_x = cfg.start_x || first.x + ctx.measureText(first.text).width;
-        var end_x = cfg.end_x || last.x;
+        
+        var start_x = (first.text) ? first.x + ctx.measureText(first.text).width : first.x;
+        var end_x = last.x;
+        
         var distance = end_x - start_x;
 
         if (distance > hyphen_width) {
-          var y = (first && last) ? (first.y + last.y) / 2 : (first) ? first.y : last.y;
+          var y = (first.y && last.y) ? (first.y + last.y) / 2 : first.y || last.y;
           var hyphen_count = Math.ceil(distance / this.max_hyphen_distance);
           var single_width = distance / (hyphen_count + 1);
           while (hyphen_count--) {
@@ -168,8 +166,8 @@ Vex.Flow.Clef.types.octave = {
   line : 3
 };
 Vex.Flow.Clef.types.treble = {
-  code : "gClef", 
-  point : 40, 
+  code : "gClef",
+  point : 40,
   line : 3
 };
 
@@ -202,12 +200,17 @@ Vex.Flow.Curve.prototype.renderCurve = function(params) {
   ctx.fill();
 };
 
+
 // ################################ BARLINE ####################################
 // Vex Flow Notation
 // Author Larry Kuhns 2011
 // Implements barlines (single, double, repeat, end)
 //
 // Requires vex.js.
+
+// Vex.Flow.STAVE_LINE_THICKNESS = 1;
+
+Vex.Flow.STAVE_LINE_THICKNESS = 1;
 
 /**
  * @constructor

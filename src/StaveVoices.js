@@ -2,10 +2,6 @@
  * StaveVoices.js Author: Zoltan Komives (zolaemil@gmail.com) Created:
  * 25.07.2013
  *
- * Stores all voices in a given measure along with the respective staff id.
- * Passes all voices to Vex.Flow.Formatter and calls joinVoices, then draws all
- * voices.
- *
  * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
  * University of Maryland
  *
@@ -24,11 +20,23 @@
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
+    /**
+     *
+     * @param {Object} voice
+     * @param {Object} staff_n
+     * @constructor
+     */
     m2v.StaffVoice = function(voice, staff_n) {
       this.voice = voice;
       this.staff_n = staff_n;
     };
 
+/**
+ * Stores all voices in a given measure along with the respective staff id.
+ * Passes all voices to Vex.Flow.Formatter and calls joinVoices, then draws all
+ * voices.
+ * @constructor 
+ */
     m2v.StaveVoices = function() {
       this.all_voices = [];
     };

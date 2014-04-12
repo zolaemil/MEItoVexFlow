@@ -1,9 +1,6 @@
 /*
  * StaffInfo.js Author: Zoltan Komives (zolaemil@gmail.com) Created: 03.07.2013
  * 
- * Contains the staff definition and the rendering information (i.e. what clef
- * modifiers are to be rendered)
- * 
  * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
  * University of Maryland
  * 
@@ -22,6 +19,12 @@
 
 var MEI2VF = (function(m2v, VF, $, undefined) {
 
+/**
+ * Contains the staff definition and the rendering information (i.e. what clef
+ * modifiers are to be rendered)
+ * 
+ * @constructor 
+ */
   m2v.StaffInfo = function(staffdef, w_clef, w_keysig, w_timesig) {
     var me = this;
     me.renderWith = {

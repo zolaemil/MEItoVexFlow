@@ -1,16 +1,8 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    m2v.CONST = {
-      LABELS_NONE : 0,
-      LABELS_FULL : 1,
-      LABELS_ABBR : 2
-    };
-
-    // TODO move
-    m2v.getRenderedMeasures = function() {
-      return m2v.rendered_measures;
-    };
-
+/**
+ * @constructor 
+ */
     m2v.Viewer = function(config) {
       this.init(config);
     };
@@ -61,29 +53,29 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         cfg.printSpaceRight = cfg.page_width - cfg.page_margin_right;
         cfg.printSpaceLeft = cfg.page_margin_left;
 
-        VF.STAVE_LINE_THICKNESS = 1;
-
-        me.renderer = new m2v.Renderer(cfg);
-        me.renderer.process(xmlDoc);
-        me.renderer.draw();
-
-        m2v.rendered_measures = me.renderer.allVexMeasureStaffs;
+        me.converter = new m2v.Converter(cfg);
+        me.converter.process(xmlDoc);
+        me.converter.draw();
 
         // currently only supported with html5 canvas:
         // m2v.util.drawBoundingBoxes(ctx, {
         // frame : false,
         // staffs : {
-        // data : me.renderer.allVexMeasureStaffs,
+        // data : me.converter.allVexMeasureStaffs,
         // drawModifiers : true,
         // drawNoteArea : true
         // },
         // voices : {
-        // data : me.renderer.allStaffVoices,
+        // data : me.converter.allStaffVoices,
         // drawTickables : true,
         // drawFrame : true
         // }
         // });
 
+      },
+
+      getAllVexMeasureStaffs : function() {
+        return this.converter.allVexMeasureStaffs;
       },
 
       /**
@@ -164,19 +156,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           ctx.scale(scale, scale);
         }
       }
-      
     };
 
     return {
-      getRenderedMeasures : m2v.getRenderedMeasures,
       setLogging : m2v.setLogging,
       Viewer : m2v.Viewer,
-      CONST : m2v.CONST
+      LABEL : m2v.LABEL
     };
 
     // return m2v;
 
   }(MEI2VF || {}, Vex.Flow, jQuery));
+
 
 MEI2VF.render_notation = function(xmlDoc, target, width, height, backend, options) {
   var cfg = $.extend(true, {}, {
@@ -187,4 +178,6 @@ MEI2VF.render_notation = function(xmlDoc, target, width, height, backend, option
     backend : backend
   }, options);
   var v = new MEI2VF.Viewer(cfg);
+
+  MEI2VF.rendered_measures = v.getAllVexMeasureStaffs();
 };
