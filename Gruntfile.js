@@ -40,7 +40,7 @@ module.exports = function(grunt) {
               'src/StaveVoices.js',
               'src/vexflow-overrides.js',
               'src/Util.js',
-              'src/meitovexflow.js'],
+              'src/InterfaceI.js'],
         dest: 'dist/meitovexflow.js'
       }
     },

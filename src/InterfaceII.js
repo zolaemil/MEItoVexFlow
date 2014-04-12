@@ -1,8 +1,8 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-/**
- * @constructor 
- */
+    /**
+     * @constructor
+     */
     m2v.Viewer = function(config) {
       this.init(config);
     };
@@ -19,7 +19,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       // TODO: add interface documentation!!!
-      // TODO extract Viewer!
 
       init : function(config) {
         var me = this, xmlDoc, firstScoreDef, cfg, canvas, ctx;
@@ -160,24 +159,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return {
       setLogging : m2v.setLogging,
-      Viewer : m2v.Viewer,
-      LABEL : m2v.LABEL
+      Viewer : m2v.Viewer
     };
 
-    // return m2v;
-
   }(MEI2VF || {}, Vex.Flow, jQuery));
-
-
-MEI2VF.render_notation = function(xmlDoc, target, width, height, backend, options) {
-  var cfg = $.extend(true, {}, {
-    page_height : height,
-    page_width : width,
-    xmlDoc : xmlDoc,
-    target : target,
-    backend : backend
-  }, options);
-  var v = new MEI2VF.Viewer(cfg);
-
-  MEI2VF.rendered_measures = v.getAllVexMeasureStaffs();
-};

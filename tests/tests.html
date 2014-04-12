@@ -113,7 +113,7 @@ version="HTML+RDFa 1.0" xml:lang="en">
 		<script type="text/JavaScript" src="../src/tables.js"></script>
 		<script type="text/JavaScript" src="../src/Converter.js"></script>
 		<script type="text/JavaScript" src="../src/Util.js"></script>		
-		<script type="text/JavaScript" src="../src/meitovexflow.js"></script>
+		<script type="text/JavaScript" src="../src/InterfaceI.js"></script>
 		<script type="text/JavaScript" src="../src/vexflow-overrides.js"></script>
 		
 		<script type="text/JavaScript" src="loadXMLDoc.js"></script>
@@ -181,26 +181,13 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				test_cases.push({ 
 					title: "Page Layout", 
 					mei_xml: 'TC.PageLayout.xml',
-					canvas_width: 1600 * 0.6, 
-					canvas_height:3000 * 0.6,
+					canvas_width: 1600, 
+					canvas_height:2700,
 					options: {
-						labelMode: 'full',
-						page_width: 1600,
-						page_height: 3000,
-						page_scale : 0.6
+						labelMode: 'full'
         			}
         		});
-        		test_cases.push({ 
-					title: "Hyphenation", 
-					mei_xml: 'TC.Hyphens.xml',
-					canvas_width: 1200 * 0.8, 
-					canvas_height:300 * 0.8,
-					options: {
-						page_width: 1200,
-						page_height: 300,
-						page_scale : 0.8
-        			}
-        		});
+        		test_cases.push({title: "Hyphenation", mei_xml: 'TC.Hyphens.xml', canvas_width: 1200, canvas_height:300 });
 				
 				//Test cases that are supposed to generate error messages on the console:
 				//  test_cases.push({ title: 'Missing_Attribute_Test_Case', mei_xml: 'TC.MissingAttribute.xml'});
