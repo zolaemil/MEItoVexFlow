@@ -79,7 +79,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         },
         staff : {
           vertical_bar_width : 20, // 10 // Width around vertical bar end-marker
-          fill_style : "#000000",
           top_text_position : 1.5, // 1 // in staff lines
           bottom_text_position : 7.5
         }

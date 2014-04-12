@@ -15,7 +15,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         page_width : 800,
         page_margin_top : 60,
         page_margin_left : 20,
-        page_margin_right : 20
+        page_margin_right : 20,
+        staff : {
+          fill_style : "#000000"
+        }
       },
 
       // TODO: add interface documentation!!!

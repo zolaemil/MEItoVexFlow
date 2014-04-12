@@ -5,22 +5,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      * singleton. No scaling; page layout information in the MEI code is ignored.
      * @param {Object} xmlDoc
      * @param {Object} target
-     * @param {Object} width
+     * @param {number} width
      * @param {Object} unused (kept for compatibility)
      * @param {Object} backend
      * @param {Object} options
      */
     m2v.render_notation = function(xmlDoc, target, width, unused, backend, options) {
 
-      var cfg = $.extend(true, {
-        ctx : new VF.Renderer(target, backend || VF.Renderer.Backends.CANVAS).getContext(),
+      var cfg = options || {};
 
-        // TODO nachsehen: ist es möglich, diese werte als defaults des
-        // converters anzugeben?
-        printSpaceTop : 20,
-        printSpaceLeft : 20,
-        printSpaceRight : (width || 800) - 20
-      }, options);
+      cfg.ctx = new VF.Renderer(target, backend || VF.Renderer.Backends.CANVAS).getContext();
+      cfg.printSpaceTop = cfg.page_margin_top - 40 || 20;
+      cfg.printSpaceLeft = 20;
+      cfg.printSpaceRight = (width || 800) - 20;
 
       m2v.Converter.prototype.initConfig(cfg);
       m2v.Converter.prototype.process(xmlDoc[0] || xmlDoc);
