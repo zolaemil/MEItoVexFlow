@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         options: {
-          mangle: false,
+          mangle: true,
           banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'   
         },   
         files: { 'dist/<%= pkg.name %>.min.js': [ 'dist/<%= pkg.name %>.js' ] }
@@ -27,13 +27,21 @@ module.exports = function(grunt) {
           separator: ';'
         },
         src: ['src/meilib.js',
+              'src/MEI2VF.js',
               'src/tables.js',
-              'src/meitovexflow.js',
+              'src/Converter.js',
+              'src/Hairpins.js',
+              'src/Ties.js',
               'src/EventLink.js',
               'src/EventReference.js',
               'src/StaffInfo.js',
+              'src/Hyphenation.js',
+              'src/Texts.js',
               'src/StaveConnector.js',
-              'src/StaveVoices.js'],
+              'src/StaveVoices.js',
+              'src/vexflow-overrides.js',
+              'src/Util.js',
+              'src/InterfaceI.js'],
         dest: 'dist/meitovexflow.js'
       }
     },
