@@ -1,5 +1,4 @@
 /*
- *
  * EventReference.js Author: Zoltan Komives (zolaemil@gmail.com) Created:
  * 04.07.2013
  *
@@ -22,12 +21,16 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
+     * @class MEI2VF.EventReverence
      * Represents and event with its xmlid, but if the xmlid is not defined, it
      * can also hold the timestamp that can be resolved as soon as the context that
      * holds the event is established. When the tstamp reference is being
      * resolved, the xml:id is calculated using the generic function tstamp2id(), then the
      * xml:id stored, thus marking that the reference is resolved.
+     * @private
+     *
      * @constructor
+     * @param {String} xmlid 
      */
     m2v.EventReference = function(xmlid) {
       this.xmlid = xmlid;

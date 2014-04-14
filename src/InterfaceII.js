@@ -1,7 +1,10 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
+     * @class MEI2VF.Viewer
+     * 
      * @constructor
+     * @param {Object} config For a full list, see the config options of the Viewer object as well as the converter options at {@link MEI2VF.Converter MEI2VF.Converter}
      */
     m2v.Viewer = function(config) {
       this.init(config);
@@ -10,18 +13,25 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
     m2v.Viewer.prototype = {
 
       defaults : {
+        /**
+         * @cfg 
+         */
         page_scale : 1,
+        /**
+         * @cfg 
+         */
         page_height : 350,
+        /**
+         * @cfg 
+         */
         page_width : 800,
-        page_margin_top : 60,
-        page_margin_left : 20,
-        page_margin_right : 20,
+        /**
+         * @cfg 
+         */
         staff : {
           fill_style : "#000000"
         }
       },
-
-      // TODO: add interface documentation!!!
 
       init : function(config) {
         var me = this, xmlDoc, firstScoreDef, cfg, canvas, ctx;
@@ -46,21 +56,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         canvas = me.createCanvas(cfg.target, cfg.backend, cfg);
         ctx = me.createContext(canvas, cfg.backend);
         me.scaleContext(ctx, cfg);
-        cfg.ctx = ctx;
-
-        // substract four line distances from page_margin_top in order to
-        // compensate VexFlow's default top spacing / allow specifying absolute
-        // values
-        cfg.printSpaceTop = cfg.page_margin_top - 40;
-        cfg.printSpaceRight = cfg.page_width - cfg.page_margin_right;
-        cfg.printSpaceLeft = cfg.page_margin_left;
 
         me.converter = new m2v.Converter(cfg);
         me.converter.process(xmlDoc);
-        me.converter.draw();
+        me.converter.draw(ctx);
 
         // currently only supported with html5 canvas:
-        // m2v.util.drawBoundingBoxes(ctx, {
+        // m2v.Util.drawBoundingBoxes(ctx, {
         // frame : false,
         // staffs : {
         // data : me.converter.allVexMeasureStaffs,
@@ -76,27 +78,22 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       },
 
-      getAllVexMeasureStaffs : function() {
-        return this.converter.allVexMeasureStaffs;
-      },
-
       /**
        * initializes the xml document; if a string is passed, it gets parsed
        *
-       * @param xmlDoc
-       *            {string|document} the input string or input document
-       * @return {document} the xml document to be rendered
+       * @param xmlDoc {String|Document} the input string or input document
+       * @return {Document} the xml document to be rendered
        */
       initXmlDoc : function(xmlDoc) {
         if ( typeof xmlDoc === 'string') {
-          // xmlDoc = m2v.util.createXMLDoc(xmlDoc);
+          // xmlDoc = m2v.Util.createXMLDoc(xmlDoc);
           xmlDoc = $.parseXML(xmlDoc);
         }
         return xmlDoc[0] || xmlDoc;
       },
 
-      getMEIPageConfig : function(firstScoreDef) {
-        var obj = m2v.attsToObj(firstScoreDef);
+      getMEIPageConfig : function(scoreDef) {
+        var obj = m2v.Util.attsToObj(scoreDef);
         return {
           page_scale : parseInt(obj['page.scale'], 10) / 100 || undefined,
           page_height : obj['page.height'],
@@ -160,9 +157,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       }
     };
 
-    return {
-      setLogging : m2v.setLogging,
-      Viewer : m2v.Viewer
-    };
+    return m2v;
 
   }(MEI2VF || {}, Vex.Flow, jQuery));

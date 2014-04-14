@@ -21,11 +21,13 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
-     * * Contains information about stave connectors parsed from the staffGrp
+     * @class MEI2VF.Connectors
+     * Contains information about stave connectors parsed from the staffGrp
      * elements and their @symbol attributes
+     * @private
      *
-     * @param {Object} labelMode
      * @constructor
+     * @param {Object} labelMode
      */
     m2v.Connectors = function(labelMode) {
       this.labelMode = labelMode;

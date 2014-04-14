@@ -20,12 +20,17 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
+     * @class MEI2VF.EventLink
+     * @private
      * Represents a link between two MEI events. The link is represented by two
-     * references: 
-     * - 1. reference to start event, 
-     * - 2. reference to end event.     
-     * 
+     * references:
+     *  
+     * 1. reference to start event, 
+     * 2. reference to end event.     
+     *
      * @constructor
+     * @param {String} first_id
+     * @param {String} last_id 
      */
     m2v.EventLink = function(first_id, last_id) {
       this.init(first_id, last_id);
@@ -39,7 +44,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * @param params
+       * @param {Object} params
        *            is an object. for ties and slurs { linkCond } to indicate
        *            the linking condition when parsing from attributes (pitch
        *            name for ties, nesting level for slurs); for hairpins

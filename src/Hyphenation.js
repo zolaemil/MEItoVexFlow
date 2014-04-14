@@ -1,18 +1,20 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     // TODO add support for multiple layers in one staff
-/**
- * 
- * @param {Object} cfg
- * @constructor
- */
-    m2v.Hyphenation = function(cfg) {
+    /**
+     * @class MEI2VF.Hyphenation
+     * @private
+     *
+     * @constructor
+     * @param {Object} cfg
+     */
+    m2v.Hyphenation = function(font, printSpaceRight, maxHyphenDistance) {
       var me = this;
       me.allSyllables = [];
       // TODO move to main.js
-      me.printSpaceRight = cfg.printSpaceRight;
-      me.font = cfg.lyricsFont;
-      me.maxHyphenDistance = cfg.maxHyphenDistance;
+      me.printSpaceRight = printSpaceRight;
+      me.font = font;
+      me.maxHyphenDistance = maxHyphenDistance;
     };
 
     m2v.Hyphenation.prototype = {
@@ -66,15 +68,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               if (first !== me.WORDBOUND && second !== me.WORDBOUND) {
                 var opts = {
                   hyphen_width : hyphenWidth,
-                  max_hyphen_distance: maxHyphenDistance
+                  max_hyphen_distance : maxHyphenDistance
                 };
                 if ( typeof first === 'number') {
-                  opts.first_annot = { x: first };
+                  opts.first_annot = {
+                    x : first
+                  };
                 } else {
                   opts.first_annot = first;
                 }
                 if ( typeof second === 'number' || second === undefined) {
-                  opts.last_annot = { x: me.printSpaceRight };
+                  opts.last_annot = {
+                    x : me.printSpaceRight
+                  };
                 } else {
                   opts.last_annot = second;
                 }

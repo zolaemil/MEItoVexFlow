@@ -21,22 +21,27 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
-     *
+     * @class MEI2VF.StaffVoice
+     * @private
+     * 
+     * @constructor
      * @param {Object} voice
      * @param {Object} staff_n
-     * @constructor
      */
     m2v.StaffVoice = function(voice, staff_n) {
       this.voice = voice;
       this.staff_n = staff_n;
     };
 
-/**
- * Stores all voices in a given measure along with the respective staff id.
- * Passes all voices to Vex.Flow.Formatter and calls joinVoices, then draws all
- * voices.
- * @constructor 
- */
+    /**
+     * @class MEI2VF.StaveVoices
+     * Stores all voices in a given measure along with the respective staff id.
+     * Passes all voices to Vex.Flow.Formatter and calls joinVoices, then draws
+     * all voices.
+     * @private
+     *
+     * @constructor
+     */
     m2v.StaveVoices = function() {
       this.all_voices = [];
     };
