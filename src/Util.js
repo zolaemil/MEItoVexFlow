@@ -1,49 +1,43 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    m2v.DO_LOG = false;
+    /**
+     * @class MEI2VF.Util
+     * @singleton
+     * @private
+     */
+    m2v.Util = {
 
-    m2v.setLogging = function(value) {
-      m2v.DO_LOG = value;
-    };
-
-    m2v.L = function() {
-      if (m2v.DO_LOG)
-        Vex.L("MEItoVexFlow", arguments);
-    };
-
-    m2v.RUNTIME_ERROR = function(error_code, message) {
-      this.error_code = error_code;
-      this.message = message;
-    };
-
-    m2v.RUNTIME_ERROR.prototype.toString = function() {
-      return "MEI2VF.RUNTIME_ERROR: " + this.error_code + ': ' + this.message;
-    };
-
-    m2v.attsToObj = function(element) {
-      var i, obj;
-      if (element.attributes) {
-        obj = {};
-        i = element.attributes.length;
-        while (i--) {
-          obj[element.attributes[i].nodeName] = element.attributes[i].nodeValue;
+      /**
+       *
+       */
+      attsToObj : function(element) {
+        var i, obj;
+        if (element.attributes) {
+          obj = {};
+          i = element.attributes.length;
+          while (i--) {
+            obj[element.attributes[i].nodeName] = element.attributes[i].nodeValue;
+          }
         }
-      }
-      return obj;
-    };
+        return obj;
+      },
 
-    m2v.listAttrs = function(element) {
-      var result = '', i, j, attrs, attr;
-      attrs = element.attributes;
-      for ( i = 0, j = attrs.length; i < j; i += 1) {
-        attr = attrs.item(i);
-        result += ' ' + attr.nodeName + '="' + attr.nodeValue + '"';
-      }
-      return result;
-    };
+      /**
+       *
+       */
+      attsToString : function(element) {
+        var result = '', i, j, atts, att;
+        atts = element.attributes;
+        for ( i = 0, j = atts.length; i < j; i += 1) {
+          att = atts.item(i);
+          result += ' ' + att.nodeName + '="' + att.nodeValue + '"';
+        }
+        return result;
+      },
 
-    m2v.util = {
-
+      /**
+       *
+       */
       drawBoundingBoxes : function(ctx, options) {
         var me = this, i, j, k, l, measure, m, inner, coords, y;
         options = options || {};
@@ -98,6 +92,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         ctx.restore();
       },
 
+      /**
+       *
+       */
       drawRectangle : function(coords, color, ctx, frame) {
         if (frame) {
           ctx.strokeStyle = 'rgba(' + color + ', 0.5)';

@@ -25,7 +25,7 @@ version="HTML+RDFa 1.0" xml:lang="en">
 
 				MEI2VF.RunTest(
 					{ title: 'Prokofiev Op. 36', mei_xml: 'TC.Prokofiev.xml', canvas_height:400}, 
-					'svg', $('#test-title'), 
+					document.getElementById('svg'), $('#test-title'), 
 					Vex.Flow.Renderer.Backends.RAPHAEL
 				);
 

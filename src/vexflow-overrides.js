@@ -15,10 +15,11 @@ Vex.Flow.Hyphen = ( function() {
          * config is a struct that has:
          *
          *  {
-         *    first_annot: Annotation,
-         *    last_annot: Annotation,
-         *    start_x: start x coordinate (alternative to first_annot),
-         *    end_x: end x coordinate (alternative to last_annot)
+         *    first_annot: Annotation or any other object with an x (and optional y) property,
+         *    last_annot: Annotation or any other object with an x (and optional y) property,
+         *    NOTE: either first_annot or last_annot must have an y property
+         *    (optional) max_hyphen_distance: the maximum distance between two hyphens
+         *    (optional) hyphen_width: 
          *  }
          *
          **/
@@ -44,25 +45,22 @@ Vex.Flow.Hyphen = ( function() {
         this.font = font;
         return this;
       },
-
-      isPartial : function() {
-        return (!this.config.first_annot || !this.config.last_annot);
-      },
-
+      
       renderHyphen : function(ctx) {
-
-        // TODO include checks for all necessary parameters
         var cfg = this.config;
         var ctx = this.context;
         var hyphen_width = cfg.hyphen_width || ctx.measureText('-').width;
+
         var first = cfg.first_annot;
         var last = cfg.last_annot;
-        var start_x = cfg.start_x || first.x + ctx.measureText(first.text).width;
-        var end_x = cfg.end_x || last.x;
+        
+        var start_x = (first.text) ? first.x + ctx.measureText(first.text).width : first.x;
+        var end_x = last.x;
+        
         var distance = end_x - start_x;
 
         if (distance > hyphen_width) {
-          var y = (first && last) ? (first.y + last.y) / 2 : (first) ? first.y : last.y;
+          var y = (first.y && last.y) ? (first.y + last.y) / 2 : first.y || last.y;
           var hyphen_count = Math.ceil(distance / this.max_hyphen_distance);
           var single_width = distance / (hyphen_count + 1);
           while (hyphen_count--) {
@@ -137,6 +135,7 @@ Vex.Flow.Font.glyphs["gClef"] = {
   "ha" : 944,
   "o" : "0 0 117 0 1 1 560 560 1 -1 0 -1120 m 948 35 l 948 15 b 693 -328 948 -141 850 -269 b 728 -536 711 -454 728 -536 b 736 -633 734 -571 736 -603 b 489 -920 736 -853 588 -914 b 456 -921 477 -920 466 -921 b 190 -700 225 -921 190 -777 b 196 -650 190 -671 195 -650 b 323 -532 204 -587 259 -536 l 333 -532 b 476 -665 409 -532 469 -592 l 476 -675 b 378 -806 476 -738 435 -788 b 343 -815 365 -812 356 -812 b 330 -826 336 -818 330 -820 b 343 -841 330 -830 335 -836 b 459 -869 372 -862 412 -869 l 486 -869 b 673 -638 503 -869 673 -867 b 665 -543 673 -610 671 -578 l 633 -347 l 626 -347 b 531 -353 595 -351 563 -353 b 10 94 301 -353 36 -245 b 8 136 8 108 8 122 b 445 788 8 406 239 612 l 428 876 b 419 1019 421 925 419 973 b 645 1543 419 1273 511 1484 b 750 1410 645 1543 696 1534 b 811 1141 790 1319 811 1229 b 528 594 811 951 715 767 b 573 354 542 518 557 445 b 591 357 578 357 585 357 l 606 357 b 948 35 785 357 937 216 m 655 1320 b 477 948 545 1315 477 1092 b 480 897 477 930 477 913 b 491 829 480 889 486 862 b 745 1177 641 942 728 1061 b 748 1208 746 1189 748 1198 b 655 1320 748 1284 701 1320 m 120 22 l 120 11 b 531 -302 129 -234 378 -302 b 623 -291 570 -302 602 -298 l 547 157 b 382 -3 455 141 382 95 l 382 -17 b 476 -155 385 -74 448 -143 b 497 -181 487 -161 497 -172 b 480 -192 497 -186 491 -192 b 451 -186 473 -192 463 -190 b 300 0 385 -165 322 -95 b 291 62 294 20 291 41 b 517 344 291 188 391 307 l 482 563 b 120 22 298 427 120 256 m 683 -276 b 833 -64 781 -234 833 -162 l 833 -49 b 609 162 827 69 727 162 l 603 162 b 683 -276 633 4 661 -148 "
 };
+
 Vex.Flow.Font.glyphs["gClef8vb"] = {
   "x_min" : 0,
   "x_max" : 937,
@@ -167,37 +166,9 @@ Vex.Flow.Clef.types.octave = {
   line : 3
 };
 Vex.Flow.Clef.types.treble = {
-  code : "gClef", 
-  point : 40, 
+  code : "gClef",
+  point : 40,
   line : 3
-};
-
-
-Vex.Flow.ModifierContext.prototype.formatAnnotations = function() {
-  var annotations = this.modifiers['annotations'];
-  if (!annotations || annotations.length === 0)
-    return this;
-
-  var text_line = this.state.text_line;
-  var max_width = 0;
-
-  // Format Annotations
-  var width;
-  for (var i = 0; i < annotations.length; ++i) {
-    var annotation = annotations[i];
-    annotation.setTextLine(text_line);
-    width = annotation.getWidth() > max_width ? annotation.getWidth() : max_width;
-    // COMMENTED OUT (TODO: find a proper solution to prevent the text lines
-    // from
-    // being increased between staffs!)
-    // text_line++;
-  }
-
-  this.state.left_shift += width / 2;
-  this.state.right_shift += width / 2;
-  // No need to update text_line because we leave lots of room on the same
-  // line.
-  return this;
 };
 
 Vex.Flow.Curve.prototype.renderCurve = function(params) {
@@ -229,158 +200,6 @@ Vex.Flow.Curve.prototype.renderCurve = function(params) {
   ctx.fill();
 };
 
-// ################################ BARLINE ####################################
-// Vex Flow Notation
-// Author Larry Kuhns 2011
-// Implements barlines (single, double, repeat, end)
-//
-// Requires vex.js.
-
-/**
- * @constructor
- */
-Vex.Flow.Barline = ( function() {
-    function Barline(type, x) {
-      if (arguments.length > 0)
-        this.init(type, x);
-    }
-
-
-    Barline.type = {
-      SINGLE : 1,
-      DOUBLE : 2,
-      END : 3,
-      REPEAT_BEGIN : 4,
-      REPEAT_END : 5,
-      REPEAT_BOTH : 6,
-      NONE : 7
-    };
-
-    var THICKNESS = Vex.Flow.STAVE_LINE_THICKNESS;
-
-    Vex.Inherit(Barline, Vex.Flow.StaveModifier, {
-      init : function(type, x) {
-        Barline.superclass.init.call(this);
-        this.barline = type;
-        this.x = x;
-        // Left most x for the stave
-      },
-
-      getCategory : function() {
-        return "barlines";
-      },
-      setX : function(x) {
-        this.x = x;
-        return this;
-      },
-
-      // Draw barlines
-      draw : function(stave, x_shift) {
-        x_shift = typeof x_shift !== 'number' ? 0 : x_shift;
-
-        switch (this.barline) {
-          case Barline.type.SINGLE:
-            this.drawVerticalBar(stave, this.x, false);
-            break;
-          case Barline.type.DOUBLE:
-            this.drawVerticalBar(stave, this.x, true);
-            break;
-          case Barline.type.END:
-            this.drawVerticalEndBar(stave, this.x);
-            break;
-          case Barline.type.REPEAT_BEGIN:
-            // If the barline is shifted over (in front of clef/time/key)
-            // Draw vertical bar at the beginning.
-            if (x_shift > 0) {
-              this.drawVerticalBar(stave, this.x);
-            }
-            this.drawRepeatBar(stave, this.x + x_shift, true);
-            break;
-          case Barline.type.REPEAT_END:
-            this.drawRepeatBar(stave, this.x, false);
-            break;
-          case Barline.type.REPEAT_BOTH:
-            this.drawRepeatBar(stave, this.x, false);
-            this.drawRepeatBar(stave, this.x, true);
-            break;
-          default:
-            // Default is NONE, so nothing to draw
-            break;
-        }
-      },
-
-      drawVerticalBar : function(stave, x, double_bar) {
-        if (!stave.context)
-          throw new Vex.RERR("NoCanvasContext", "Can't draw stave without canvas context.");
-        var top_line = stave.getYForLine(0);
-
-        // ################## ADDED -1 AT THE END OF THE LINE:
-        var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) - 1;
-        if (double_bar)
-          stave.context.fillRect(x - 3, top_line, 1, bottom_line - top_line + 1);
-        stave.context.fillRect(x, top_line, 1, bottom_line - top_line + 1);
-      },
-
-      drawVerticalEndBar : function(stave, x) {
-        if (!stave.context)
-          throw new Vex.RERR("NoCanvasContext", "Can't draw stave without canvas context.");
-
-        var top_line = stave.getYForLine(0);
-
-        // ################## ADDED -1 AT THE END OF THE LINE:
-        var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) - 1;
-        stave.context.fillRect(x - 5, top_line, 1, bottom_line - top_line + 1);
-        stave.context.fillRect(x - 2, top_line, 3, bottom_line - top_line + 1);
-      },
-
-      drawRepeatBar : function(stave, x, begin) {
-        if (!stave.context)
-          throw new Vex.RERR("NoCanvasContext", "Can't draw stave without canvas context.");
-
-        var top_line = stave.getYForLine(0);
-
-        // ################## ADDED -1 AT THE END OF THE LINE:
-        var bottom_line = stave.getYForLine(stave.options.num_lines - 1) + (THICKNESS / 2) - 1;
-        var x_shift = 3;
-
-        if (!begin) {
-          x_shift = -5;
-        }
-
-        stave.context.fillRect(x + x_shift, top_line, 1, bottom_line - top_line + 1);
-        stave.context.fillRect(x - 2, top_line, 3, bottom_line - top_line + 1);
-
-        var dot_radius = 2;
-
-        // Shift dots left or right
-        if (begin) {
-          x_shift += 4;
-        } else {
-          x_shift -= 4;
-        }
-
-        var dot_x = (x + x_shift) + (dot_radius / 2);
-
-        // calculate the y offset based on number of stave lines
-        var y_offset = (stave.options.num_lines - 1) * stave.options.spacing_between_lines_px;
-        y_offset = (y_offset / 2) - (stave.options.spacing_between_lines_px / 2);
-        var dot_y = top_line + y_offset + (dot_radius / 2);
-
-        // draw the top repeat dot
-        stave.context.beginPath();
-        stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
-        stave.context.fill();
-
-        //draw the bottom repeat dot
-        dot_y += stave.options.spacing_between_lines_px;
-        stave.context.beginPath();
-        stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
-        stave.context.fill();
-      }
-    });
-
-    return Barline;
-  }());
 
 // [VexFlow](http://vexflow.com) - Copyright (c) Mohit Muthanna 2010.
 //

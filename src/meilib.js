@@ -21,8 +21,19 @@
  * the License.
  */
 
+/**
+ * @class MeiLib
+ * @singleton 
+ */
 var MeiLib = {};
 
+/**
+* @class MeiLib.RuntimeError
+* 
+* @constructor
+* @param {String} errorcode
+* @param {String} message
+ */
 MeiLib.RuntimeError = function(errorcode, message) {
   this.errorcode = errorcode;
   this.message = message;
@@ -41,9 +52,8 @@ MeiLib.createPseudoUUID = function() {
 
 /**
  * Enumerate over the children events of node (node is a layer or a beam).
- * 
- * @param node
- *            an XML DOM object
+ * @param {Object} node an XML DOM object
+ * @constructor 
  */
 MeiLib.EventEnumerator = function(node) {
   this.init(node);

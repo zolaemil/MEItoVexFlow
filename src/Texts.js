@@ -1,5 +1,11 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
+    /**
+     * @class MEI2VF.Texts
+     * @private
+     *
+     * @constructor
+     */
     m2v.Texts = function() {
       var me = this;
       me.complexTextModels = [];
@@ -45,7 +51,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                 me.breakLine();
                 break;
               case 'title' :
-                attObj = m2v.attsToObj(childNode);
+                attObj = m2v.Util.attsToObj(childNode);
                 defaults = {
                   el : childNode.localName,
                   halign : 'center',
@@ -57,7 +63,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                 me.breakLine();
                 break;
               default :
-                obj = $.extend({}, opts, m2v.attsToObj(childNode));
+                obj = $.extend({}, opts, m2v.Util.attsToObj(childNode));
                 me.htmlToArray(childNode, obj);
             }
           }
