@@ -1,8 +1,6 @@
 /*
 * Component of MEItoVexFlow Author: Raffaele Viglianti, 2012
 *
-* Tables for MEI <-> VexFlow values
-*
 * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
 * University of Maryland
 *
@@ -23,6 +21,7 @@
 /**
  * @class MEI2VF
  * @singleton
+ * Tables for MEI <-> VexFlow values
  */
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
@@ -41,7 +40,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       durations : {
-        'long': 'l',
+        'long' : 'l',
         'breve' : 'd',
         '1' : 'w',
         '2' : 'h',

@@ -23,6 +23,8 @@
 
 // TODO auto left indent for labels
 
+// TODO add setPgHeadProcessor, setAnchoredTextProcessor (?)
+
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
@@ -114,14 +116,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * - 'full': renders full labels in the first system, abbreviated labels
          * in all following systems
          * - 'abbr': only render abbreviated labels
-         *
-         * If set to null or undefined, no labels are rendered
+         * - null or undefined: renders no labels
          */
         labelMode : null,
         /**
          * @cfg {Number} maxHyphenDistance The maximum distance (in pixels)
-         * between two
-         * hyphens in the lyrics lines
+         * between two hyphens in the lyrics lines
          */
         maxHyphenDistance : 75,
         //sectionsOnNewLine : false, // TODO: add feature
@@ -186,6 +186,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       initConfig : function(config) {
         var me = this;
         me.cfg = $.extend(true, {}, me.defaults, config);
+        /**
+         * The print space coordinates calculated from the page config. Values:
+         *
+         * -  `top`
+         * -  `left`
+         * -  `right`
+         * -  `width`
+         */
         me.printSpace = {
           // substract four line distances (40px) from page_margin_top in order
           // to
@@ -202,7 +210,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * Calls {@link MEI2VF.Converter#reset reset()} and then processes the
        * specified MEI document or document fragment. The generated objects can
-       * be processed further or drawn to a canvas via {@link
+       * be processed further or drawn immediately to a canvas via {@link
        * MEI2VF.Converter#draw draw()}.
        * @chainable
        * @param {XMLDocument} xmlDoc the XML document
@@ -220,27 +228,59 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * Resets the internal data objects. Called by {@link
-       * MEI2VF.Converter#process process()}.
+       * Resets all data created when MEI data is processed.
+       * Called by {@link MEI2VF.Converter#process process()}.
        * @chainable
        * @return {MEI2VF.Converter} the Converter object
        */
       reset : function() {
         var me = this;
         /**
-         * a 2d array containing all Vex.Flow.Stave objects. Data structure:
+         * A 2d array containing all Vex.Flow.Stave objects. Addressing scheme:
          * [measure_n][staff_n]
          */
         me.allVexMeasureStaffs = [];
+        // (TODO check if the allStaveVoices index corresponds to the measure numbers / should be made so)
         /**
-         * a 2d array containing all stave voice objects. Data is just pushed in
-         * (the index is irrelevant).
-         * Contains objects with the properties staveVoices and measureStaffs
+         * An array containing objects with the voice data of each measure.
+         * Properties of the objects:
+         *
+         * - `staveVoices` is a {@link MEI2VF.StaveVoices MEI2VF.StaveVoices}
+         * object
+         * - `measureStaffs` is an array of all Vex.Flow.Stave objects to which
+         * the stave voices are rendered to.
+         *
+         * Data is just pushed in and later processed as a whole, so the array
+         * index is currently irrelevant.
          });
          */
         me.allStaffVoices = [];
+        /**
+         * An array of all anchored texts in the MEI document. Contains objects
+         * with the following properties:
+         *
+         * -  `text`: The text content of the anchored text
+         * -  `container`: the container object, e.g. a VexFlow staff. Provides
+         * the basis for the calculation of
+         * absolute coordinates from the relative MEI attributes vo / ho.
+         * Irrelevant
+         * when both x and y are specified
+         * -  `x`: the x coordinate
+         * -  `y`: the y coordinate
+         * -  `ho`: the horizontal offset
+         * -  `vo`: the vertical offset
+         */
         me.allAnchoredTexts = [];
+        /**
+         * An array containing all Vex.Flow.Beam objects. Data is just pushed in
+         * and later processed as a whole, so the array index is currently
+         * irrelevant.
+         });
+         */
         me.allBeams = [];
+        /**
+         *
+         */
 
         me.texts = new m2v.Texts();
         me.startConnectors = new m2v.Connectors(me.cfg.labelMode);
@@ -1657,6 +1697,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         throw new m2v.RUNTIME_ERROR('BadArguments', 'The MEI duration "' + mei_dur + '" is not supported.');
       },
 
+      // TODO: dots should work with the lastest VexFlow, so try to remove the noDots 
+      // parameter there. Can the noDots condition be removed completely or will there 
+      // be dots rendered with space elements?
       /**
        *
        */
@@ -1719,8 +1762,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       // NB checks only once for the first defined staff; this has to be
-      // changed
-      // when the number of staffs changes in the course of a piece
+      // changed when the number of staffs changes in the course of a piece
       /**
        *
        */
@@ -1756,7 +1798,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
       },
 
-      // TODO make anchored texts staff modifiers
+      // TODO make anchored texts staff modifiers (?)
       /**
        *
        */
