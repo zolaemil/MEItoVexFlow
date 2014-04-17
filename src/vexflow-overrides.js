@@ -19,7 +19,7 @@ Vex.Flow.Hyphen = ( function() {
          *    last_annot: Annotation or any other object with an x (and optional y) property,
          *    NOTE: either first_annot or last_annot must have an y property
          *    (optional) max_hyphen_distance: the maximum distance between two hyphens
-         *    (optional) hyphen_width: 
+         *    (optional) hyphen_width: the width of the hyphen character to draw
          *  }
          *
          **/
@@ -85,18 +85,13 @@ Vex.Flow.Hyphen = ( function() {
     return Hyphen;
   }());
 
-//fallback: remove when the CMN breve is implemented in VexFlow
-if (!Vex.Flow.durationToTicks.durations['0']) {
-  Vex.Flow.durationToTicks.durations['0'] = Vex.Flow.RESOLUTION / 0.5;
+//fallback: remove when the CMN breve (double whole) is implemented in VexFlow
+if (!Vex.Flow.durationToTicks.durations['d']) {
+  Vex.Flow.durationToTicks.durations['d'] = Vex.Flow.RESOLUTION / 0.5;
 }
-//fallback: remove when the CMN long is implemented in VexFlow
-if (!Vex.Flow.durationToTicks.durations['l']) {
-  Vex.Flow.durationToTicks.durations['l'] = Vex.Flow.RESOLUTION / 0.25;
-}
-
-// fallback: remove when the CMN breve is implemented in VexFlow
-if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
-  Vex.Flow.durationToGlyph.duration_codes['0'] = {
+// fallback: remove when the CMN breve (double whole) is implemented in VexFlow
+if (!Vex.Flow.durationToGlyph.duration_codes['d']) {
+  Vex.Flow.durationToGlyph.duration_codes['d'] = {
     common : {
       head_width : 20,
       stem : false,
@@ -131,6 +126,11 @@ if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
       }
     }
   };
+}
+
+//fallback: remove when the CMN long is implemented in VexFlow
+if (!Vex.Flow.durationToTicks.durations['l']) {
+  Vex.Flow.durationToTicks.durations['l'] = Vex.Flow.RESOLUTION / 0.25;
 }
 
 // fallback: remove when the CMN long is implemented in VexFlow
@@ -197,10 +197,11 @@ Vex.Flow.Font.glyphs["noteheadQuadWholeSquare"] = {
   "x_min" : 0,
   "x_max" : 746,
   "ha" : 746,
+  // based on the Bravura breve glyph; CHANGES: all values < -1400
   "o" : "0 0 117 0 1 1 560 560 1 -1 0 -1120 "+
   "m 724 350 "+
   "b 746 328 736 350 746 340 "+
-  "l 746 -1428 "+
+  "l 746 -1428 "+ 
   "b 724 -1450 746 -1439 736 -1450 "+
   "b 701 -1428 711 -1450 701 -1439 "+
   "l 701 -270 "+
