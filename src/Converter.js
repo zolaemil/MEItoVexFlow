@@ -516,7 +516,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * element startMeasure and ending before the next sb element
        *
        * @param {Element} startMeasure the start measure
-       * @return {array} the widths of all measures in the current system
+       * @return {Array} the widths of all measures in the current system
        */
       getMeasureWidths : function(startMeasure) {
         var me = this, widths;
@@ -531,7 +531,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * @return {Array} an array of all measure widths in the current stave
        */
       getMEIWidthsTillSb : function(startElement) {
-        var me = this, currentElement = startElement, specifiedWidths = [];
+        var me = this, currentElement = startElement, specifiedWidths = [], getNext = m2v.Util.getNext;
         m2v.L('Converter.getMEIWidthsTillSb()', '{}');
         while (currentElement) {
           switch (currentElement.localName) {
@@ -541,36 +541,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             case 'sb' :
               return specifiedWidths;
           }
-          currentElement = me.getNext(currentElement);
+          currentElement = getNext(currentElement);
           // currentElement = currentElement.nextSibling;
         }
         return specifiedWidths;
-      },
-
-      /**
-       * gets the next sibling node or -- if it is undefined -- the first
-       * element in the parent's following sibling
-       */
-      getNext : function(currentElement) {
-        var me = this, parentElement, next;
-        next = me.getNextElement(currentElement);
-        if (next)
-          return next;
-        parentElement = currentElement.parentNode;
-        next = me.getNextElement(parentElement);
-        if (next)
-          return next.firstChild;
-      },
-
-      /**
-       *
-       */
-      getNextElement : function(element) {
-        var n = element;
-        do
-          n = n.nextSibling;
-        while (n && n.nodeType != 1);
-        return n;
       },
 
       /**
