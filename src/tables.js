@@ -41,6 +41,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       durations : {
+        'long': 'l',
         'breve' : '0',
         '1' : 'w',
         '2' : 'h',

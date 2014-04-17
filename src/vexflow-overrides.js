@@ -85,15 +85,20 @@ Vex.Flow.Hyphen = ( function() {
     return Hyphen;
   }());
 
-//fallback: remove when the breve is implemented in VexFlow
+//fallback: remove when the CMN breve is implemented in VexFlow
 if (!Vex.Flow.durationToTicks.durations['0']) {
   Vex.Flow.durationToTicks.durations['0'] = Vex.Flow.RESOLUTION / 0.5;
 }
-// fallback: remove when the breve is implemented in VexFlow
+//fallback: remove when the CMN long is implemented in VexFlow
+if (!Vex.Flow.durationToTicks.durations['l']) {
+  Vex.Flow.durationToTicks.durations['l'] = Vex.Flow.RESOLUTION / 0.25;
+}
+
+// fallback: remove when the CMN breve is implemented in VexFlow
 if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
   Vex.Flow.durationToGlyph.duration_codes['0'] = {
     common : {
-      head_width : 24,
+      head_width : 20,
       stem : false,
       stem_offset : 0,
       flag : false,
@@ -104,6 +109,45 @@ if (!Vex.Flow.durationToGlyph.duration_codes['0']) {
     type : {
       "n" : {// Breve note
         code_head : "noteheadDoubleWholeSquare"
+      },
+      "h" : {// Whole note harmonic
+        code_head : "v46"
+      },
+      "m" : {// Whole note muted
+        code_head : "v92",
+        stem_offset : -3
+      },
+      "r" : {// Breve rest
+        code_head : "restDoubleWhole",
+        head_width : 12,
+        rest : true,
+        position : "D/5",
+        dot_shiftY : 0.5
+      },
+      "s" : {// Whole note slash
+        // Drawn with canvas primitives
+        head_width : 15,
+        position : "B/4"
+      }
+    }
+  };
+}
+
+// fallback: remove when the CMN long is implemented in VexFlow
+if (!Vex.Flow.durationToGlyph.duration_codes['l']) {
+  Vex.Flow.durationToGlyph.duration_codes['l'] = {
+    common : {
+      head_width : 20,
+      stem : false,
+      stem_offset : 0,
+      flag : false,
+      dot_shiftY : 0,
+      line_above : 0,
+      line_below : 0
+    },
+    type : {
+      "n" : {// Breve note
+        code_head : "noteheadQuadWholeSquare"
       },
       "h" : {// Whole note harmonic
         code_head : "v46"
@@ -147,6 +191,43 @@ Vex.Flow.Font.glyphs["noteheadDoubleWholeSquare"] = {
   "x_max" : 746,
   "ha" : 746,
   "o" : "0 0 117 0 1 1 560 560 1 -1 0 -1120 m 724 350 b 746 328 736 350 746 340 l 746 -328 b 724 -350 746 -339 736 -350 b 701 -328 711 -350 701 -339 l 701 -270 b 659 -234 701 -253 683 -234 l 83 -234 b 45 -276 67 -234 45 -256 l 45 -328 b 22 -350 45 -339 35 -350 b 0 -328 10 -350 0 -339 l 0 328 b 22 350 0 340 10 350 b 45 328 35 350 45 340 l 45 260 b 77 218 45 260 64 218 l 659 218 b 701 265 679 218 701 232 l 701 328 b 724 350 701 340 711 350 m 45 18 l 45 -36 b 146 -94 45 -70 83 -94 l 606 -94 b 701 -36 664 -94 701 -77 l 701 28 b 606 78 701 57 664 78 l 139 78 b 45 18 71 78 45 59 "
+};
+// NOT PART OF BRAVURA:
+Vex.Flow.Font.glyphs["noteheadQuadWholeSquare"] = {
+  "x_min" : 0,
+  "x_max" : 746,
+  "ha" : 746,
+  "o" : "0 0 117 0 1 1 560 560 1 -1 0 -1120 "+
+  "m 724 350 "+
+  "b 746 328 736 350 746 340 "+
+  "l 746 -1428 "+
+  "b 724 -1450 746 -1439 736 -1450 "+
+  "b 701 -1428 711 -1450 701 -1439 "+
+  "l 701 -270 "+
+  "b 659 -234 701 -253 683 -234 "+
+  "l 83 -234 "+
+  "b 45 -276 67 -234 45 -256 "+
+  "l 45 -328 "+
+  "b 22 -350 45 -339 35 -350 "+
+  "b 0 -328 10 -350 0 -339 "+
+  "l 0 328 "+
+  "b 22 350 0 340 10 350 "+
+  "b 45 328 35 350 45 340 "+
+  "l 45 260 "+
+  "b 77 218 45 260 64 218 "+
+  "l 659 218 "+
+  "b 701 265 679 218 701 232 "+
+  "l 701 328 "+
+  "b 724 350 701 340 711 350 "+
+  "m 45 18 "+
+  "l 45 -36 "+
+  "b 146 -94 45 -70 83 -94 "+
+  "l 606 -94 "+
+  "b 701 -36 664 -94 701 -77 "+
+  "l 701 28 "+
+  "b 606 78 701 57 664 78 "+
+  "l 139 78 "+
+  "b 45 18 71 78 45 59 "
 };
 Vex.Flow.Font.glyphs["restDoubleWhole"] = {
   "x_min" : 0,

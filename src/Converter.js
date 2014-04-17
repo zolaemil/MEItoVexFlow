@@ -203,9 +203,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * Calls {@link MEI2VF.Converter#reset reset()} and then processes the
        * specified MEI document or document fragment. The generated objects can
        * be processed further or drawn to a canvas via {@link
-       * MEI2VF.Converter#draw
-       * draw()}.
+       * MEI2VF.Converter#draw draw()}.
        * @chainable
+       * @param {XMLDocument} xmlDoc the XML document
        * @return {MEI2VF.Converter} the Converter object
        */
       process : function(xmlDoc) {
@@ -221,18 +221,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * Resets the internal data objects. Called by {@link
-       * MEI2VF.Converter#reset
-       * reset()}.
+       * MEI2VF.Converter#process process()}.
        * @chainable
        * @return {MEI2VF.Converter} the Converter object
        */
       reset : function() {
         var me = this;
         /**
-         * contains all Vex.Flow.Stave objects in a 2d array
+         * a 2d array containing all Vex.Flow.Stave objects. Data structure:
          * [measure_n][staff_n]
          */
         me.allVexMeasureStaffs = [];
+        /**
+         * a 2d array containing all stave voice objects. Data is just pushed in
+         * (the index is irrelevant).
+         * Contains objects with the properties staveVoices and measureStaffs
+         });
+         */
         me.allStaffVoices = [];
         me.allAnchoredTexts = [];
         me.allBeams = [];
@@ -1387,6 +1392,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             keys : ['d/5'],
             duration : 'wr'
           });
+
+          // mRest.ignore_ticks = true;
+          // console.log(mRest);
+          // me.processAttrHo(10, mRest);
+
           mei_ho = $(element).attr('ho');
           if (mei_ho)
             me.processAttrHo(mei_ho, mRest);
@@ -1687,10 +1697,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (!noDots && $(mei_note).attr('dots') === '1')
           dur += 'd';
         return dur;
-        // return me.translateDuration($(mei_note).attr('dur')) +
-        // (allow_dotted
-        // === true && $(mei_note).attr('dots') === '1') ? 'd' : '';
-        // return me.translateDuration($(mei_note).attr('dur'));
       },
 
       /**
