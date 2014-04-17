@@ -637,7 +637,7 @@ MeiLib.Alt.prototype.getDefaultItem = function() {
  * @n attribute value of the element.
  */
 MeiLib.Variant = function(elem, xmlID, tagname, source, resp, n){
-  this.elemenet = elem;
+  this.elem = elem;
   this.xmlID = xmlID;
   this.tagname = tagname;
   this.source = source;

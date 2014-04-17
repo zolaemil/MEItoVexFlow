@@ -341,6 +341,11 @@ MeiLibTest = function(){
   choices = $(meiDoc.sectionview_score).find('choice');
   assert(apps.length, 0);
   assert(choices.length, 0);
+  console.log(meiDoc.sectionview_score.innerHTML);
+  //TODO: Assert that default reading/choice is inserted:
+  // 1. Find processing Instruction <?MEI2VF rdgStart="choice01"?>
+  // 2. Get next sibling and
+  // 3. Assert it's a <note> with @dur="2"
   assert(meiDoc.sectionplane["app-recon"][0], undefined);
   assert(meiDoc.sectionplane["choice01"].length, 1);
   assert(meiDoc.sectionplane["app-var"].length, 1);
