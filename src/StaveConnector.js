@@ -32,7 +32,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
     m2v.Connectors = function(labelMode) {
       this.labelMode = labelMode;
       this.allVexConnectors = [];
-      this.currentModels = {};
     };
 
     m2v.Connectors.prototype = {
@@ -72,15 +71,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return this.allVexConnectors;
       },
 
-      setModelForStaveRange : function(obj, add) {
-        add = add || '';
-        this.currentModels[obj.top_staff_n + ':' + obj.bottom_staff_n + add] = obj;
-      },
-
-      createVexFromModels : function(currentMeasure, barline_l, barline_r, currentSystem) {
+      createVexFromModels : function(models, currentMeasure, barline_l, barline_r, system_n) {
         var me = this, vexType, top_staff, bottom_staff, vexConnector, label, labelMode;
         labelMode = me.labelMode;
-        $.each(me.currentModels, function(i, model) {
+        $.each(models, function(i, model) {
 
           vexType = (barline_r) ? me.vexTypesBarlineRight[barline_r] : me.vexTypes[model.symbol];
           top_staff = currentMeasure[model.top_staff_n];
@@ -91,7 +85,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             vexConnector.setType(vexType);
             me.addToVexConnectors(vexConnector);
             if (labelMode === 'full') {
-              label = (currentSystem === 1) ? model.label : model.labelAbbr;
+              label = (system_n === 1) ? model.label : model.labelAbbr;
             } else if (labelMode === 'abbr') {
               label = model.labelAbbr;
             }

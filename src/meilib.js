@@ -274,11 +274,12 @@ MeiLib.XMLID = function(elem) {
  * Calculates a timestamp value for an event in a given context. (Event refers
  * to musical events such as notes, rests and chords).
  * 
- * @param eventid {String} the xml:id of the event @param context {Array} of
+ * @param eventid {String} the xml:id of the event 
+ * @param context {Array} of
  * contextual objects {layer, meter}. Time signature is mandatory for the first
  * one, but optional for the rest. All layers belong to a single logical layer.
- * They are the layer elements from some consequtive measures. @return {String}
- * the MEI timestamp value (expressed in beats relative to the meter of the
+ * They are the layer elements from some consequtive measures. 
+ * @return {String} the MEI timestamp value (expressed in beats relative to the meter of the
  * measure containing the event) of all events that happened before the given
  * event in the given context. If the event is not in the first measure (layer)
  * the timestamp value contains a 'measure part', that is for example 2m+2 if

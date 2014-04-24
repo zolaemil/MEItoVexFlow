@@ -1,19 +1,19 @@
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2TEXT = ( function(m2t, VF, $, undefined) {
 
     /**
-     * @class MEI2VF.Texts
+     * @class MEI2TEXT.Texts
      * @private
      *
      * @constructor
      */
-    m2v.Texts = function() {
+    m2t.Texts = function() {
       var me = this;
       me.complexTextModels = [];
       me.defaultFontSize = 25;
       me.lineHeight = 1.3;
     };
 
-    m2v.Texts.prototype = {
+    m2t.Texts.prototype = {
 
       addComplexText : function(element, coords) {
         var me = this;
@@ -51,7 +51,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                 me.breakLine();
                 break;
               case 'title' :
-                attObj = m2v.Util.attsToObj(childNode);
+                attObj = MEI2VF.Util.attsToObj(childNode);
                 defaults = {
                   el : childNode.localName,
                   halign : 'center',
@@ -63,7 +63,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                 me.breakLine();
                 break;
               default :
-                obj = $.extend({}, opts, m2v.Util.attsToObj(childNode));
+                obj = $.extend({}, opts, MEI2VF.Util.attsToObj(childNode));
                 me.htmlToArray(childNode, obj);
             }
           }
@@ -166,6 +166,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       }
     };
 
-    return m2v;
+    return m2t;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2TEXT || {}, Vex.Flow, jQuery));

@@ -60,6 +60,7 @@ MEI2VF.render_notation = function(xmlDoc, target, width, height, backend, option
   this.Converter.process(xmlDoc[0] || xmlDoc);
   this.Converter.draw(ctx);
 
+
   this.rendered_measures = this.Converter.getAllVexMeasureStaffs();
 
 };

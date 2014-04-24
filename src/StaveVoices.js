@@ -23,7 +23,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
     /**
      * @class MEI2VF.StaffVoice
      * @private
-     * 
+     *
      * @constructor
      * @param {Object} voice
      * @param {Object} staff_n
@@ -60,26 +60,33 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         this.all_voices = [];
       },
 
-      format : function(width) {
-        var all, vexVoices, vexVoicesStaffWise, staff, i, f;
+      // TODO store them staffwise instead of extracting information at this point!?
+      /**
+       *
+       * @param {Object} staff a staff in the current measure used to set
+       * the x dimensions of the voice
+       */
+      format : function(staff) {
+        var all, vexVoices, vexVoicesStaffWise, staff_n, i, f;
         all = this.all_voices;
         vexVoices = [];
         vexVoicesStaffWise = {};
         i = all.length;
         while (i--) {
           vexVoices.push(all[i].voice);
-          staff = all[i].staff_n;
-          if (vexVoicesStaffWise[staff]) {
-            vexVoicesStaffWise[staff].push(all[i].voice);
+          staff_n = all[i].staff_n;
+          if (vexVoicesStaffWise[staff_n]) {
+            vexVoicesStaffWise[staff_n].push(all[i].voice);
           } else {
-            vexVoicesStaffWise[staff] = [all[i].voice];
+            vexVoicesStaffWise[staff_n] = [all[i].voice];
           }
         }
         f = new VF.Formatter();
         for (i in vexVoicesStaffWise) {
           f.joinVoices(vexVoicesStaffWise[i]);
         }
-        f.format(vexVoices, width);
+        f.formatToStave(vexVoices, staff);
+        // f.format(vexVoices, width);
         // new VF.Formatter().joinVoices(voices).format(voices, width,
         // {align_rests: true});
       },

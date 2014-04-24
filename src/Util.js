@@ -35,35 +35,35 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return result;
       },
 
-      /**
-       * returns the next sibling element to an element
-       * @param {Element} element the start element
-       * @return {Element} the element found or undefined if there is none
-       */
-      getNextElement : function(element) {
-        var n = element;
-        do
-          n = n.nextSibling;
-        while (n && n.nodeType != 1);
-        return n;
-      },
-      
-      /**
-       * gets the next sibling node or -- if it is undefined -- the first
-       * element in the parent's following sibling
-       * @param {Element} element the start element
-       * @return {Element} the element found or undefined if there is none
-       */
-      getNext : function(element) {
-        var me = this, parentElement, next, getNextElement = m2v.Util.getNextElement;
-        next = getNextElement(element);
-        if (next)
-          return next;
-        parentElement = element.parentNode;
-        next = getNextElement(parentElement);
-        if (next)
-          return next.firstChild;
-      },
+      // /**
+       // * returns the next sibling element to an element
+       // * @param {Element} element the start element
+       // * @return {Element} the element found or undefined if there is none
+       // */
+      // getNextElement : function(element) {
+        // var n = element;
+        // do
+          // n = n.nextSibling;
+        // while (n && n.nodeType != 1);
+        // return n;
+      // },
+//       
+      // /**
+       // * gets the next sibling node or -- if it is undefined -- the first
+       // * element in the parent's following sibling
+       // * @param {Element} element the start element
+       // * @return {Element} the element found or undefined if there is none
+       // */
+      // getNext : function(element) {
+        // var me = this, parentElement, next, getNextElement = m2v.Util.getNextElement;
+        // next = getNextElement(element);
+        // if (next)
+          // return next;
+        // parentElement = element.parentNode;
+        // next = getNextElement(parentElement);
+        // if (next)
+          // return next.firstChild;
+      // },
 
       /**
        *

@@ -2,9 +2,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
      * @class MEI2VF.Viewer
-     * 
+     *
      * @constructor
-     * @param {Object} config For a full list, see the config options of the Viewer object as well as the converter options at {@link MEI2VF.Converter MEI2VF.Converter}
+     * @param {Object} config For a full list, see the config options of the
+     * Viewer object as well as the converter options at {@link MEI2VF.Converter
+     * MEI2VF.Converter}
      */
     m2v.Viewer = function(config) {
       this.init(config);
@@ -14,19 +16,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       defaults : {
         /**
-         * @cfg 
+         * @cfg
          */
         page_scale : 1,
         /**
-         * @cfg 
+         * @cfg
          */
         page_height : 350,
         /**
-         * @cfg 
+         * @cfg
          */
         page_width : 800,
         /**
-         * @cfg 
+         * @cfg
          */
         staff : {
           fill_style : "#000000"
@@ -58,8 +60,26 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.scaleContext(ctx, cfg);
 
         me.converter = new m2v.Converter(cfg);
+
+        me.converter.setPgHeadProcessor(function(element) {
+          // console.log(me);
+          me.texts.addComplexText(element, {
+            x : this.printSpace.left,
+            y : 200,
+            w : this.printSpace.width
+          });
+        });
+
+        // TODO für die texte etwas analoges zu der converter-klasse einrichten
+        // (draw usw)
+
+        me.texts = new MEI2TEXT.Texts();
+
         me.converter.process(xmlDoc);
         me.converter.draw(ctx);
+        me.texts.setContext(ctx).draw();
+
+        // console.log(me.converter.systems);
 
         // currently only supported with html5 canvas:
         // m2v.Util.drawBoundingBoxes(ctx, {
