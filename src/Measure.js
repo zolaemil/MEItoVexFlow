@@ -1,7 +1,5 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    // TODO create tempoW, clefW, timeSigW
-
     /**
      * @class MEI2VF.Measure
      * @private
@@ -31,7 +29,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       me.voices = voices;
       /**
        * @property {MEI2VF.Connectors} startConnectors an instance of
-       * MEI2VF.Connectors handling all left connectors (only the first measure of a staff has data)
+       * MEI2VF.Connectors handling all left connectors (only the first measure
+       * in a system has data)
        */
       me.startConnectors = startConnectors;
       /**
@@ -42,7 +41,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       me.tempoElements = tempoElements;
       me.tempoFont = tempoFont;
-      
+
       me.noteOffsetX = 0;
     };
 
@@ -112,13 +111,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
       },
 
-      calculateMeasureOffsets: function() {
+      calculateMeasureOffsets : function() {
         var me = this, i, staffs, staff;
-        // get maximum start_x of all staffs in measure
         staffs = me.staffs;
-        // (temporary and incomplete) calculate the maximum note start x of
-        // all staves. Remove when there are methods in vexFlow to align start
-        // modifiers and voice start x between systems
         i = staffs.length;
         while (i--) {
           staff = staffs[i];
@@ -128,18 +123,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
+      calculateRepeatPadding : function() {
+        var me = this;
+        var staff = me.staffs[me.getFirstDefinedStaff(me.staffs)];
+        me.repeatPadding = (staff.modifiers[0].barline == Vex.Flow.Barline.type.REPEAT_BEGIN && staff.modifiers.length > 2) ? 20 : 0;
+      },
 
       // format: function(ctx) {
       //
       // },
 
-
       // TODO align start modifiers (changes in vexflow necessary??)
       draw : function(ctx) {
         var me = this, i, staffs, staff;
-        
         staffs = me.staffs;
-                // set note start x and draw staffs
         i = staffs.length;
         while (i--) {
           staff = staffs[i];
@@ -147,10 +144,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             staff.setContext(ctx).draw();
           }
         }
-        // draw voices
         me.voices.format(staffs[me.getFirstDefinedStaff(staffs)]);
         me.voices.draw(ctx, staffs);
-        // draw connectors
         me.startConnectors.setContext(ctx).draw();
         me.inlineConnectors.setContext(ctx).draw();
 

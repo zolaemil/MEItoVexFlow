@@ -62,8 +62,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       preFormat : function() {
-        var me = this, all, staff_n, i, f;
-
+        var me = this, all, staff_n, i;
         all = me.all_voices;
         me.vexVoices = [];
         me.vexVoicesStaffWise = {};
@@ -77,23 +76,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.vexVoicesStaffWise[staff_n] = [all[i].voice];
           }
         }
-        f = me.formatter;
-
-        f.preCalculateMinTotalWidth(me.vexVoices);
-        return f.getMinTotalWidth();
+        me.formatter.preCalculateMinTotalWidth(me.vexVoices);
+        return me.formatter.getMinTotalWidth();
       },
 
-      // TODO store them staffwise instead of extracting information at this point!?
+      // TODO store the voices staffwise instead of extracting information at this point!?
       /**
        *
        * @param {Object} staff a staff in the current measure used to set
        * the x dimensions of the voice
        */
       format : function(staff) {
-        var me = this, all, staff_n, i, f;
-
+        var me = this, i, f;
         f = me.formatter;
-
         for (i in me.vexVoicesStaffWise) {
           f.joinVoices(me.vexVoicesStaffWise[i]);
         }

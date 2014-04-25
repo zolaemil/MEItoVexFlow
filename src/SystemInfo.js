@@ -1,7 +1,5 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    // TODO make static
-
     /**
      * @class MEI2VF.SystemInfo
      * Deals with MEI data provided by scoreDef, staffDef and staffGrp elements and its children
@@ -25,14 +23,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.printSpace = printSpace;
 
         /**
-         * contains the currently effective {@link MEI2VF.StaffInfo} objects
+         * contains the current {@link MEI2VF.StaffInfo} objects
          */
         me.currentStaffInfos = [];
         /**
-         * @property {Number} currentSystemMarginLeft the left margin of the
+         * @property {Number} systemLeftMar the left margin of the
          * current system (additional to the left print space margin)
          */
-        me.currentSystemMarginLeft = undefined;
+        me.systemLeftMar = undefined;
         /**
          * @property {Number} currentLowestY the lowest Y coordinate of the
          * previously processed staffs
@@ -45,11 +43,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       setLeftMar : function(width) {
-        this.currentSystemMarginLeft = width;
+        this.systemLeftMar = width;
       },
 
       getLeftMar : function() {
-        return this.currentSystemMarginLeft;
+        return this.systemLeftMar;
       },
 
       setModelForStaveRange : function(target, obj, add) {
@@ -186,7 +184,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        * Supported elements: <b>staffGrp</b> <b>pgHead</b>
        *
-       * @param {Element} element the scoreDef element to read
+       * @param {Element} element the scoreDef element to process
        */
       processScoreDef_child : function(element) {
         var me = this, staff_n;

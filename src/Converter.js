@@ -21,20 +21,19 @@
 * the License.
 */
 
+// TODO fix global leaks
+
 // TODO make direction models converter options again and remove them from the
 // measure!?
 
 // TODO mrests have to be ignored by the formatter
 
 // TODO add setAnchoredTextProcessor
-// TODO handle staff labels separately
 
 // TODO schon einmal die benutzten Elemente in den Schleifen unterbringen; dann
 // auch eine Möglichkeit schaffen, dass man einstellen kann, ob ein nicht
 // vorhandenes Element entweder einfach ignoriert wird oder aber ein Fehler
 // geworfen wird!
-
-// TODO evtl den runner vollkommen abstrakt halten!?!?!?
 
 // TODO vorschlagen, evtl nach namespaces geordnet unterordner von src anzulegen;
 // da könnte in einen dann auch das mit den texten rein
