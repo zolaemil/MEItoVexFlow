@@ -251,9 +251,18 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				test_cases.push({ title: "Plain Staff", mei_xml: 'TC.PlainStaff.xml'});
 				
 				test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
-				test_cases.push({ 
-					title: "Page Layout", 
-					mei_xml: 'TC.PageLayout.xml',
+				// test_cases.push({ 
+					// title: "Page Layout, measure widths in the MEI code", 
+					// mei_xml: 'TC.PageLayout.xml',
+					// canvas_width: 1600, 
+					// canvas_height:2700,
+					// options: {
+						// labelMode: 'full'
+        			// }
+        		// });
+        		test_cases.push({ 
+					title: "Page Layout, automatic measure width calculation", 
+					mei_xml: 'TC.PageLayoutAutoWidths.xml',
 					canvas_width: 1600, 
 					canvas_height:2700,
 					options: {
