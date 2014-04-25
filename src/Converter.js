@@ -21,16 +21,13 @@
 * the License.
 */
 
-// TODO add staff modifiers only after doing the voice things?
-
 // TODO make direction models converter options again and remove them from the
 // measure!?
 
 // TODO mrests have to be ignored by the formatter
 
-// TODO auto left indent for labels
-
-// TODO add setPgHeadProcessor, setAnchoredTextProcessor (?)
+// TODO add setAnchoredTextProcessor
+// TODO handle staff labels separately
 
 // TODO schon einmal die benutzten Elemente in den Schleifen unterbringen; dann
 // auch eine Möglichkeit schaffen, dass man einstellen kann, ob ein nicht
@@ -41,6 +38,10 @@
 
 // TODO vorschlagen, evtl nach namespaces geordnet unterordner von src anzulegen;
 // da könnte in einen dann auch das mit den texten rein
+
+// TODO single out measure number attachment
+
+// TODO das mit dem tempo auf einzelnen noten lässt sich wohl gut lösen, wenn man statt staff.setTempo addModifier verwendet (siehe setTempo in stave.js); dort kann man x- und y-koordinaten angeben!
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
@@ -368,15 +369,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        */
       draw : function(ctx) {
         var me = this;
-
-        var i = me.systems.length;
-        while (i--) {
-          if (me.systems[i]) {
-            me.systems[i].format(ctx).draw(ctx);
-          }
-        }
-
-
+        me.drawSystems(ctx);
         me.drawVexBeams(me.allBeams, ctx);
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
@@ -595,9 +588,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.extract_linkingElements(tieElements, element, 'tie', me.ties);
         me.extract_linkingElements(slurElements, element, 'slur', me.slurs);
         me.extract_linkingElements(hairpinElements, element, 'hairpin', me.hairpins);
-        me.addTempoToStaves(tempoElements, staffs);
 
-        var measure = new m2v.Measure(element, staffs, currentStaveVoices, startConnectors, inlineConnectors);
+        var measure = new m2v.Measure(element, staffs, currentStaveVoices, startConnectors, inlineConnectors, tempoElements, me.cfg.tempoFont);
 
         system.addMeasure(measure);
 
@@ -717,15 +709,17 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         currentStaffInfo = me.systemInfo.getStaffInfo(staff_n);
 
         if (currentStaffInfo.showClefCheck()) {
+          staff.clefIndex = 2;
           staff.addClef(currentStaffInfo.getClef());
         }
         if (currentStaffInfo.showKeysigCheck()) {
+          staff.keySigIndex = staff.clefIndex + 1 || 2;  
           staff.addKeySignature(currentStaffInfo.getKeySpec());
 
         }
         if (currentStaffInfo.showTimesigCheck()) {
+          staff.timeSigIndex = staff.keySigIndex + 1 || staff.clefIndex + 1 || 2;
           staff.addTimeSignature(currentStaffInfo.getTimeSig());
-          staff.hasTimeSignature = true;
         }
 
         staff.setBegBarType( left_barline ? m2v.tables.barlines[left_barline] : VF.Barline.type.NONE);
@@ -919,43 +913,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             // }
           }
           eventlink_container.add(eventLink);
-        });
-      },
-
-      // TODO handle timestamps! (is it necessary to handle tempo element
-      // as annotations?)
-      // TODO make magic numbers constants
-      /**
-       * Writes the data of the given tempo
-       * elements to the corresponding Vex.Flow.Stave object
-       * @param {Array} elements the tempo elements
-       * @param {Array} measure An array of the Vex.Flow.Stave objects in the
-       * current measure
-       */
-      addTempoToStaves : function(elements, measure) {
-        var me = this, staff_n, staff, text, offsetX, vexTempo;
-        $.each(elements, function(i, tempoElement) {
-          staff_n = $(tempoElement).attr('staff');
-          ho = $(tempoElement).attr('ho');
-          vo = $(tempoElement).attr('vo');
-          vexStaff = measure[staff_n];
-          text = $(tempoElement).text();
-          vexTempo = new Vex.Flow.StaveTempo({
-            name : text,
-            duration : $(tempoElement).attr('mm.unit'),
-            dots : +$(tempoElement).attr('mm.dots'),
-            bpm : +$(tempoElement).attr('mm')
-          }, vexStaff.x, 5);
-          if (vo)
-            vexTempo.setShiftY(+vo * me.HALF_LINE_DISTANCE);
-          offsetX = (vexStaff.getModifierXShift() > 0) ? -14 : 14;
-          if (vexStaff.hasTimeSignature)
-            offsetX -= 24;
-          if (ho)
-            offsetX += +ho * me.HALF_LINE_DISTANCE;
-          vexTempo.setShiftX(offsetX);
-          vexTempo.font = me.cfg.tempoFont;
-          vexStaff.modifiers.push(vexTempo);
         });
       },
 
@@ -1432,7 +1389,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * reads and converts the pitch of an MEI <b>note</b> element
+       * converts the pitch of an MEI <b>note</b> element to a VexFlow pitch
        *
        * @param {Element} mei_note
        * @return {String} the VexFlow pitch
@@ -1607,6 +1564,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           optionsObj.stem_direction = specified_dir;
         } else {
           optionsObj.auto_stem = true;
+        }
+      },
+
+      drawSystems : function(ctx) {
+        var me = this, i = me.systems.length;
+        while (i--) {
+          if (me.systems[i]) {
+            me.systems[i].format(ctx).draw(ctx);
+          }
         }
       },
 

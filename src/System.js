@@ -81,22 +81,30 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * width specified in the MEI file and writes them to the measure object
        */
       calculateMissingMeasureWidths : function() {
-        var me = this, i, j, totalSpecifiedMeasureWidth = 0, nonSpecifiedMeasureWidth, nonSpecified_n = 0;
+        var me = this, i, j, totalSpecifiedMeasureWidth = 0, avaliableSingleWidth, nonSpecified_n = 0, noteOffsets = 0;
 
         for ( i = 0, j = me.measures.length; i < j; i += 1) {
           if (me.measures[i].meiW === null) {
             nonSpecified_n += 1;
+            noteOffsets += me.measures[i].noteOffsetX;
           } else {
             totalSpecifiedMeasureWidth += me.measures[i].meiW;
           }
         }
-        nonSpecifiedMeasureWidth = Math.floor((me.coords.w - me.leftMar - totalSpecifiedMeasureWidth) / nonSpecified_n);
+        avaliableSingleWidth = Math.floor((me.coords.w - me.leftMar - totalSpecifiedMeasureWidth - noteOffsets) / nonSpecified_n);
         for ( i = 0, j = me.measures.length; i < j; i += 1) {
           if (me.measures[i].meiW === null) {
-            me.measures[i].w = nonSpecifiedMeasureWidth;
+            me.measures[i].w = avaliableSingleWidth + me.measures[i].noteOffsetX;
           } else {
             me.measures[i].w = me.measures[i].meiW;
           }
+        }
+      },
+
+      calculateMeasureOffsets : function() {
+        var measures = this.measures, i = measures.length;
+        while (i--) {
+          measures[i].calculateMeasureOffsets();
         }
       },
 
@@ -106,6 +114,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if ( typeof me.leftMar !== 'number') {
           me.calculateInitialIndent(ctx);
         }
+
+        me.calculateMeasureOffsets();
 
         me.calculateMissingMeasureWidths();
 
@@ -117,13 +127,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         for ( j = 0, l = m.length; j < l; j += 1) {
           if (m[j]) {
 
-            // m[j].processLabels();
-            // console.log(m[j]);
-            // TODO add/call measure function setHorizontalDimension
-
             var width = m[j].w;
 
             var staffs = m[j].getStaffs();
+
+            // var i = staffs.length;
+            // while (i--) {
+            // if (staffs[i]) {
+            //
+            // }
+            // }
 
             var i = staffs.length;
             while (i--) {
@@ -142,7 +155,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
                 staff.x += offsetX;
                 staff.glyph_start_x += offsetX;
-                staff.start_x += offsetX;
+                staff.start_x = staff.x + m[j].noteOffsetX;
 
                 staff.bounds.x += offsetX;
 
@@ -157,6 +170,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             offsetX += width;
 
           }
+
+          m[j].addTempoToStaves();
+
         }
 
         return me;
