@@ -44,6 +44,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      */
     m2v.StaveVoices = function() {
       this.all_voices = [];
+      this.formatter = new VF.Formatter();
     };
 
     m2v.StaveVoices.prototype = {
@@ -60,6 +61,28 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         this.all_voices = [];
       },
 
+      preFormat : function() {
+        var me = this, all, staff_n, i, f;
+
+        all = me.all_voices;
+        me.vexVoices = [];
+        me.vexVoicesStaffWise = {};
+        i = all.length;
+        while (i--) {
+          me.vexVoices.push(all[i].voice);
+          staff_n = all[i].staff_n;
+          if (me.vexVoicesStaffWise[staff_n]) {
+            me.vexVoicesStaffWise[staff_n].push(all[i].voice);
+          } else {
+            me.vexVoicesStaffWise[staff_n] = [all[i].voice];
+          }
+        }
+        f = me.formatter;
+
+        f.preCalculateMinTotalWidth(me.vexVoices);
+        return f.getMinTotalWidth();
+      },
+
       // TODO store them staffwise instead of extracting information at this point!?
       /**
        *
@@ -67,25 +90,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * the x dimensions of the voice
        */
       format : function(staff) {
-        var all, vexVoices, vexVoicesStaffWise, staff_n, i, f;
-        all = this.all_voices;
-        vexVoices = [];
-        vexVoicesStaffWise = {};
-        i = all.length;
-        while (i--) {
-          vexVoices.push(all[i].voice);
-          staff_n = all[i].staff_n;
-          if (vexVoicesStaffWise[staff_n]) {
-            vexVoicesStaffWise[staff_n].push(all[i].voice);
-          } else {
-            vexVoicesStaffWise[staff_n] = [all[i].voice];
-          }
+        var me = this, all, staff_n, i, f;
+
+        f = me.formatter;
+
+        for (i in me.vexVoicesStaffWise) {
+          f.joinVoices(me.vexVoicesStaffWise[i]);
         }
-        f = new VF.Formatter();
-        for (i in vexVoicesStaffWise) {
-          f.joinVoices(vexVoicesStaffWise[i]);
-        }
-        f.formatToStave(vexVoices, staff);
+        f.formatToStave(me.vexVoices, staff);
         // f.format(vexVoices, width);
         // new VF.Formatter().joinVoices(voices).format(voices, width,
         // {align_rests: true});

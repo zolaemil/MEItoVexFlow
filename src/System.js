@@ -17,7 +17,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       me.measures = [];
       me.currentMeasureInSystem = 0;
       me.resetCurrentMeasureX();
-
     };
 
     m2v.System.prototype = {
@@ -78,23 +77,24 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * calculates the width of all measures in a stave which don't have a
-       * width specified in the MEI file and writes them to the measure object
+       * specified width in the MEI code and writes them to the measure object
        */
       calculateMissingMeasureWidths : function() {
-        var me = this, i, j, totalSpecifiedMeasureWidth = 0, avaliableSingleWidth, nonSpecified_n = 0, noteOffsets = 0;
+        var me = this, i, j, totalSpecifiedMeasureWidth = 0, avaliableSingleWidth, nonSpecified_n = 0, noteOffsets = 0, totalVoicesW =0;
 
         for ( i = 0, j = me.measures.length; i < j; i += 1) {
           if (me.measures[i].meiW === null) {
             nonSpecified_n += 1;
             noteOffsets += me.measures[i].noteOffsetX;
+            totalVoicesW += me.measures[i].minVoicesW;
           } else {
             totalSpecifiedMeasureWidth += me.measures[i].meiW;
           }
         }
-        avaliableSingleWidth = Math.floor((me.coords.w - me.leftMar - totalSpecifiedMeasureWidth - noteOffsets) / nonSpecified_n);
+        avaliableSingleWidth = Math.floor((me.coords.w - me.leftMar - totalSpecifiedMeasureWidth - noteOffsets - totalVoicesW) / nonSpecified_n);
         for ( i = 0, j = me.measures.length; i < j; i += 1) {
           if (me.measures[i].meiW === null) {
-            me.measures[i].w = avaliableSingleWidth + me.measures[i].noteOffsetX;
+            me.measures[i].w = avaliableSingleWidth + me.measures[i].noteOffsetX + me.measures[i].minVoicesW;
           } else {
             me.measures[i].w = me.measures[i].meiW;
           }
@@ -102,9 +102,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       calculateMeasureOffsets : function() {
-        var measures = this.measures, i = measures.length;
+        var measures = this.measures, i = measures.length, w;
         while (i--) {
           measures[i].calculateMeasureOffsets();
+          w = measures[i].voices.preFormat();
+          measures[i].minVoicesW = w;
+          console.log(measures[i].minVoicesW);
         }
       },
 
