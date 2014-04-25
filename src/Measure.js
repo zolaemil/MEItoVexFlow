@@ -8,19 +8,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      */
     m2v.Measure = function(element, staffs, voices, startConnectors, inlineConnectors, tempoElements, tempoFont) {
       var me = this;
-
       me.element = element;
-
-      me.x = undefined;
-      me.y = undefined;
-      me.w = undefined;
-
-      me.tempoW = undefined;
-      me.clefW = undefined;
-      me.timeSigW = undefined;
-
-      me.meiW = me.getWidthAttr(element);
-
       me.staffs = staffs;
       /**
        * @property {MEI2VF.StaveVoices} voices The voices of all staffs in the
@@ -38,11 +26,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * MEI2VF.Connectors handling all right connectors
        */
       me.inlineConnectors = inlineConnectors;
-
       me.tempoElements = tempoElements;
       me.tempoFont = tempoFont;
-
       me.noteOffsetX = 0;
+      me.meiW = me.getWidthAttr(element);
     };
 
     m2v.Measure.prototype = {
@@ -85,26 +72,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * current measure
        */
       addTempoToStaves : function() {
-        var me = this, staff_n, staff, text, offsetX, vexTempo;
+        var me = this, staff_n, staff, offsetX, vexStaff, vexTempo, atts;
         $.each(me.tempoElements, function(i, tempoElement) {
           atts = m2v.Util.attsToObj(tempoElement);
-          ho = atts.ho;
-          vo = atts.vo;
           vexStaff = me.staffs[atts.staff];
-          text = $(tempoElement).text();
           vexTempo = new Vex.Flow.StaveTempo({
-            name : text,
+            name : $(tempoElement).text(),
             duration : atts['mm.unit'],
             dots : +atts['mm.dots'],
             bpm : +atts.mm
           }, vexStaff.x, 5);
-          if (vo)
-            vexTempo.setShiftY(+vo * me.HALF_LINE_DISTANCE);
+          if (atts.vo)
+            vexTempo.setShiftY(+atts.vo * me.HALF_LINE_DISTANCE);
           offsetX = (vexStaff.getModifierXShift() > 0) ? -14 : 14;
           if ( typeof vexStaff.timeSigIndex === 'number')
             offsetX -= 24;
-          if (ho)
-            offsetX += +ho * me.HALF_LINE_DISTANCE;
+          if (atts.ho)
+            offsetX += +atts.ho * me.HALF_LINE_DISTANCE;
           vexTempo.setShiftX(offsetX);
           vexTempo.font = me.tempoFont;
           vexStaff.modifiers.push(vexTempo);

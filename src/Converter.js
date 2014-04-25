@@ -21,6 +21,8 @@
 * the License.
 */
 
+// TODO fix hyphenation errors
+
 // TODO fix global leaks
 
 // TODO make direction models converter options again and remove them from the
@@ -952,7 +954,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processNote : function(element, staff, parent_layer, measure_n, staff_n, directions) {
-        var me = this, dots, mei_acci, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, i, atts, note_opts, note;
+        var me = this, dots, mei_accid, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, mei_staff_n, i, atts, note_opts, note;
 
         atts = m2v.Util.attsToObj(element);
 
@@ -1070,7 +1072,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processChord : function(element, staff, parent_layer, measure_n, staff_n, directions) {
-        var me = this, i, j, hasDots, $children, dots = [], keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_tie, mei_slur, mei_ho, chord, chord_opts;
+        var me = this, i, j, hasDots, $children, dots = [], keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_tie, mei_slur, mei_ho, chord, chord_opts, atts, note_atts;
 
         $children = $(element).children();
 
