@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * StaveConnector.js Author: Zoltan Komives (zolaemil@gmail.com) Created:
+ * 24.07.2013
+ *
+ * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
+ * University of Maryland
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+var MEI2VF = ( function(m2v, VF, $, undefined) {
+
+<span id='MEI2VF-Connectors-method-constructor'><span id='MEI2VF-Connectors'>    /**
+</span></span>     * @class MEI2VF.Connectors
+     * Contains information about stave connectors parsed from the staffGrp
+     * elements and their @symbol attributes
+     * @private
+     *
+     * @constructor
+     * @param {Object} labelMode
+     */
+    m2v.Connectors = function(labelMode) {
+      this.labelMode = labelMode;
+      this.allVexConnectors = [];
+    };
+
+    m2v.Connectors.prototype = {
+
+      vexTypes : {
+        'line' : VF.StaveConnector.type.SINGLE_LEFT,
+        'brace' : VF.StaveConnector.type.BRACE,
+        'bracket' : VF.StaveConnector.type.BRACKET,
+        'none' : null,
+        'singleright' : VF.StaveConnector.type.SINGLE_RIGHT
+        // non-MEI
+      },
+
+      vexTypesBarlineRight : {
+        'single' : VF.StaveConnector.type.SINGLE_RIGHT,
+        'dbl' : VF.StaveConnector.type.THIN_DOUBLE,
+        'end' : VF.StaveConnector.type.BOLD_DOUBLE_RIGHT,
+        // 'rptstart' : VF.StaveConnector.type.BOLD_DOUBLE_LEFT,
+        'rptend' : VF.StaveConnector.type.BOLD_DOUBLE_RIGHT,
+        // 'rptboth' : VF.Barline.type.REPEAT_BOTH,
+        'invis' : null
+      },
+
+      vexTypesBarlineLeft : {
+        'single' : VF.StaveConnector.type.SINGLE_LEFT,
+        'dbl' : VF.StaveConnector.type.THIN_DOUBLE,
+        'end' : VF.StaveConnector.type.BOLD_DOUBLE_LEFT,
+        'rptstart' : VF.StaveConnector.type.BOLD_DOUBLE_LEFT,
+        'invis' : null
+      },
+
+      addToVexConnectors : function(obj) {
+        this.allVexConnectors.push(obj);
+      },
+
+      getAll : function() {
+        return this.allVexConnectors;
+      },
+
+      createVexFromModels : function(models, currentMeasure, barline_l, barline_r, system_n) {
+        var me = this, vexType, top_staff, bottom_staff, vexConnector, label, labelMode;
+        labelMode = me.labelMode;
+        $.each(models, function() {
+
+          vexType = (barline_r) ? me.vexTypesBarlineRight[barline_r] : me.vexTypes[this.symbol];
+          top_staff = currentMeasure[this.top_staff_n];
+          bottom_staff = currentMeasure[this.bottom_staff_n];
+
+          if ( typeof vexType === 'number' &amp;&amp; top_staff &amp;&amp; bottom_staff) {
+            vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
+            vexConnector.setType(vexType);
+            me.addToVexConnectors(vexConnector);
+            if (labelMode === 'full') {
+              label = (system_n === 1) ? this.label : this.labelAbbr;
+            } else if (labelMode === 'abbr') {
+              label = this.labelAbbr;
+            }
+            if (label)
+              vexConnector.setText(label);
+          }
+
+          if (barline_l) {
+            vexType = me.vexTypesBarlineLeft[barline_l];
+            if ( typeof vexType === 'number' &amp;&amp; top_staff &amp;&amp; bottom_staff) {
+              vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
+              vexConnector.setType(vexType);
+              if (vexType === VF.StaveConnector.type.BOLD_DOUBLE_LEFT) {
+                vexConnector.checkShift = true;
+              }
+              me.addToVexConnectors(vexConnector);
+            }
+          }
+
+        });
+      },
+
+      setContext : function(ctx) {
+        this.ctx = ctx;
+        return this;
+      },
+
+      draw : function() {
+        var i, j, conn, shift;
+        for ( i = 0, j = this.allVexConnectors.length; i &lt; j; i += 1) {
+          conn = this.allVexConnectors[i];
+          if (conn.checkShift) {
+            shift = conn.top_stave.getModifierXShift();
+            if (shift &gt; 0)
+              conn.setXShift(shift);
+          }
+          conn.setContext(this.ctx).draw();
+        }
+      }
+    };
+
+    return m2v;
+
+  }(MEI2VF || {}, Vex.Flow, jQuery));
+</pre>
+</body>
+</html>
