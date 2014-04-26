@@ -60,24 +60,31 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.scaleContext(ctx, cfg);
 
         me.converter = new m2v.Converter(cfg);
+        me.texts = new MEI2TEXT.Texts();
+        me.anchoredTexts = new MEI2TEXT.AnchoredTexts();
+
 
         me.converter.setPgHeadProcessor(function(element) {
-          // console.log(me);
           me.texts.addComplexText(element, {
             x : this.printSpace.left,
             y : 200,
             w : this.printSpace.width
           });
         });
+        
+        me.converter.setAnchoredTextProcessor(function(element, staff) {
+          me.anchoredTexts.processAnchoredStaffText(element, staff);
+        });
+        
 
         // TODO für die texte etwas analoges zu der converter-klasse einrichten
         // (draw usw)
 
-        me.texts = new MEI2TEXT.Texts();
 
         me.converter.process(xmlDoc);
         me.converter.draw(ctx);
         me.texts.setContext(ctx).draw();
+        me.anchoredTexts.setContext(ctx).draw();
 
         // console.log(me.converter.systems);
 

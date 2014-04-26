@@ -21,16 +21,12 @@
 * the License.
 */
 
-// TODO fix hyphenation errors
-
-// TODO fix global leaks
+// TODO (directions) change to {xmlid1: [dir1, dir2], xmlid2: [dir3]} !?
 
 // TODO make direction models converter options again and remove them from the
 // measure!?
 
 // TODO mrests have to be ignored by the formatter
-
-// TODO add setAnchoredTextProcessor
 
 // TODO schon einmal die benutzten Elemente in den Schleifen unterbringen; dann
 // auch eine Möglichkeit schaffen, dass man einstellen kann, ob ein nicht
@@ -249,22 +245,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.allVexMeasureStaffs = [];
         /**
-         * Contains the information of all anchored texts from the MEI document
-         * in objects with the properties:
-         *
-         * -  `text`: The text content of the anchored text
-         * -  `container`: the container object, e.g. a VexFlow staff. Provides
-         * the basis for the calculation of
-         * absolute coordinates from the relative MEI attributes vo / ho.
-         * Irrelevant
-         * when both x and y are specified
-         * -  `x`: the x coordinate
-         * -  `y`: the y coordinate
-         * -  `ho`: the horizontal offset
-         * -  `vo`: the vertical offset
-         */
-        me.allAnchoredTexts = [];
-        /**
          * Contains all Vex.Flow.Beam objects. Data is just pushed in
          * and later processed as a whole, so the array index is currently
          * irrelevant.
@@ -318,8 +298,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.pendingSectionBreak = true;
         /**
          * @property {Object} currentVoltaType Contains information about the
-         * volta type of the
-         * current staff. Properties:
+         * volta type of the current staff. Properties:
          *
          * -  `start` {String} indicates the number to render to the volta. When
          * falsy, it is assumed that the volta does not start in the current
@@ -334,13 +313,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          *
          */
         me.unresolvedTStamp2 = [];
-        // TODO change to {xmlid1: [dir1, dir2], xmlid2: [dir3]} !?
         return me;
       },
 
       /**
-       * Calls {@link #reset} and then processes the
-       * specified MEI document or document fragment. The generated objects can
+       * Calls {@link #reset} and then processes the specified MEI document or
+       * document fragment. The generated objects can
        * be processed further or drawn immediately to a canvas via {@link #draw}.
        * @chainable
        * @param {XMLDocument} xmlDoc the XML document
@@ -370,7 +348,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
         me.hairpins.setContext(ctx).draw();
-        me.drawAnchoredTexts(me.allAnchoredTexts, me.HALF_LINE_DISTANCE, ctx);
         me.hyphenation.setContext(ctx).draw();
 
         return me;
@@ -386,7 +363,22 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * returns a 2d array of all VexFlow staff objects, arranged by
+       * assigns an external function for processing anchoredText elements. By
+       * default,
+       * anchoredText elements are ignored in MEI2VF.
+       * @param {Function} fn the callback function. Parameter: element
+       */
+      setAnchoredTextProcessor : function(staffFn, layerFn) {
+        if (staffFn) {
+          this.processAnchoredStaffText = staffFn;
+        };
+        if (layerFn) {
+          this.processAnchoredLayerText = layerFn;
+        }
+      },
+
+      /**
+       * returns a 2d array of all Vex.Flow.Stave objects, arranged by
        * [measure_n][staff_n]
        * @return {Array}
        */
@@ -399,8 +391,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * resets the x coordinates, sets the y coordinates of all staves in the
-       * current system and updates the staff modifier infos
+       * creates in initializes a new {@link MEI2VF.System} and updates the staff
+       * modifier infos
        */
       startNewSystem : function() {
         var me = this, system;
@@ -426,7 +418,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           me.systemInfo.forceStaveStartInfos();
         }
 
-        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {system: system});
+        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {
+          system : system
+        });
 
         me.systems[me.currentSystem_n] = system;
         return system;
@@ -632,7 +626,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * stave in its system
        */
       processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices, atSystemStart, atSystemTop, directions) {
-        var me = this, staff, staff_n, anchoredTexts, readEvents, layer_events;
+        var me = this, staff, staff_n, readEvents, layer_events;
 
         staff_n = +$(staff_element).attr('n');
 
@@ -642,7 +636,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         staffs[staff_n] = staff;
 
-        anchoredTexts = $(staff_element).children('anchoredText').each(function() {
+        $(staff_element).children('anchoredText').each(function() {
           me.processAnchoredStaffText(this, staff);
         });
 
@@ -763,23 +757,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         voice.setStrict(false);
         voice.addTickables(voice_contents);
         return voice;
-      },
-
-      // TODO: better attach to staff instead of writing an own array!?!?
-      // TODO allow anchored text relative to other elements than <staff>
-      /**
-       *
-       */
-      processAnchoredStaffText : function(element, staff) {
-        var me = this, $element = $(element);
-        me.allAnchoredTexts.push({
-          text : $element.text(),
-          container : staff,
-          x : $element.attr('x'),
-          y : $element.attr('y'),
-          ho : $element.attr('ho'),
-          vo : $element.attr('vo')
-        });
       },
 
       /**
@@ -934,7 +911,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           case 'chord' :
             return me.processChord(element, staff, staff_n, directions);
           case 'anchoredText' :
-            return me.processAnchoredText(element, staff, staff_n, directions);
+            return me.processAnchoredLayerText(element, staff, staff_n, directions);
           default :
             throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element_type + '" is not supported.');
         }
@@ -943,7 +920,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processAnchoredText : function() {
+      processAnchoredStaffText : function() {
+        // TODO
+        return;
+      },
+
+      /**
+       *
+       */
+      processAnchoredLayerText : function() {
         // TODO
         return;
       },
@@ -1560,23 +1545,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       drawVexBeams : function(beams, ctx) {
         $.each(beams, function() {
           this.setContext(ctx).draw();
-        });
-      },
-
-      // TODO make anchored texts staff modifiers (?)
-      /**
-       *
-       */
-      drawAnchoredTexts : function(allAnchoredTexts, halfLineDistance, ctx) {
-        var x, y, staff;
-        $.each(allAnchoredTexts, function() {
-          staff = this.container;
-          y = +this.y || staff.getYForLine(3) - 4 + (+this.vo * halfLineDistance || 0);
-          x = +this.x || staff.glyph_start_x + (+this.ho * halfLineDistance || 0);
-          ctx.font = this.font || '20px Times';
-          if (this.align)
-            ctx.textAlign = this.align;
-          ctx.fillText(this.text, x, y);
         });
       }
     };
