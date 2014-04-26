@@ -1,6 +1,6 @@
 // 04/26/2014: setWidth is copied from the latest VexFlow version on GitHub; this
 // version of setWidth is necessary for the measure calculation to work; the
-// bower version of VexFlow currently has an older version of this function.
+// older version currently available via bower doesn't work.
 // ### delete when the new version of the function is available in bower ###
 Vex.Flow.Stave.prototype.setWidth = function(width) {
   this.width = width;

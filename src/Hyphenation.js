@@ -68,14 +68,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                   hyphen_width : hyphenWidth,
                   max_hyphen_distance : me.maxHyphenDistance
                 };
-                if ( typeof first === 'number') {
+                if (first.type ==='system') {
                   opts.first_annot = {
-                    x : first
+                    x : first.getMeasures()[0].getX()
                   };
                 } else {
                   opts.first_annot = first;
                 }
-                if ( typeof second === 'number' || second === undefined) {
+                if (second === undefined || second.type ==='system') {
                   opts.last_annot = {
                     x : me.printSpaceRight
                   };

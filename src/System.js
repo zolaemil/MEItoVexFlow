@@ -13,6 +13,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      */
     m2v.System = function(leftMar, coords, staffYs, labels) {
       var me = this;
+      me.type = 'system';
+      
       me.leftMar = leftMar;
       me.coords = coords;
       me.staffYs = staffYs;
@@ -27,10 +29,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       getStaffYs : function() {
         return this.staffYs;
-      },
-
-      getX : function() {
-        return this.x;
       },
 
       addMeasure : function(measure) {

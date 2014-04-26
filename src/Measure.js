@@ -49,14 +49,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return this.voices;
       },
 
+      getX: function() {
+        return this.getFirstDefinedStaff().x;
+      },
+
       /**
        *
        */
-      getFirstDefinedStaff : function(staffs) {
-        var i = staffs.length;
+      getFirstDefinedStaff : function() {
+        var me = this, i = me.staffs.length;
         while (i--) {
-          if (staffs[i])
-            return i;
+          if (me.staffs[i])
+            return me.staffs[i];
         }
         throw new m2v.RUNTIME_ERROR('ERROR', 'getFirstDefinedStaff(): no staff found in the current measure.');
       },
@@ -109,7 +113,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       calculateRepeatPadding : function() {
         var me = this;
-        var staff = me.staffs[me.getFirstDefinedStaff(me.staffs)];
+        var staff = me.getFirstDefinedStaff();
         me.repeatPadding = (staff.modifiers[0].barline == Vex.Flow.Barline.type.REPEAT_BEGIN && staff.modifiers.length > 2) ? 20 : 0;
       },
 
@@ -146,7 +150,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             staff.setContext(ctx).draw();
           }
         }
-        me.voices.format(staffs[me.getFirstDefinedStaff(staffs)]);
+        me.voices.format(me.getFirstDefinedStaff());
         me.voices.draw(ctx, staffs);
         me.startConnectors.setContext(ctx).draw();
         me.inlineConnectors.setContext(ctx).draw();
