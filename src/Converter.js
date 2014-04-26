@@ -426,7 +426,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           me.systemInfo.forceStaveStartInfos();
         }
 
-        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), system);
+        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {system: system});
 
         me.systems[me.currentSystem_n] = system;
         return system;
