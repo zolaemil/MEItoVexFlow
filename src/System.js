@@ -1,8 +1,7 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
-    // TODO width calculation: extra width for shifted repeat bar begins!
-    // TODO width calculation: take end modifiers into account, too (not urgent; currently, end
-    // modifiers are not supported in mei2vf)
+    // TODO width calculation: take end modifiers into account, too (not urgent; currently, since end
+    // modifiers are currently not part of mei2vf)
 
     /**
      * A single instance of a staff system, containing and processing information
@@ -12,7 +11,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      *
      * @constructor
      */
-    m2v.System = function(startMeasureElement, leftMar, coords, staffYs, labels, labelMode) {
+    m2v.System = function(leftMar, coords, staffYs, labels) {
       var me = this;
       me.leftMar = leftMar;
       me.coords = coords;
@@ -83,7 +82,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * specified width in the MEI code and writes them to the measure object
        */
       calculateMissingMeasureWidths : function() {
-        var me = this, i, j, totalSpecifiedMeasureWidth = 0, avaliableSingleWidth, nonSpecified_n = 0, noteOffsets = 0, totalVoicesW = 0;
+        var me = this, i, j, totalSpecifiedMeasureWidth = 0, avaliableSingleWidth, nonSpecified_n = 0;
         for ( i = 0, j = me.measures.length; i < j; i += 1) {
           if (me.measures[i].meiW === null) {
             nonSpecified_n += 1;
@@ -103,7 +102,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       format : function(ctx) {
-        var me = this, i, j, l, measures, offsetX, width, staffs, staff, label;
+        var me = this, i, j, l, measures, offsetX, width, staffs, staff, labels;
         if ( typeof me.leftMar !== 'number') {
           me.calculateInitialIndent(ctx);
         }
@@ -113,31 +112,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         measures = me.getMeasures();
         for ( j = 0, l = measures.length; j < l; j += 1) {
           if (measures[j]) {
-            width = measures[j].w;
-            staffs = measures[j].getStaffs();
-            i = staffs.length;
-            while (i--) {
-              if (staffs[i]) {
-                staff = staffs[i];
-                if (j === 0) {
-                  label = me.labels[i];
-                  if ( typeof label === 'string') {
-                    staff.setText(label, VF.Modifier.Position.LEFT, {
-                      shift_y : -3
-                    });
-                  }
-                }
-                staff.x += offsetX;
-                staff.glyph_start_x += offsetX;
-                staff.start_x = staff.x + measures[j].noteOffsetX;
-                staff.bounds.x += offsetX;
-                staff.setWidth(width);
-                staff.modifiers[0].x += offsetX;
-                // staff.end_x += offsetX + offsetW;
-                // staff.glyph_end_x += offsetX + offsetW;
-              }
-            }
-            offsetX += width;
+              labels = (j === 0) ? me.labels : null;
+            measures[j].format(offsetX, labels);
+            offsetX += measures[j].w;
           }
           measures[j].addTempoToStaves();
         }

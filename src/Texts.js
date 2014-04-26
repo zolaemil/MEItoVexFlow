@@ -33,10 +33,10 @@ var MEI2TEXT = ( function(m2t, VF, $, undefined) {
       htmlToArray : function(element, opts) {
         var me = this, obj, attObj, defaults, text;
 
-        $(element).contents().each(function(i, childNode) {
+        $(element).contents().each(function() {
 
-          if (childNode.nodeName === '#text') {
-            text = childNode.textContent.replace(/([\n|\r]+\s*)/g, '');
+          if (this.nodeName === '#text') {
+            text = this.textContent.replace(/([\n|\r]+\s*)/g, '');
             if (text) {
               me.textArray[me.line_n].push({
                 text : text,
@@ -44,27 +44,27 @@ var MEI2TEXT = ( function(m2t, VF, $, undefined) {
               });
             }
           } else {
-            switch (childNode.localName) {
+            switch (this.localName) {
               case undefined :
                 break;
               case 'lb' :
                 me.breakLine();
                 break;
               case 'title' :
-                attObj = MEI2VF.Util.attsToObj(childNode);
+                attObj = MEI2VF.Util.attsToObj(this);
                 defaults = {
-                  el : childNode.localName,
+                  el : this.localName,
                   halign : 'center',
                   fontsize : (attObj.type === 'sub') ? 35 : 50,
                   fontweight : 'Bold'
                 };
                 obj = $.extend({}, opts, defaults, attObj);
-                me.htmlToArray(childNode, obj);
+                me.htmlToArray(this, obj);
                 me.breakLine();
                 break;
               default :
-                obj = $.extend({}, opts, MEI2VF.Util.attsToObj(childNode));
-                me.htmlToArray(childNode, obj);
+                obj = $.extend({}, opts, MEI2VF.Util.attsToObj(this));
+                me.htmlToArray(this, obj);
             }
           }
         });
@@ -82,47 +82,47 @@ var MEI2TEXT = ( function(m2t, VF, $, undefined) {
       },
 
       draw : function() {
-        var me = this, coords, fontsize, leftTexts, centerTexts, rightTexts, maxFontSizeInLine, offsetX, fontweight, fontstyle, i;
+        var me = this, coords, leftTexts, centerTexts, rightTexts, maxFontSizeInLine, i;
 
-        i = me.complexTextModels.length;
-        while (i--) {
-          coords = me.complexTextModels[i].coords;
-
-          $.each(me.complexTextModels[i].texts, function(i, lineObj) {
+        var processText = function () {
             leftTexts = [];
             centerTexts = [];
             rightTexts = [];
             maxFontSizeInLine = 0;
-
-            $.each(lineObj, function(j, obj) {
-              switch (obj.opts.halign) {
+            $.each(this, function() {
+              switch (this.opts.halign) {
                 case 'center' :
-                  centerTexts.push(obj);
+                  centerTexts.push(this);
                   break;
                 case 'right' :
-                  rightTexts.push(obj);
+                  rightTexts.push(this);
                   break;
                 default :
-                  leftTexts.push(obj);
+                  leftTexts.push(this);
               }
             });
 
             maxFontSizeInLine = Math.max(me.drawCenterTexts(centerTexts, coords), me.drawRightAlignedTexts(rightTexts, coords), me.drawLeftAlignedTexts(leftTexts, coords));
 
-            coords.y += maxFontSizeInLine * me.lineHeight;
-          });
+            coords.y += maxFontSizeInLine * me.lineHeight;          
+        };
+
+        i = me.complexTextModels.length;
+        while (i--) {
+          coords = me.complexTextModels[i].coords;
+          $.each(me.complexTextModels[i].texts, processText);
         }
       },
 
       drawCenterTexts : function(centerTexts, coords) {
         var me = this, fontsize, maxFontSize, fontweight, fontstyle, totalTextWidth = 0;
 
-        $.each(centerTexts, function(j, obj) {
-          fontsize = obj.opts.fontsize || me.defaultFontSize;
-          fontweight = obj.opts.fontweight || '';
-          fontstyle = obj.opts.fontstyle || '';
+        $.each(centerTexts, function() {
+          fontsize = this.opts.fontsize || me.defaultFontSize;
+          fontweight = this.opts.fontweight || '';
+          fontstyle = this.opts.fontstyle || '';
           me.ctx.font = fontstyle + ' ' + fontweight + ' ' + fontsize + 'px Times';
-          totalTextWidth += me.ctx.measureText(obj.text).width;
+          totalTextWidth += me.ctx.measureText(this.text).width;
         });
 
         maxFontSize = me.drawLeftAlignedTexts(centerTexts, {
@@ -135,15 +135,15 @@ var MEI2TEXT = ( function(m2t, VF, $, undefined) {
 
       drawLeftAlignedTexts : function(leftTexts, coords) {
         var me = this, fontsize, maxFontSize = 0, fontweight, fontstyle, offsetX = 0;
-        $.each(leftTexts, function(j, obj) {
-          fontsize = obj.opts.fontsize || me.defaultFontSize;
+        $.each(leftTexts, function() {
+          fontsize = this.opts.fontsize || me.defaultFontSize;
           maxFontSize = Math.max(fontsize, maxFontSize);
-          fontweight = obj.opts.fontweight || '';
-          fontstyle = obj.opts.fontstyle || '';
+          fontweight = this.opts.fontweight || '';
+          fontstyle = this.opts.fontstyle || '';
           me.ctx.font = fontstyle + ' ' + fontweight + ' ' + fontsize + 'px Times';
           me.ctx.textAlign = 'left';
-          me.ctx.fillText(obj.text, coords.x + offsetX, coords.y);
-          offsetX += me.ctx.measureText(obj.text).width;
+          me.ctx.fillText(this.text, coords.x + offsetX, coords.y);
+          offsetX += me.ctx.measureText(this.text).width;
         });
         return maxFontSize;
       },

@@ -72,12 +72,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * current measure
        */
       addTempoToStaves : function() {
-        var me = this, staff_n, staff, offsetX, vexStaff, vexTempo, atts;
-        $.each(me.tempoElements, function(i, tempoElement) {
-          atts = m2v.Util.attsToObj(tempoElement);
+        var me = this, offsetX, vexStaff, vexTempo, atts;
+        $.each(me.tempoElements, function() {
+          atts = m2v.Util.attsToObj(this);
           vexStaff = me.staffs[atts.staff];
           vexTempo = new Vex.Flow.StaveTempo({
-            name : $(tempoElement).text(),
+            name : $(this).text(),
             duration : atts['mm.unit'],
             dots : +atts['mm.dots'],
             bpm : +atts.mm
@@ -113,11 +113,29 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.repeatPadding = (staff.modifiers[0].barline == Vex.Flow.Barline.type.REPEAT_BEGIN && staff.modifiers.length > 2) ? 20 : 0;
       },
 
-      // format: function(ctx) {
-      //
-      // },
-
       // TODO align start modifiers (changes in vexflow necessary??)
+      format : function(offsetX, labels) {
+        var me = this, width = me.w, staffs = me.staffs, i = staffs.length;
+        while (i--) {
+          if (staffs[i]) {
+            staff = staffs[i];
+            if (labels && typeof labels[i] === 'string') {
+              staff.setText(labels[i], VF.Modifier.Position.LEFT, {
+                shift_y : -3
+              });
+            }
+            staff.x += offsetX;
+            staff.glyph_start_x += offsetX;
+            staff.start_x = staff.x + me.noteOffsetX;
+            staff.bounds.x += offsetX;
+            staff.setWidth(width);
+            staff.modifiers[0].x += offsetX;
+            // staff.end_x += offsetX + offsetW;
+            // staff.glyph_end_x += offsetX + offsetW;
+          }
+        }
+      },
+
       draw : function(ctx) {
         var me = this, i, staffs, staff;
         staffs = me.staffs;

@@ -369,6 +369,7 @@ MeiLib.dotsMult = function(node) {
 MeiLib.sumUpUntil = function(eventid, layer, meter) {
 
   var sumUpUntil_inNode = function(node_elem) {
+    var beats, children, found, dur, dots, subtotal, chord_dur, i;
     var node = $(node_elem);
     var node_name = node.prop('localName');
     if (node_name === 'note' || node_name === 'rest') {
@@ -378,13 +379,13 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
           found : true
         };
       } else {
-        var dur = Number(node.attr('dur'));
+        dur = Number(node.attr('dur'));
         if (!dur)
           throw new MeiLib.RuntimeError('MeiLib.sumUpUntil:E001',
               "Duration is not a number ('breve' and 'long' are not supported).");
-        var dots = node.attr('dots');
+        dots = node.attr('dots');
         dots = Number(dots || "0");
-        var beats = MeiLib.dotsMult(node)
+        beats = MeiLib.dotsMult(node)
             * MeiLib.dur2beats(dur, meter);
 
         return {
@@ -408,11 +409,11 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
     } else if (node_name === 'layer' || node_name === 'beam') {
 
       // sum up childrens' duration
-      var beats = 0;
-      var children = node.children();
-      var found = false;
-      for (var i = 0; i < children.length && !found; ++i) {
-        var subtotal = sumUpUntil_inNode(children[i]);
+      beats = 0;
+      children = node.children();
+      found = false;
+      for (i = 0; i < children.length && !found; ++i) {
+        subtotal = sumUpUntil_inNode(children[i]);
         beats += subtotal.beats;
         found = subtotal.found;
       }
@@ -421,7 +422,7 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
         found : found
       };
     } else if (node_name === 'chord') {
-      var chord_dur = node.attr('dur');
+      chord_dur = node.attr('dur');
       if (node.attr('xml:id') === eventid) {
         return {
           beats : 0,
@@ -429,7 +430,7 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
         };
       } else {
         // ... or find the longest note in the chord ????
-        var chord_dur = node.attr('dur');
+        chord_dur = node.attr('dur');
         if (chord_dur) {
           if (node.find("[xml\\:id='" + eventid + "']").length) {
             return {
@@ -443,10 +444,10 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
             };
           }
         } else {
-          var children = node.children();
-          var found = false;
-          for (var i = 0; i < children.length && !found; ++i) {
-            var subtotal = sumUpUntil_inNode(children[i]);
+          children = node.children();
+          found = false;
+          for (i = 0; i < children.length && !found; ++i) {
+            subtotal = sumUpUntil_inNode(children[i]);
             beats = subtotal.beats;
             found = subtotal.found;
           }
@@ -524,7 +525,7 @@ MeiLib.SliceMEI = function(MEI, params) {
     $(slice).find('staffDef').remove(':not(' + staffDefSelector + ')');
   if (params.noClef || params.noKey || params.noMeter) {
     var staffDefs = $(slice).find('staffDef');
-    var scoreDefs = $(slice).find('scoreDef');
+    scoreDefs = $(slice).find('scoreDef');
     setVisibles(scoreDefs, params);
     setVisibles(staffDefs, params);
   }
@@ -724,16 +725,17 @@ MeiLib.MeiDoc.prototype.parseEditorList = function() {
  * xml:id attribute value of the <app> or <choice> elements.
  */
 MeiLib.MeiDoc.prototype.parseALTs = function() {
+  var i, j;
   this.ALTs = {};
   // console.log(this.rich_score);
   var apps = $(this.rich_score).find('app, choice');
-  for (var i = 0; i < apps.length; i++) {
+  for (i = 0; i < apps.length; i++) {
     var app = apps[i];
     var parent = app.parentNode;
     var altitems = $(app).find('rdg, lem, sic, corr');
     var AppsItem = new MeiLib.Alt(MeiLib.XMLID(app), MeiLib.XMLID(parent));
     AppsItem.altitems = {};
-    for (var j = 0; j < altitems.length; j++) {
+    for (j = 0; j < altitems.length; j++) {
       var altitem = altitems[j];
       var source = $(altitem).attr('source');
       var resp = $(altitem).attr('resp');
@@ -748,17 +750,18 @@ MeiLib.MeiDoc.prototype.parseALTs = function() {
 }
 
 MeiLib.MeiDoc.prototype.initAltgroups = function() {
+  var i, j;
   var ALTs = this.ALTs;
   annots = $(this.rich_score)
       .find('annot[type="appGrp"], annot[type="choiceGrp"]');
   this.altgroups = {};
-  for (var i = 0; i < annots.length; i++) {
+  for (i = 0; i < annots.length; i++) {
     altgroup = [];
     token_list = $(annots[i]).attr('plist').split(' ');
-    for (var j = 0; j < token_list.length; j++) {
+    for (j = 0; j < token_list.length; j++) {
       altgroup.push(token_list[j].replace('#', ''));
     }
-    for (var j in altgroup) {
+    for (j in altgroup) {
       this.altgroups[altgroup[j]] = altgroup;
     }
   };

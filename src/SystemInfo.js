@@ -187,7 +187,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * @param {Element} element the scoreDef element to process
        */
       processScoreDef_child : function(element) {
-        var me = this, staff_n;
+        var me = this;
         switch (element.localName) {
           case 'staffGrp' :
             me.processStaffGrp(element);
@@ -203,7 +203,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processPgHead : function(element) {
+      processPgHead : function(unused_element) {
         return;
       },
 

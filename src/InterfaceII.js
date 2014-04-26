@@ -147,7 +147,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // passed!?
       // TODO handle jQuery target objects, too!?
       createCanvas : function(target, backend, cfg) {
-        var me = this, h, w;
+        var h, w;
         if (target.localName === 'canvas' || target.localName === 'svg')
           return target;
         h = cfg.page_height * cfg.page_scale;

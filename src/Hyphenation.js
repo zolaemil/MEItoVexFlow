@@ -49,7 +49,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // TODO add support for hyphens in lines where neither the first nor the
       // second syllable occur
       draw : function() {
-        var me = this, i, k, first, second, hyphenCount, hyphenWidth, endFirst, hyphenY, distance, hyphenCount, singleWidth, hyphenStart;
+        var me = this, i, k, first, second, hyphenWidth;
 
         me.ctx.setFont(me.font.family, me.font.size, me.font.weight);
 

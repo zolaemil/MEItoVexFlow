@@ -74,20 +74,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       createVexFromModels : function(models, currentMeasure, barline_l, barline_r, system_n) {
         var me = this, vexType, top_staff, bottom_staff, vexConnector, label, labelMode;
         labelMode = me.labelMode;
-        $.each(models, function(i, model) {
+        $.each(models, function() {
 
-          vexType = (barline_r) ? me.vexTypesBarlineRight[barline_r] : me.vexTypes[model.symbol];
-          top_staff = currentMeasure[model.top_staff_n];
-          bottom_staff = currentMeasure[model.bottom_staff_n];
+          vexType = (barline_r) ? me.vexTypesBarlineRight[barline_r] : me.vexTypes[this.symbol];
+          top_staff = currentMeasure[this.top_staff_n];
+          bottom_staff = currentMeasure[this.bottom_staff_n];
 
           if ( typeof vexType === 'number' && top_staff && bottom_staff) {
             vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
             vexConnector.setType(vexType);
             me.addToVexConnectors(vexConnector);
             if (labelMode === 'full') {
-              label = (system_n === 1) ? model.label : model.labelAbbr;
+              label = (system_n === 1) ? this.label : this.labelAbbr;
             } else if (labelMode === 'abbr') {
-              label = model.labelAbbr;
+              label = this.labelAbbr;
             }
             if (label)
               vexConnector.setText(label);
