@@ -104,7 +104,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       format : function(ctx) {
-        var me = this, i, j, l, measures, offsetX, width, staffs, staff, labels;
+        var me = this, i, j, measures, offsetX, labels;
         if ( typeof me.leftMar !== 'number') {
           me.calculateInitialIndent(ctx);
         }
@@ -112,13 +112,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.calculateMissingMeasureWidths();
         offsetX = me.coords.x + me.leftMar;
         measures = me.getMeasures();
-        for ( j = 0, l = measures.length; j < l; j += 1) {
-          if (measures[j]) {
-              labels = (j === 0) ? me.labels : null;
-            measures[j].format(offsetX, labels);
-            offsetX += measures[j].w;
+        for ( i = 0, j = measures.length; i < j; i += 1) {
+          if (measures[i]) {
+              labels = (i === 0) ? me.labels : null;
+            measures[i].format(offsetX, labels);
+            offsetX += measures[i].w;
           }
-          measures[j].addTempoToStaves();
+          measures[i].addTempoToStaves();
         }
         return me;
       },

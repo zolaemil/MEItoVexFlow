@@ -92,7 +92,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         for (i in me.vexVoicesStaffWise) {
           f.joinVoices(me.vexVoicesStaffWise[i]);
         }
-        f.formatToStave(me.vexVoices, staff);
+        f.formatToStave(me.vexVoices, staff, {align_rests: true});
         // f.format(vexVoices, width);
         // new VF.Formatter().joinVoices(voices).format(voices, width,
         // {align_rests: true});

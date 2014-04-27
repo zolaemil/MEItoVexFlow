@@ -181,29 +181,29 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				test_cases.push({ title: "Plain Staff", mei_xml: 'TC.PlainStaff.xml'});
 				test_cases.push({ title: "Fermatas", mei_xml: 'TC.Fermatas.xml'});
 				
-				// test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
-				// // test_cases.push({ 
-					// // title: "Page Layout, measure widths in the MEI code", 
-					// // mei_xml: 'TC.PageLayout.xml',
-					// // canvas_width: 1600, 
-					// // canvas_height:2700,
-					// // options: {
-						// // labelMode: 'full'
-        			// // }
-        		// // });
-        		// test_cases.push({ 
-					// title: "Page Layout, automatic measure width calculation", 
-					// mei_xml: 'TC.PageLayoutAutoWidths.xml',
+				test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
+				// test_cases.push({ 
+					// title: "Page Layout, measure widths in the MEI code", 
+					// mei_xml: 'TC.PageLayout.xml',
 					// canvas_width: 1600, 
 					// canvas_height:2700,
 					// options: {
 						// labelMode: 'full'
         			// }
         		// });
-        		// test_cases.push({title: "Hyphenation", mei_xml: 'TC.Hyphens.xml', canvas_width: 1200, canvas_height:300 });
-// 				
-				// //Test cases that are supposed to generate error messages on the console:
-				 // test_cases.push({ title: 'Missing_Attribute_Test_Case', mei_xml: 'TC.MissingAttribute.xml'});
+        		test_cases.push({ 
+					title: "Page Layout, automatic measure width calculation", 
+					mei_xml: 'TC.PageLayoutAutoWidths.xml',
+					canvas_width: 1600, 
+					canvas_height:2700,
+					options: {
+						labelMode: 'full'
+        			}
+        		});
+        		test_cases.push({title: "Hyphenation", mei_xml: 'TC.Hyphens.xml', canvas_width: 1200, canvas_height:300 });
+				
+				//Test cases that are supposed to generate error messages on the console:
+				 test_cases.push({ title: 'Missing_Attribute_Test_Case', mei_xml: 'TC.MissingAttribute.xml'});
 
 				var canvas_elements = new Array();
 				var title_elements = new Array();

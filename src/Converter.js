@@ -21,26 +21,6 @@
 * the License.
 */
 
-// TODO add support for trill etc
-
-// TODO fix measure = 0 bug!
-
-// TODO add config to set the behaviour when an element is not supported;
-// depending on that setting, either throw a notsuppted error or silently ignore
-// the element; maybe even let the users specify which elements / attributes
-// should be silently ignored!?
-
-// TODO externalize label rendering
-
-// TODO make direction models converter options again and remove them from the
-// measure!?
-
-// TODO mrests have to be ignored by the formatter
-
-// TODO das mit dem tempo auf einzelnen noten lässt sich wohl gut lösen, wenn man
-// statt staff.setTempo addModifier verwendet (siehe setTempo in stave.js); dort
-// kann man x- und y-koordinaten angeben!
-
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
@@ -1038,7 +1018,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processChord : function(element, staff, staff_n) {
-        var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_slur, mei_ho, chord, chord_opts, atts, note_atts;
+        var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], durAtt, xml_id, mei_slur, mei_ho, chord, chord_opts, atts, note_atts;
 
         $children = $(element).children();
 
@@ -1203,7 +1183,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processmRest : function(element, staff) {
-        var me = this, mRest, mei_ho, atts;
+        var me = this, mRest, atts;
 
         try {
           atts = m2v.Util.attsToObj(element);

@@ -39,7 +39,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       drawBoundingBoxes : function(ctx, options) {
-        var me = this, i, j, k, l, measure, m, coords, y;
+        var me = this, i, j, k, l, measure, m, coords;
         options = options || {};
         ctx.save();
         if (options.staffs && options.staffs.data) {
