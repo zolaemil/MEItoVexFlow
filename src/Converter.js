@@ -33,9 +33,6 @@
 // vorhandenes Element entweder einfach ignoriert wird oder aber ein Fehler
 // geworfen wird!
 
-// TODO vorschlagen, evtl nach namespaces geordnet unterordner von src anzulegen;
-// da könnte in einen dann auch das mit den texten rein
-
 // TODO single out measure number attachment
 
 // TODO das mit dem tempo auf einzelnen noten lässt sich wohl gut lösen, wenn man

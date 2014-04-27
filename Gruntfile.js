@@ -37,7 +37,6 @@ module.exports = function(grunt) {
               'src/tables.js',
               'src/Ties.js',
               'src/StaffInfo.js',
-              'src/MEI2TEXT/Texts.js',
               'src/StaveConnector.js',
               'src/StaveVoices.js',
               'src/System.js',
