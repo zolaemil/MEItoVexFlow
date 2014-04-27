@@ -35,6 +35,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         this.measures.push(measure);
       },
 
+      getMeasure : function(i) {
+        return this.measures[i];
+      },
+
       getMeasures : function() {
         return this.measures;
       },

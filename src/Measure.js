@@ -6,7 +6,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      *
      * @constructor
      */
-    m2v.Measure = function(element, staffs, voices, startConnectors, inlineConnectors, tempoElements, tempoFont) {
+    m2v.Measure = function(element, n, staffs, voices, startConnectors, inlineConnectors, tempoElements, tempoFont) {
       var me = this;
       me.element = element;
       me.staffs = staffs;
@@ -30,6 +30,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       me.tempoFont = tempoFont;
       me.noteOffsetX = 0;
       me.meiW = me.getWidthAttr(element);
+      /**
+       * @property {Number} n The number of the current measure as specified in
+       * the MEI document
+       */
+      me.n = n;
     };
 
     m2v.Measure.prototype = {
@@ -49,18 +54,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return this.voices;
       },
 
-      getX: function() {
+      getX : function() {
         return this.getFirstDefinedStaff().x;
+      },
+
+      getN : function() {
+        return this.n;
       },
 
       /**
        *
        */
       getFirstDefinedStaff : function() {
-        var me = this, i = me.staffs.length;
-        while (i--) {
-          if (me.staffs[i])
+        var me = this, i, j;
+        for ( i = 0, j = me.staffs.length; i < j; i += 1) {
+          if (me.staffs[i]) {
             return me.staffs[i];
+          }
         }
         throw new m2v.RUNTIME_ERROR('ERROR', 'getFirstDefinedStaff(): no staff found in the current measure.');
       },

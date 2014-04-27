@@ -33,8 +33,6 @@
 // vorhandenes Element entweder einfach ignoriert wird oder aber ein Fehler
 // geworfen wird!
 
-// TODO single out measure number attachment
-
 // TODO das mit dem tempo auf einzelnen noten lässt sich wohl gut lösen, wenn man
 // statt staff.setTempo addModifier verwendet (siehe setTempo in stave.js); dort
 // kann man x- und y-koordinaten angeben!
@@ -106,11 +104,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * outermost staffDef element
          */
         autoStaveConnectorLine : true,
-        /**
-         * @cfg {Boolean} autoMeasureNumbers Specifies if measure numbers should
-         * automatically be added to each system start
-         */
-        autoMeasureNumbers : false,
         /**
          * @cfg {String} labelMode Specifies the way voice labels are added
          * to staves. Values:
@@ -382,6 +375,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       getAllVexMeasureStaffs : function() {
         return this.allVexMeasureStaffs;
       },
+      
+      /**
+       * returns all systems created when processing the MEI document
+       * @return {Array} an array of {@link MEI2VF.System} objects  
+       */
+      getSystems: function() {
+        return this.systems;
+      },
 
       getCurrentSystem : function() {
         return this.systems[this.systems.length - 1];
@@ -578,7 +579,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.extract_linkingElements(slurElements, element, 'slur', me.slurs);
         me.extract_linkingElements(hairpinElements, element, 'hairpin', me.hairpins);
 
-        var measure = new m2v.Measure(element, staffs, currentStaveVoices, startConnectors, inlineConnectors, tempoElements, me.cfg.tempoFont);
+        var measure = new m2v.Measure(element, measure_n, staffs, currentStaveVoices, startConnectors, inlineConnectors, tempoElements, me.cfg.tempoFont);
 
         system.addMeasure(measure);
 
@@ -716,11 +717,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (right_barline)
           staff.setEndBarType(m2v.tables.barlines[right_barline]);
 
-        if (atSystemTop) {
-          if (atSystemStart && me.cfg.autoMeasureNumbers && measure_n !== 1)
-            staff.setMeasure(measure_n);
-          if (me.currentVoltaType)
-            me.addStaffVolta(staff);
+        if (atSystemTop && me.currentVoltaType) {
+          me.addStaffVolta(staff);
         }
       },
 

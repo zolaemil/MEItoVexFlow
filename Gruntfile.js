@@ -43,7 +43,7 @@ module.exports = function(grunt) {
               'src/SystemInfo.js',
               'src/vexflow-overrides.js',
               'src/Util.js',
-              'src/InterfaceI.js'],
+              'src/Interface.js'],
         dest: 'dist/meitovexflow.js'
       }
     },
