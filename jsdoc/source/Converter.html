@@ -38,26 +38,21 @@
 * the License.
 */
 
-// TODO fix hyphenation errors
+// TODO add support for trill etc
 
-// TODO fix global leaks
+// TODO fix measure = 0 bug!
+
+// TODO add config to set the behaviour when an element is not supported;
+// depending on that setting, either throw a notsuppted error or silently ignore
+// the element; maybe even let the users specify which elements / attributes
+// should be silently ignored!?
+
+// TODO externalize label rendering
 
 // TODO make direction models converter options again and remove them from the
 // measure!?
 
 // TODO mrests have to be ignored by the formatter
-
-// TODO add setAnchoredTextProcessor
-
-// TODO schon einmal die benutzten Elemente in den Schleifen unterbringen; dann
-// auch eine Möglichkeit schaffen, dass man einstellen kann, ob ein nicht
-// vorhandenes Element entweder einfach ignoriert wird oder aber ein Fehler
-// geworfen wird!
-
-// TODO vorschlagen, evtl nach namespaces geordnet unterordner von src anzulegen;
-// da könnte in einen dann auch das mit den texten rein
-
-// TODO single out measure number attachment
 
 // TODO das mit dem tempo auf einzelnen noten lässt sich wohl gut lösen, wenn man
 // statt staff.setTempo addModifier verwendet (siehe setTempo in stave.js); dort
@@ -90,6 +85,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Converter.prototype = {
 
+      // TODO calculate now, that should not be too expensive
       // currently fixed
       HALF_LINE_DISTANCE : 5, // VF.Staff.spacing_between_lines_px / 2;
 
@@ -130,11 +126,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * outermost staffDef element
          */
         autoStaveConnectorLine : true,
-<span id='MEI2VF-Converter-cfg-autoMeasureNumbers'>        /**
-</span>         * @cfg {Boolean} autoMeasureNumbers Specifies if measure numbers should
-         * automatically be added to each system start
-         */
-        autoMeasureNumbers : false,
 <span id='MEI2VF-Converter-cfg-labelMode'>        /**
 </span>         * @cfg {String} labelMode Specifies the way voice labels are added
          * to staves. Values:
@@ -175,14 +166,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           size : 15,
           weight : 'Italic'
         },
-<span id='MEI2VF-Converter-cfg-staffFont'>        /**
-</span>         * @cfg {Object} staffFont The staff font (used for barlines)
-         */
-        staffFont : {
-          family : 'Times',
-          size : 14,
-          weight : 'Italic'
-        },
 <span id='MEI2VF-Converter-cfg-tempoFont'>        /**
 </span>         * @cfg {Object} tempoFont The tempo font
          */
@@ -212,16 +195,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       initConfig : function(config) {
         var me = this;
         me.cfg = $.extend(true, {}, me.defaults, config);
-<span id='MEI2VF-Converter-property-printSpace'>        /**
-</span>         * @property {Object} printSpace The print space coordinates calculated
-         * from the page config. Values:
-         *
-         * -  `top`
-         * -  `left`
-         * -  `right`
-         * -  `width`
-         */
-
 <span id='MEI2VF-Converter-property-systemInfo'>        /**
 </span>         *  @property {MEI2VF.SystemInfo} systemInfo an instance of
          * MEI2VF.SystemInfo dealing with the staff info derived from the
@@ -231,6 +204,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         // TODO see if the values of this property should better be calculated
         // in the viewer object
+<span id='MEI2VF-Converter-property-printSpace'>        /**
+</span>         * @property {Object} printSpace The print space coordinates calculated
+         * from the page config. Values:
+         *
+         * -  `top`
+         * -  `left`
+         * -  `right`
+         * -  `width`
+         */
         me.printSpace = {
           // substract four line distances (40px) from page_margin_top in order
           // to compensate VexFlow's default top spacing / allow specifying
@@ -255,7 +237,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       reset : function() {
         var me = this;
         me.systemInfo.init(me.cfg, me.printSpace);
-
 <span id='MEI2VF-Converter-property-systems'>        /**
 </span>         * Contains all {@link MEI2VF.System} objects
          */
@@ -265,22 +246,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * [measure_n][staff_n]
          */
         me.allVexMeasureStaffs = [];
-<span id='MEI2VF-Converter-property-allAnchoredTexts'>        /**
-</span>         * Contains the information of all anchored texts from the MEI document
-         * in objects with the properties:
-         *
-         * -  `text`: The text content of the anchored text
-         * -  `container`: the container object, e.g. a VexFlow staff. Provides
-         * the basis for the calculation of
-         * absolute coordinates from the relative MEI attributes vo / ho.
-         * Irrelevant
-         * when both x and y are specified
-         * -  `x`: the x coordinate
-         * -  `y`: the y coordinate
-         * -  `ho`: the horizontal offset
-         * -  `vo`: the vertical offset
-         */
-        me.allAnchoredTexts = [];
 <span id='MEI2VF-Converter-property-allBeams'>        /**
 </span>         * Contains all Vex.Flow.Beam objects. Data is just pushed in
          * and later processed as a whole, so the array index is currently
@@ -335,8 +300,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.pendingSectionBreak = true;
 <span id='MEI2VF-Converter-property-currentVoltaType'>        /**
 </span>         * @property {Object} currentVoltaType Contains information about the
-         * volta type of the
-         * current staff. Properties:
+         * volta type of the current staff. Properties:
          *
          * -  `start` {String} indicates the number to render to the volta. When
          * falsy, it is assumed that the volta does not start in the current
@@ -351,13 +315,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 </span>         *
          */
         me.unresolvedTStamp2 = [];
-        // TODO change to {xmlid1: [dir1, dir2], xmlid2: [dir3]} !?
         return me;
       },
 
 <span id='MEI2VF-Converter-method-process'>      /**
-</span>       * Calls {@link #reset} and then processes the
-       * specified MEI document or document fragment. The generated objects can
+</span>       * Calls {@link #reset} and then processes the specified MEI document or
+       * document fragment. The generated objects can
        * be processed further or drawn immediately to a canvas via {@link #draw}.
        * @chainable
        * @param {XMLDocument} xmlDoc the XML document
@@ -387,9 +350,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
         me.hairpins.setContext(ctx).draw();
-        me.drawAnchoredTexts(me.allAnchoredTexts, me.HALF_LINE_DISTANCE, ctx);
         me.hyphenation.setContext(ctx).draw();
-
         return me;
       },
 
@@ -402,8 +363,22 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         this.systemInfo.processPgHead = fn;
       },
 
+<span id='MEI2VF-Converter-method-setAnchoredTextProcessor'>      /**
+</span>       * assigns an external function for processing anchoredText elements. By
+       * default, anchoredText elements are ignored in MEI2VF.
+       * @param {Function} fn the callback function. Parameter: element
+       */
+      setAnchoredTextProcessor : function(staffFn, layerFn) {
+        if (staffFn) {
+          this.processAnchoredStaffText = staffFn;
+        };
+        if (layerFn) {
+          this.processAnchoredLayerText = layerFn;
+        }
+      },
+
 <span id='MEI2VF-Converter-method-getAllVexMeasureStaffs'>      /**
-</span>       * returns a 2d array of all VexFlow staff objects, arranged by
+</span>       * returns a 2d array of all Vex.Flow.Stave objects, arranged by
        * [measure_n][staff_n]
        * @return {Array}
        */
@@ -411,24 +386,28 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return this.allVexMeasureStaffs;
       },
 
-      getCurrentSystem : function() {
-        return this.systems[this.systems.length - 1];
+<span id='MEI2VF-Converter-method-getSystems'>      /**
+</span>       * returns all systems created when processing the MEI document
+       * @return {Array} an array of {@link MEI2VF.System} objects
+       */
+      getSystems : function() {
+        return this.systems;
       },
 
-<span id='MEI2VF-Converter-method-startNewSystem'>      /**
-</span>       * resets the x coordinates, sets the y coordinates of all staves in the
-       * current system and updates the staff modifier infos
+<span id='MEI2VF-Converter-method-createNewSystem'>      /**
+</span>       * creates in initializes a new {@link MEI2VF.System} and updates the staff
+       * modifier infos
        */
-      startNewSystem : function() {
-        var me = this, system;
+      createNewSystem : function() {
+        var me = this, system, leftMar, coords;
 
-        m2v.L('Converter.startNewSystem()', '{enter}');
+        m2v.L('Converter.createNewSystem()', '{enter}');
 
         me.pendingSystemBreak = false;
         me.currentSystem_n += 1;
 
-        var leftMar = me.systemInfo.getLeftMar();
-        var coords = {
+        leftMar = me.systemInfo.getLeftMar();
+        coords = {
           x : me.printSpace.left,
           y : (me.currentSystem_n === 1) ? me.printSpace.top : me.systemInfo.getCurrentLowestY() + me.cfg.systemSpacing,
           w : me.printSpace.width
@@ -443,7 +422,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           me.systemInfo.forceStaveStartInfos();
         }
 
-        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {system: system});
+        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {
+          system : system
+        });
 
         me.systems[me.currentSystem_n] = system;
         return system;
@@ -523,7 +504,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
 <span id='MEI2VF-Converter-method-setPendingSystemBreak'>      /**
-</span>       *
+</span>       * sets the property {@link #pendingSystemBreak} to `true`. When true, a
+       * new system will be initialized when {@link #processMeasure} is called
+       * the next time.
        */
       setPendingSystemBreak : function() {
         this.pendingSystemBreak = true;
@@ -539,10 +522,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, measure_n, atSystemStart, left_barline, right_barline, currentStaveVoices, atSystemTop = true, system;
 
         if (me.pendingSectionBreak || me.pendingSystemBreak) {
-          system = me.startNewSystem();
+          system = me.createNewSystem();
           atSystemStart = true;
         } else {
-          system = me.getCurrentSystem();
+          system = me.systems[me.systems.length - 1];
           atSystemStart = false;
         }
 
@@ -588,7 +571,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var directions = me.dirToObj(dirElements);
 
         $.each(staffElements, function() {
-          me.processStaffInMeasure(system, staffs, this, measure_n, left_barline, right_barline, currentStaveVoices, atSystemStart, atSystemTop, directions);
+          me.processStaffInMeasure(system, staffs, this, measure_n, left_barline, right_barline, currentStaveVoices, atSystemTop, directions);
           atSystemTop = false;
         });
 
@@ -604,10 +587,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.extract_linkingElements(slurElements, element, 'slur', me.slurs);
         me.extract_linkingElements(hairpinElements, element, 'hairpin', me.hairpins);
 
-        var measure = new m2v.Measure(element, staffs, currentStaveVoices, startConnectors, inlineConnectors, tempoElements, me.cfg.tempoFont);
+        var measure = new m2v.Measure(element, measure_n, staffs, currentStaveVoices, startConnectors, inlineConnectors, tempoElements, me.cfg.tempoFont);
 
         system.addMeasure(measure);
-
       },
 
 <span id='MEI2VF-Converter-method-getStaffLabels'>      /**
@@ -619,52 +601,48 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (!me.cfg.labelMode) {
           return labels;
         }
-
         labelType = (me.cfg.labelMode === 'full' &amp;&amp; me.currentSystem_n === 1) ? 'label' : 'labelAbbr';
-
         infos = me.systemInfo.getAllStaffInfos();
-
         i = infos.length;
         while (i--) {
           if (infos[i]) {
             labels[i] = infos[i][labelType];
           }
         }
-
         return labels;
       },
 
 <span id='MEI2VF-Converter-method-processStaffInMeasure'>      /**
 </span>       * Processes a single stave in a measure
        *
-       * @param {Element} the XML staff element
+       * @param {MEI2VF.System} the current system
+       * @param {Array} staffs
+       * @param {Element} staff_element the MEI staff element
        * @param {Number} measure_n the measure number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
        * @param {MEI2VF.StaveVoices} currentStaveVoices The current MEI2VF
        * StaveVoices object
-       * @param {Boolean} atSystemStart indicates if the current measure is at
-       * the start of a system
        * @param {Boolean} atSystemTop indicates if the current stave is the first
        * stave in its system
        */
-      processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices, atSystemStart, atSystemTop, directions) {
-        var me = this, staff, staff_n, anchoredTexts, readEvents, layer_events;
+      processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices, atSystemTop, directions) {
+        var me = this, staff, staff_n, readEvents, layer_events;
 
         staff_n = +$(staff_element).attr('n');
 
         staff = me.createVexStaff(system, staff_n);
 
-        me.addStaffModifiers(staff, measure_n, staff_n, left_barline, right_barline, atSystemStart, atSystemTop);
+        me.addStaffModifiers(staff, staff_n, left_barline, right_barline, atSystemTop);
 
         staffs[staff_n] = staff;
 
-        anchoredTexts = $(staff_element).children('anchoredText').each(function() {
+        $(staff_element).children('anchoredText').each(function() {
           me.processAnchoredStaffText(this, staff);
         });
 
         readEvents = function() {
-          var event = me.processElement(this, staff, staff_n, directions);
+          var event = me.processNoteLikeElement(this, staff, staff_n, directions);
           // return event.vexNote;
           return event.vexNote || event;
         };
@@ -678,7 +656,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
 <span id='MEI2VF-Converter-method-createVexStaff'>      /**
-</span>       * Creates a new Vex.Flow.Stave object and adds staff modifiers to it.
+</span>       * Creates a new Vex.Flow.Stave object.
        *
        * @param {MEI2VF.System} system the parent system of the staff
        * @param {Number} staff_n the staff number
@@ -690,36 +668,30 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute &quot;n&quot;.');
         }
         staff = new VF.Stave();
-
         // init the staff with fixed x measurements which will be substituted at
         // a later stage in MEI2VF.System's format() function (the Vex.Flow.Stave
         // objects must be initialized with some x measurements, but the real
         // values depend on values only available after modifiers, voices etc
         // have been added)
         staff.init(0, system.getStaffYs()[staff_n], 1000, me.cfg.staff);
-
         // temporary; (due to a bug?) in VexFlow, bottom_text_position does
         // not work when it's passed in the config object
         staff.options.bottom_text_position = me.cfg.staff.bottom_text_position;
-
-        staff.font = me.cfg.staffFont;
         return staff;
       },
 
 <span id='MEI2VF-Converter-method-addStaffModifiers'>      /**
-</span>       * Adds staff modifiers to a Vex.Flow.Staff object.
+</span>       * Adds staff modifiers (bar lines, clef, time signature, key signature,
+       * volta) to a Vex.Flow.Staff.
        *
        * @param {Vex.Flow.Stave} The stave object
-       * @param {Number} measure_n the measure number
        * @param {Number} staff_n the staff number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
-       * @param {Boolean} atSystemStart indicates if the current measure is at
-       * the start of a system
        * @param {Boolean} atSystemTop indicates if the current stave is the first
        * stave in its system
        */
-      addStaffModifiers : function(staff, measure_n, staff_n, left_barline, right_barline, atSystemStart, atSystemTop) {
+      addStaffModifiers : function(staff, staff_n, left_barline, right_barline, atSystemTop) {
         var me = this, currentStaffInfo;
 
         currentStaffInfo = me.systemInfo.getStaffInfo(staff_n);
@@ -742,16 +714,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (right_barline)
           staff.setEndBarType(m2v.tables.barlines[right_barline]);
 
-        if (atSystemTop) {
-          if (atSystemStart &amp;&amp; me.cfg.autoMeasureNumbers &amp;&amp; measure_n !== 1)
-            staff.setMeasure(measure_n);
-          if (me.currentVoltaType)
-            me.addStaffVolta(staff);
+        if (atSystemTop &amp;&amp; me.currentVoltaType) {
+          me.addStaffVolta(staff);
         }
       },
 
 <span id='MEI2VF-Converter-method-addStaffVolta'>      /**
-</span>       *
+</span>       * Adds a volta to a staff. Currently not working due to the reworking of
+       * the measure width calulation (27/4/2014)
+       * @experimental
        */
       addStaffVolta : function(staff) {
         var volta = this.currentVoltaType;
@@ -764,7 +735,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
 <span id='MEI2VF-Converter-method-createVexVoice'>      /**
-</span>       *
+</span>       * Creates a new Vex.Flow.Voice
+       * @param {Array} voice_contents The contents of the voice, an array of
+       * tickables
+       * @param {Number} staff_n The number of the enclosing staff element
+       * return {Vex.Flow.Voice}
        */
       createVexVoice : function(voice_contents, staff_n) {
         var me = this, voice, meter;
@@ -780,23 +755,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         voice.setStrict(false);
         voice.addTickables(voice_contents);
         return voice;
-      },
-
-      // TODO: better attach to staff instead of writing an own array!?!?
-      // TODO allow anchored text relative to other elements than &lt;staff&gt;
-<span id='MEI2VF-Converter-method-processAnchoredStaffText'>      /**
-</span>       *
-       */
-      processAnchoredStaffText : function(element, staff) {
-        var me = this, $element = $(element);
-        me.allAnchoredTexts.push({
-          text : $element.text(),
-          container : staff,
-          x : $element.attr('x'),
-          y : $element.attr('y'),
-          ho : $element.attr('ho'),
-          vo : $element.attr('vo')
-        });
       },
 
 <span id='MEI2VF-Converter-method-resolveUnresolvedTimestamps'>      /**
@@ -826,8 +784,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
 <span id='MEI2VF-Converter-method-extract_linkingElements'>      /**
 </span>       * Extract &lt;b&gt;tie&lt;/b&gt;, &lt;b&gt;slur&lt;/b&gt; or &lt;b&gt;hairpin&lt;/b&gt; elements and create
-       * EventLink
-       * objects
+       * EventLink objects
        */
       extract_linkingElements : function(link_elements, measure, element_name, eventlink_container) {
         var me = this;
@@ -932,10 +889,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
       },
 
-<span id='MEI2VF-Converter-method-processElement'>      /**
-</span>       *
+<span id='MEI2VF-Converter-method-processNoteLikeElement'>      /**
+</span>       * processes a note like element by calling the adequate processing function
+       * @param {Element} element the element to process
+       * @param {} staff
+       * @param {Number} staff_n the number of the staff as given in the MEI document
+       * @param {} directions the directions of the current measure 
        */
-      processElement : function(element, staff, staff_n, directions) {
+      processNoteLikeElement : function(element, staff, staff_n, directions) {
         var me = this;
         switch (element.localName) {
           case 'rest' :
@@ -951,16 +912,24 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           case 'chord' :
             return me.processChord(element, staff, staff_n, directions);
           case 'anchoredText' :
-            return me.processAnchoredText(element, staff, staff_n, directions);
+            return me.processAnchoredLayerText(element, staff, staff_n, directions);
           default :
             throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element &quot;' + element_type + '&quot; is not supported.');
         }
       },
 
-<span id='MEI2VF-Converter-method-processAnchoredText'>      /**
+<span id='MEI2VF-Converter-method-processAnchoredStaffText'>      /**
 </span>       *
        */
-      processAnchoredText : function() {
+      processAnchoredStaffText : function() {
+        // TODO
+        return;
+      },
+
+<span id='MEI2VF-Converter-method-processAnchoredLayerText'>      /**
+</span>       *
+       */
+      processAnchoredLayerText : function() {
         // TODO
         return;
       },
@@ -1288,7 +1257,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, elements;
         var process = function() {
           // make sure to get vexNote out of wrapped note objects
-          var proc_element = me.processElement(this, staff, staff_n, directions);
+          var proc_element = me.processNoteLikeElement(this, staff, staff_n, directions);
           return proc_element.vexNote || proc_element;
         };
         elements = $(element).children().map(process).get();
@@ -1577,23 +1546,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       drawVexBeams : function(beams, ctx) {
         $.each(beams, function() {
           this.setContext(ctx).draw();
-        });
-      },
-
-      // TODO make anchored texts staff modifiers (?)
-<span id='MEI2VF-Converter-method-drawAnchoredTexts'>      /**
-</span>       *
-       */
-      drawAnchoredTexts : function(allAnchoredTexts, halfLineDistance, ctx) {
-        var x, y, staff;
-        $.each(allAnchoredTexts, function() {
-          staff = this.container;
-          y = +this.y || staff.getYForLine(3) - 4 + (+this.vo * halfLineDistance || 0);
-          x = +this.x || staff.glyph_start_x + (+this.ho * halfLineDistance || 0);
-          ctx.font = this.font || '20px Times';
-          if (this.align)
-            ctx.textAlign = this.align;
-          ctx.fillText(this.text, x, y);
         });
       }
     };
