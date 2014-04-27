@@ -943,8 +943,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, refLocationIndex;
         // check if there's an unresolved TStamp2 reference to this location
         // (measure, staff, layer):
-        if (!measure_n)
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.me.extract_events:', '<measure> must have @n specified');
+        if (isNaN(measure_n))
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_events', '<measure> must have @n specified');
         staff_n = staff_n || 1;
         refLocationIndex = measure_n + ':' + staff_n + ':' + ($(layer).attr('n') || '1');
         if (me.unresolvedTStamp2[refLocationIndex]) {
