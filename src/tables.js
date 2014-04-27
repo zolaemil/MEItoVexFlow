@@ -108,6 +108,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         'dot' : 'a.',
         'stroke' : 'a|'
       },
+      
+      fermata: {
+        'above': 'a@a',
+        'below': 'a@u'
+      },
 
       barlines : {
         'single' : VF.Barline.type.SINGLE,

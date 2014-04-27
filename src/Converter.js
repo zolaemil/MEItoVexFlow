@@ -873,11 +873,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * processes a note like element by calling the adequate processing function
+       * processes a note like element by calling the adequate processing
+       * function
        * @param {Element} element the element to process
        * @param {} staff
-       * @param {Number} staff_n the number of the staff as given in the MEI document
-       * @param {} directions the directions of the current measure 
+       * @param {Number} staff_n the number of the staff as given in the MEI
+       * document
+       * @param {} directions the directions of the current measure
        */
       processNoteLikeElement : function(element, staff, staff_n, directions) {
         var me = this;
@@ -897,7 +899,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           case 'anchoredText' :
             return me.processAnchoredLayerText(element, staff, staff_n, directions);
           default :
-            throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element_type + '" is not supported.');
+            throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element.localName + '" is not supported.');
         }
       },
 
@@ -993,6 +995,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           $.each($(element).find('artic'), function() {
             me.addArticulation(note, this);
           });
+          if (atts.fermata) {
+            me.addFermata(note, atts.fermata);
+          }
+
           // FIXME For now, we'll remove any child nodes of <note>
           $.each($(element).children(), function() {
             $(this).remove();
@@ -1108,15 +1114,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               index : [i]
             };
 
-            mei_accid = $(this).attr('accid');
-            if (mei_accid)
-              me.processAttrAccid(mei_accid, chord, i);
+            if (note_atts.accid) {
+              me.processAttrAccid(note_atts.accid, chord, i);
+            }
+            if (note_atts.fermata) {
+              me.addFermata(chord, note_atts.fermata, i);
+            }
           });
 
-          if (hasDots)
+          if (hasDots) {
             chord.addDotToAll();
-          if (mei_ho)
+          }
+          if (mei_ho) {
             me.processAttrHo(mei_ho, chord);
+          }
+          if (atts.fermata) {
+            me.addFermata(chord, atts.fermata);
+          }
 
           // TODO add support for chord/@tie and chord/@slur
 
@@ -1144,8 +1158,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processRest : function(element, staff, unused_staff_n, directions) {
-        var me = this, dur, rest, mei_ho, xml_id;
+        var me = this, dur, rest, xml_id, atts;
         try {
+          atts = m2v.Util.attsToObj(element);
+
           dur = me.processAttsDuration(element, true);
           // assign whole rests to the fourth line, all others to the
           // middle line:
@@ -1154,7 +1170,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             duration : dur + 'r'
           });
 
-          xml_id = $(element).attr('xml:id');
+          xml_id = atts['xml:id'];
 
           // If xml:id is missing, create it
           if (!xml_id) {
@@ -1164,13 +1180,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
           me.addDirections(rest, directions, xml_id);
 
-          mei_ho = $(element).attr('ho');
-          if (mei_ho)
-            me.processAttrHo(mei_ho, rest);
-
+          if (atts.ho) {
+            me.processAttrHo(atts.ho, rest);
+          }
           rest.setStave(staff);
-          if ($(element).attr('dots') === '1')
+          if (atts.dots === '1') {
             rest.addDotToAll();
+          }
+          if (atts.fermata) {
+            me.addFermata(rest, atts.fermata);
+          }
           return {
             vexNote : rest,
             id : xml_id
@@ -1184,9 +1203,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processmRest : function(element, staff) {
-        var me = this, mRest, mei_ho;
+        var me = this, mRest, mei_ho, atts;
 
         try {
+          atts = m2v.Util.attsToObj(element);
+
           mRest = new VF.StaveNote({
             keys : ['d/5'],
             duration : 'wr'
@@ -1199,9 +1220,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           // console.log(mRest);
           // me.processAttrHo(10, mRest);
 
-          mei_ho = $(element).attr('ho');
-          if (mei_ho)
-            me.processAttrHo(mei_ho, mRest);
+          if (atts.ho) {
+            me.processAttrHo(atts.ho, mRest);
+          }
+          if (atts.fermata) {
+            me.addFermata(mRest, atts.fermata);
+          }
           mRest.setStave(staff);
           return {
             vexNote : mRest
@@ -1400,6 +1424,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           vexArtic.setPosition(m2v.tables.positions[place]);
         }
         note.addArticulation(0, vexArtic);
+      },
+
+      /**
+       * adds a fermata to a note-like object
+       * @param {Vex.Flow.StaveNote} note the note the fermata will be attached
+       * to
+       * @param {String} place The place of the fermata (values: 'above' or
+       * 'below')
+       * @param {Number} index The index of the note in a chord (optional)
+       */
+      addFermata : function(note, place, index) {
+        var vexArtic = new VF.Articulation(m2v.tables.fermata[place]);
+        vexArtic.setPosition(m2v.tables.positions[place]);
+        note.addArticulation(index || 0, vexArtic);
       },
 
       /**
