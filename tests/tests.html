@@ -187,9 +187,18 @@ version="HTML+RDFa 1.0" xml:lang="en">
 					options: {
 						labelMode: 'full',
 						page_margin_top: 450
-        			}
-        		});
-        		test_cases.push({title: "Hyphenation", mei_xml: 'TC.Hyphens.xml', canvas_width: 1200, canvas_height:300 });
+					}
+				});
+				test_cases.push({
+					title: "Page Layout: plain staff with no margins",
+					mei_xml: 'TC.PlainStaff.xml',
+					options: {
+						page_margin_left: 0,
+						page_margin_right: 0,
+						page_margin_top: 0,
+					}
+				});
+				test_cases.push({title: "Hyphenation", mei_xml: 'TC.Hyphens.xml', canvas_width: 1200, canvas_height:300 });
 				
 				//Test cases that are supposed to generate error messages on the console:
 				 test_cases.push({ title: 'Missing_Attribute_Test_Case', mei_xml: 'TC.MissingAttribute.xml'});
