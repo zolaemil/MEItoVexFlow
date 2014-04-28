@@ -22,16 +22,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
      * @class MEI2VF.Connectors
-     * Contains information about stave connectors parsed from the staffGrp
-     * elements and their @symbol attributes
+     * Handles stave connectors
      * @private
      *
      * @constructor
-     * @param {Object} labelMode
+     * @param {Object} config the config object
      */
-    m2v.Connectors = function(labelMode) {
-      this.labelMode = labelMode;
-      this.allVexConnectors = [];
+    m2v.Connectors = function(config) {
+      var me = this;
+      me.allVexConnectors = [];
+      if (config) {
+        me.init(config);
+      }
     };
 
     m2v.Connectors.prototype = {
@@ -42,16 +44,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         'bracket' : VF.StaveConnector.type.BRACKET,
         'none' : null,
         'singleright' : VF.StaveConnector.type.SINGLE_RIGHT
-        // non-MEI
       },
 
       vexTypesBarlineRight : {
         'single' : VF.StaveConnector.type.SINGLE_RIGHT,
         'dbl' : VF.StaveConnector.type.THIN_DOUBLE,
         'end' : VF.StaveConnector.type.BOLD_DOUBLE_RIGHT,
-        // 'rptstart' : VF.StaveConnector.type.BOLD_DOUBLE_LEFT,
         'rptend' : VF.StaveConnector.type.BOLD_DOUBLE_RIGHT,
-        // 'rptboth' : VF.Barline.type.REPEAT_BOTH,
         'invis' : null
       },
 
@@ -63,27 +62,25 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         'invis' : null
       },
 
-      addToVexConnectors : function(obj) {
-        this.allVexConnectors.push(obj);
-      },
-
-      getAll : function() {
-        return this.allVexConnectors;
-      },
-
-      createVexFromModels : function(models, currentMeasure, barline_l, barline_r, system_n) {
+      init : function(config) {
         var me = this, vexType, top_staff, bottom_staff, vexConnector, label, labelMode;
-        labelMode = me.labelMode;
+        var models = config.models;
+        var staffs = config.staffs;
+        var barline_l = config.barline_l;
+        var barline_r = config.barline_r;
+        var system_n = config.system_n;
+        labelMode = config.labelMode;
+
         $.each(models, function() {
 
           vexType = (barline_r) ? me.vexTypesBarlineRight[barline_r] : me.vexTypes[this.symbol];
-          top_staff = currentMeasure[this.top_staff_n];
-          bottom_staff = currentMeasure[this.bottom_staff_n];
+          top_staff = staffs[this.top_staff_n];
+          bottom_staff = staffs[this.bottom_staff_n];
 
           if ( typeof vexType === 'number' && top_staff && bottom_staff) {
             vexConnector = new VF.StaveConnector(top_staff, bottom_staff);
             vexConnector.setType(vexType);
-            me.addToVexConnectors(vexConnector);
+            me.allVexConnectors.push(vexConnector);
             if (labelMode === 'full') {
               label = (system_n === 1) ? this.label : this.labelAbbr;
             } else if (labelMode === 'abbr') {
@@ -101,11 +98,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               if (vexType === VF.StaveConnector.type.BOLD_DOUBLE_LEFT) {
                 vexConnector.checkShift = true;
               }
-              me.addToVexConnectors(vexConnector);
+              me.allVexConnectors.push(vexConnector);
             }
           }
 
         });
+      },
+
+      getAll : function() {
+        return this.allVexConnectors;
       },
 
       setContext : function(ctx) {
@@ -114,15 +115,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       draw : function() {
-        var i, j, conn, shift;
-        for ( i = 0, j = this.allVexConnectors.length; i < j; i += 1) {
-          conn = this.allVexConnectors[i];
+        var me = this, i, j, conn, shift, ctx = me.ctx;
+        for ( i = 0, j = me.allVexConnectors.length; i < j; i += 1) {
+          conn = me.allVexConnectors[i];
           if (conn.checkShift) {
             shift = conn.top_stave.getModifierXShift();
-            if (shift > 0)
+            if (shift > 0) {
               conn.setXShift(shift);
+            }
           }
-          conn.setContext(this.ctx).draw();
+          conn.setContext(me.ctx).draw();
         }
       }
     };

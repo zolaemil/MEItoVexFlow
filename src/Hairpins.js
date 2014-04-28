@@ -55,8 +55,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       draw : function() {
         var ctx = this.ctx;
-        $.each(this.allVexHairpins, function(i, vexHairpin) {
-          vexHairpin.setContext(ctx).draw();
+        $.each(this.allVexHairpins, function() {
+          this.setContext(ctx).draw();
         });
       }
     };

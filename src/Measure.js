@@ -6,35 +6,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      *
      * @constructor
      */
-    m2v.Measure = function(element, n, staffs, voices, startConnectors, inlineConnectors, tempoElements, tempoFont) {
-      var me = this;
-      me.element = element;
-      me.staffs = staffs;
-      /**
-       * @property {MEI2VF.StaveVoices} voices The voices of all staffs in the
-       * current measure
-       */
-      me.voices = voices;
-      /**
-       * @property {MEI2VF.Connectors} startConnectors an instance of
-       * MEI2VF.Connectors handling all left connectors (only the first measure
-       * in a system has data)
-       */
-      me.startConnectors = startConnectors;
-      /**
-       * @property {MEI2VF.Connectors} startConnectors an instance of
-       * MEI2VF.Connectors handling all right connectors
-       */
-      me.inlineConnectors = inlineConnectors;
-      me.tempoElements = tempoElements;
-      me.tempoFont = tempoFont;
-      me.noteOffsetX = 0;
-      me.meiW = me.getWidthAttr(element);
-      /**
-       * @property {Number} n The number of the current measure as specified in
-       * the MEI document
-       */
-      me.n = n;
+    m2v.Measure = function(config) {
+      this.init(config);
     };
 
     m2v.Measure.prototype = {
@@ -42,28 +15,105 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // currently fixed
       HALF_LINE_DISTANCE : 5, // VF.Staff.spacing_between_lines_px / 2;
 
-      getWidthAttr : function(element) {
+      init : function(config) {
+        var me = this;
+        /**
+         * @cfg {Element} element the MEI element of the current measure
+         */
+        me.element = config.element;
+        /**
+         * @cfg {Number} n The number of the current measure as specified in
+         * the MEI document
+         */
+        me.n = config.n;
+        // TODO instead of passing the staff contents in the config object, use a method addToMeasure!?!
+        /**
+         * @cfg {Array} staffs an array of the staffs in the current
+         * measure. Contains
+         */
+        me.staffs = config.staffs;
+        /**
+         * @cfg {MEI2VF.StaveVoices} voices The voices of all staffs in the
+         * current measure
+         */
+        me.voices = config.voices;
+        /**
+         * @cfg {MEI2VF.Connectors} startConnectors an instance of
+         * MEI2VF.Connectors handling all left connectors (only the first measure
+         * in a system has data)
+         */
+        me.startConnectors = new m2v.Connectors(config.startConnectorCfg);
+        /**
+         * @cfg {MEI2VF.Connectors} startConnectors an instance of
+         * MEI2VF.Connectors handling all right connectors
+         */
+        me.inlineConnectors = new m2v.Connectors(config.inlineConnectorCfg);
+        /**
+         * @cfg {Array} tempoElements the MEI tempo elements in the current
+         * measure
+         */
+        me.tempoElements = config.tempoElements;
+        /**
+         * @cfg {Object} the font used for rendering tempo specifications
+         */
+        me.tempoFont = config.tempoFont;
+        /**
+         * @property {Number} the maximum note_start_x value of all
+         * Vex.Flow.Stave objects in the current measure
+         */
+        me.maxNoteStartX = 0;
+        /**
+         * @property {Number} meiW the width attribute of the measure element or
+         * null if NaN
+         */
+        me.meiW = me.readMEIW(me.element);
+      },
+
+      /**
+       *  reads the width attribute of the specified element and converts it to a
+       * number
+       * @param {Element} element the element to process
+       * @return {Number} the number of the attribute or null if NaN
+       */
+      readMEIW : function(element) {
         return +element.getAttribute('width') || null;
       },
 
+      /**
+       * gets the staffs array of the current measure
+       * @return {Array}
+       */
       getStaffs : function() {
         return this.staffs;
       },
 
+      /**
+       * gets the voices object of the current measure
+       * @return {MEI2VF.StaveVoices}
+       */
       getVoices : function() {
         return this.voices;
       },
 
+      /**
+       * gets the x coordinate of the staff
+       * @return {Number}
+       */
       getX : function() {
         return this.getFirstDefinedStaff().x;
       },
 
+      /**
+       * gets the number of the current staff as specified in the MEI code
+       * @return {Number}
+       */
       getN : function() {
         return this.n;
       },
 
       /**
-       *
+       * gets the first defined staff in the current measure
+       * @return {Vex.Flow.Stave}
        */
       getFirstDefinedStaff : function() {
         var me = this, i, j;
@@ -79,11 +129,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // as annotations?)
       // TODO make magic numbers constants
       /**
-       * Writes the data of the given tempo
-       * elements to the corresponding Vex.Flow.Stave object
-       * @param {Array} elements the tempo elements
-       * @param {Array} measure An array of the Vex.Flow.Stave objects in the
-       * current measure
+       * Writes the data of the tempo elements in the current measure to the
+       * corresponding Vex.Flow.Stave object
        */
       addTempoToStaves : function() {
         var me = this, offsetX, vexStaff, vexTempo, atts;
@@ -109,18 +156,44 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
       },
 
-      calculateMeasureOffsets : function() {
+      /**
+       * calculates the minimum width of the current measure
+       */
+      calculateMinWidth : function() {
+        var me = this;
+        me.calculateMaxNoteStartX();
+        me.calculateRepeatPadding();
+        me.minVoicesW = me.voices.preFormat();
+        me.minWidth = me.maxNoteStartX + me.minVoicesW + me.repeatPadding; 
+      },
+      
+      /**
+       * gets the minimum width of the current measure; 
+       */
+      getMinWidth: function() {
+        return this.minWidth;
+      },
+
+      /**
+       * calculates the maximum note_start_x of all Vex.Flow.Stave objects in the
+       * current measure
+       */
+      calculateMaxNoteStartX : function() {
         var me = this, i, staffs, staff;
         staffs = me.staffs;
         i = staffs.length;
         while (i--) {
           staff = staffs[i];
           if (staff) {
-            me.noteOffsetX = Math.max(me.noteOffsetX, staff.getNoteStartX());
+            me.maxNoteStartX = Math.max(me.maxNoteStartX, staff.getNoteStartX());
           }
         }
       },
 
+      /**
+       * calculates additional start padding when there are repetition start bars
+       * in the current measure
+       */
       calculateRepeatPadding : function() {
         var me = this;
         var staff = me.getFirstDefinedStaff();
@@ -128,28 +201,41 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       // TODO align start modifiers (changes in vexflow necessary??)
-      format : function(offsetX, labels) {
-        var me = this, width = me.w, staffs = me.staffs, i = staffs.length;
+      
+      // TODO move label attachment somewhere else
+      /**
+       * Formats the staffs in the current measure: sets x coordinates and adds
+       * staff labels
+       * @param {Number} x The x coordinate of the the measure
+       * @param {Object} labels
+       */
+      format : function(x, labels) {
+        var me = this, width = me.w, i = me.staffs.length;
         while (i--) {
-          if (staffs[i]) {
-            staff = staffs[i];
+          if (me.staffs[i]) {
+            staff = me.staffs[i];
             if (labels && typeof labels[i] === 'string') {
               staff.setText(labels[i], VF.Modifier.Position.LEFT, {
                 shift_y : -3
               });
             }
-            staff.x += offsetX;
-            staff.glyph_start_x += offsetX;
-            staff.start_x = staff.x + me.noteOffsetX;
-            staff.bounds.x += offsetX;
+            staff.x += x;
+            staff.glyph_start_x += x;
+            staff.start_x = staff.x + me.maxNoteStartX;
+            staff.bounds.x += x;
             staff.setWidth(width);
-            staff.modifiers[0].x += offsetX;
-            // staff.end_x += offsetX + offsetW;
-            // staff.glyph_end_x += offsetX + offsetW;
+            staff.modifiers[0].x += x;
+            // staff.end_x += x + offsetW;
+            // staff.glyph_end_x += x + offsetW;
           }
         }
       },
 
+      /**
+       * Draws the staffs, voices and connectors in the current measure to a
+       * canvas
+       * @param {Object} ctx the canvas context
+       */
       draw : function(ctx) {
         var me = this, i, staffs, staff;
         staffs = me.staffs;
@@ -164,7 +250,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.voices.draw(ctx, staffs);
         me.startConnectors.setContext(ctx).draw();
         me.inlineConnectors.setContext(ctx).draw();
-
       }
     };
 
