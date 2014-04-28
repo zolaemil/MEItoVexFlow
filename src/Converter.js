@@ -483,7 +483,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * Processes a MEI measure element and calls functions to process a
        * selection of ancestors: .//staff, ./slur, ./tie, ./hairpin, .//tempo
-       * @param {Element} element the MEI measure element
+       * @param {XMLElement} element the MEI measure element
        */
       processMeasure : function(element) {
         var me = this, measure_n, atSystemStart, left_barline, right_barline, atSystemTop = true, system;
@@ -579,7 +579,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        * @param {MEI2VF.System} the current system
        * @param {Array} staffs
-       * @param {Element} staff_element the MEI staff element
+       * @param {XMLElement} staff_element the MEI staff element
        * @param {Number} measure_n the measure number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
@@ -873,7 +873,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * processes a note like element by calling the adequate processing
        * function
-       * @param {Element} element the element to process
+       * @param {XMLElement} element the element to process
        * @param {} staff
        * @param {Number} staff_n the number of the staff as given in the MEI
        * document
@@ -1372,7 +1372,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * converts the pitch of an MEI <b>note</b> element to a VexFlow pitch
        *
-       * @param {Element} mei_note
+       * @param {XMLElement} mei_note
        * @return {String} the VexFlow pitch
        */
       processAttsPitch : function(mei_note) {
