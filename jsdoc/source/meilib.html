@@ -16,78 +16,91 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">/*
- * MeiLib - General purpose JavaScript functions for processing MEI documents.
- * 
- * meilib.js
- * 
- * Author: Zoltan Komives Created: 05.07.2013
- * 
- * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
- * University of Maryland
- * 
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+* MeiLib - General purpose JavaScript functions for processing MEI documents.
+*
+* meilib.js
+*
+* Author: Zoltan Komives Created: 05.07.2013
+*
+* Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
+* University of Maryland
+*
+* Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not
+* use this file except in compliance with the License. You may obtain a copy of
+* the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations under
+* the License.
+*/
 
 <span id='MeiLib'>/**
 </span> * @class MeiLib
- * @singleton 
+ * @singleton
  */
 var MeiLib = {};
 
 <span id='MeiLib-RuntimeError-method-constructor'><span id='MeiLib-RuntimeError'>/**
-</span></span>* @class MeiLib.RuntimeError
-* 
-* @constructor
-* @param {String} errorcode
-* @param {String} message
+</span></span> * @class MeiLib.RuntimeError
+ *
+ * @constructor
+ * @param {String} errorcode
+ * @param {String} message
  */
 MeiLib.RuntimeError = function(errorcode, message) {
   this.errorcode = errorcode;
   this.message = message;
 }
-
+<span id='MeiLib-RuntimeError-method-toString'>/**
+</span> * @method toString
+ * @return {String} the string representation of the error
+ */
 MeiLib.RuntimeError.prototype.toString = function() {
-  return 'MeiLib.RuntimeError: ' + this.errorcode + ': ' + this.message
-      ? this.message
-      : &quot;&quot;;
+  return 'MeiLib.RuntimeError: ' + this.errorcode + ': ' + this.message ? this.message : &quot;&quot;;
 }
+<span id='MeiLib'>/**
+</span> * @class MeiLib
+ * @singleton
+ */
 
+<span id='MeiLib-method-createPseudoUUID'>/**
+</span> * @method createPseudoUUID
+ */
 MeiLib.createPseudoUUID = function() {
-  return (&quot;0000&quot; + (Math.random() * Math.pow(36, 4) &lt;&lt; 0).toString(36))
-      .substr(-4)
+  return (&quot;0000&quot; + (Math.random() * Math.pow(36, 4) &lt;&lt; 0).toString(36)).substr(-4)
 }
-
-<span id='MeiLib-RuntimeError-method-constructor'>/**
-</span> * Enumerate over the children events of node (node is a layer or a beam).
+<span id='MeiLib-EventEnumerator-method-constructor'><span id='MeiLib-EventEnumerator'>/**
+</span></span> * @class MeiLib.EventEnumerator
+ * Enumerate over the children events of node (node is a layer or a beam).
+ * @constructor
  * @param {Object} node an XML DOM object
- * @constructor 
  */
 MeiLib.EventEnumerator = function(node) {
   this.init(node);
 }
-
+<span id='MeiLib-EventEnumerator-method-init'>/**
+</span> * @method init
+ * @param {} node
+ */
 MeiLib.EventEnumerator.prototype.init = function(node) {
   if (!node)
-    throw new MeiLib.RuntimeError('MeiLib.EventEnumerator.init():E01',
-        'node is null or undefined');
+    throw new MeiLib.RuntimeError('MeiLib.EventEnumerator.init():E01', 'node is null or undefined');
   this.node = node;
   this.next_evnt = null;
-  this.EoI = true; // false if and only if next_evnt is valid.
+  this.EoI = true;
+  // false if and only if next_evnt is valid.
   this.children = $(this.node).children();
   this.i_next = -1;
   this.read_ahead();
 }
-
+<span id='MeiLib-EventEnumerator-method-nextEvent'>/**
+</span> * @method nextEvent
+ * @return
+ */
 MeiLib.EventEnumerator.prototype.nextEvent = function() {
   if (!this.EoI) {
     var result = this.next_evnt;
@@ -96,7 +109,10 @@ MeiLib.EventEnumerator.prototype.nextEvent = function() {
   }
   throw new MeiLib.RuntimeError('MeiLib.LayerEnum:E01', 'End of Input.')
 }
-
+<span id='MeiLib-EventEnumerator-method-read_ahead'>/**
+</span> * @method read_ahead
+ * @return
+ */
 MeiLib.EventEnumerator.prototype.read_ahead = function() {
   if (this.beam_enumerator) {
     if (!this.beam_enumerator.EoI) {
@@ -111,14 +127,14 @@ MeiLib.EventEnumerator.prototype.read_ahead = function() {
     this.step_ahead()
   }
 }
-
-MeiLib.EventEnumerator.prototype.step_ahead = function() {
-  ++this.i_next;
+<span id='MeiLib-EventEnumerator-method-step_ahead'>/**
+</span> * @method step_ahead
+ */
+MeiLib.EventEnumerator.prototype.step_ahead = function() {++this.i_next;
   if (this.i_next &lt; this.children.length) {
     this.next_evnt = this.children[this.i_next];
     var node_name = $(this.next_evnt).prop('localName');
-    if (node_name === 'note' || node_name === 'rest'
-        || node_name === 'mRest' || node_name === 'chord') {
+    if (node_name === 'note' || node_name === 'rest' || node_name === 'mRest' || node_name === 'chord') {
       this.EoI = false
     } else if (node_name === 'beam') {
       this.beam_enumerator = new MeiLib.EventEnumerator(this.next_evnt);
@@ -133,34 +149,33 @@ MeiLib.EventEnumerator.prototype.step_ahead = function() {
     this.EoI = true;
   }
 }
+<span id='MeiLib'>/**
+</span> * @class MeiLib
+ * @singleton
+ */
 
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Calculate the duration of an event (number of beats) according to the given
+<span id='MeiLib-method-durationOf'>/**
+</span> * @method durationOf
+ * Calculate the duration of an event (number of beats) according to the given
  * meter.
- * 
+ *
  * Event refers to musical event such as notes, rests, chords. The MEI element
  * &lt;space/&gt; is also considered an event.
- * 
- * @param evnt
- *            an XML DOM object
- * @param meter
- *            the time signature object { count, unit }
+ *
+ * @param evnt an XML DOM object
+ * @param meter the time signature object { count, unit }
  */
 MeiLib.durationOf = function(evnt, meter) {
 
   IsSimpleEvent = function(tagName) {
     return (tagName === 'note' || tagName === 'rest' || tagName === 'space');
   }
-
   var durationOf_SimpleEvent = function(simple_evnt, meter) {
     var dur = $(simple_evnt).attr('dur');
     if (!dur)
-      throw new MeiLib.RuntimeError('MeiLib.durationOf:E04',
-          '@dur of &lt;note&gt;, &lt;rest&gt; or &lt;space&gt; must be specified.');
-    return MeiLib.dotsMult(simple_evnt)
-        * MeiLib.dur2beats(Number(dur), meter);
+      throw new MeiLib.RuntimeError('MeiLib.durationOf:E04', '@dur of &lt;note&gt;, &lt;rest&gt; or &lt;space&gt; must be specified.');
+    return MeiLib.dotsMult(simple_evnt) * MeiLib.dur2beats(Number(dur), meter);
   }
-
   var durationOf_Chord = function(chord, meter, layer_no) {
     if (!layer_no)
       layer_no = &quot;1&quot;;
@@ -177,18 +192,14 @@ MeiLib.durationOf = function(evnt, meter) {
           dur = dur_note;
           dotsMult = dotsMult_note;
         } else if (dur &amp;&amp; dur != dur_note) {
-          throw new MeiLib.RuntimeError('MeiLib.durationOf:E05',
-              'duration of &lt;chord&gt; is ambiguous.');
+          throw new MeiLib.RuntimeError('MeiLib.durationOf:E05', 'duration of &lt;chord&gt; is ambiguous.');
         }
       }
     });
     if (dur)
       return dotsMult * MeiLib.dur2beats(Number(dur), meter);
-    throw new MeiLib.RuntimeError(
-        'MeiLib.durationOf:E06',
-        '@dur of chord must be specified either in &lt;chord&gt; or in at least one of its &lt;note&gt; elements.');
+    throw new MeiLib.RuntimeError('MeiLib.durationOf:E06', '@dur of chord must be specified either in &lt;chord&gt; or in at least one of its &lt;note&gt; elements.');
   }
-
   var durationOf_Beam = function(beam, meter) {
     var acc = 0;
     beam.children().each(function() {
@@ -200,14 +211,12 @@ MeiLib.durationOf = function(evnt, meter) {
       } else if (tagName === 'chord') {
         dur_b = durationOf_Chord(this, meter);
       } else {
-        throw new MeiLib.RuntimeError('MeiLib.durationOf:E03',
-            &quot;Not supported element '&quot; + tagName + &quot;'&quot;);
+        throw new MeiLib.RuntimeError('MeiLib.durationOf:E03', &quot;Not supported element '&quot; + tagName + &quot;'&quot;);
       }
       acc += dur_b;
     });
     return acc;
   }
-
   var evnt_name = $(evnt).prop('localName');
   if (IsSimpleEvent(evnt_name)) {
     return durationOf_SimpleEvent(evnt, meter);
@@ -218,37 +227,40 @@ MeiLib.durationOf = function(evnt, meter) {
   } else if (evnt_name === 'beam') {
     return durationOf_Beam(evnt, meter);
   } else {
-    throw new MeiLib.RuntimeError('MeiLib.durationOf:E05',
-        &quot;Not supported element: '&quot; + evnt_name + &quot;'&quot;);
+    throw new MeiLib.RuntimeError('MeiLib.durationOf:E05', &quot;Not supported element: '&quot; + evnt_name + &quot;'&quot;);
   }
 
 }
-
-/*
+<span id='MeiLib-method-tstamp2id'>/**
+</span> * @method tstamp2id
  * Find the event with the minimum distance from of the given timestamp.
- * 
- * @param tstamp {String} the timestamp to match against events in the given
- * context. Local timestamp only (without measure part). @param layer {Obejct}
- * an XML DOM object, contains all events in the given measure. @param meter
- * {Object} the effective time signature object { count, unit } in the measure
- * containing layer. @return {String} the xml:id of the closest element, or
+ *
+ * @param {String} tstamp the timestamp to match against events in the given
+ * context. Local timestamp only (without measure part).
+ * @param {Object} layer an XML DOM object, contains all events in the given
+ * measure.
+ * @param {Object} meter the effective time signature object { count, unit } in
+ * the measure containing layer.
+ * @return {String} the xml:id of the closest element, or
  * undefined if &lt;code&gt;layer&lt;/code&gt; contains no events.
  */
 MeiLib.tstamp2id = function(tstamp, layer, meter) {
   var ts = Number(tstamp);
-  var ts_acc = 0; // total duration of events before current event
+  var ts_acc = 0;
+  // total duration of events before current event
   var c_ts = function() {
     return ts_acc + 1;
-  } // tstamp of current event
+  }// tstamp of current event
   var distF = function() {
     return ts - c_ts();
-  } // signed distance between tstamp and tstamp of current event;
-
+  }// signed distance between tstamp and tstamp of current event;
   var eventList = new MeiLib.EventEnumerator(layer);
   var evnt;
   var dist;
-  var prev_evnt; // previous event
-  var prev_dist; // previuos distance
+  var prev_evnt;
+  // previous event
+  var prev_dist;
+  // previuos distance
   while (!eventList.EoI &amp;&amp; (dist === undefined || dist &gt; 0)) {
     prev_evnt = evnt;
     prev_dist = dist;
@@ -277,7 +289,13 @@ MeiLib.tstamp2id = function(tstamp, layer, meter) {
   }
   return xml_id;
 }
-
+<span id='MeiLib-method-XMLID'>/**
+</span> * @method XMLID
+ * returns the xml:id attribute of an element; if there is none, the function
+ * created a pseudo id, adds it to the element and returns that id.
+ * @param {Element} elem the element to process
+ * @return {String} the xml:id of the element
+ */
 MeiLib.XMLID = function(elem) {
   xml_id = $(elem).attr('xml:id');
   if (!xml_id) {
@@ -286,17 +304,18 @@ MeiLib.XMLID = function(elem) {
   }
   return xml_id;
 }
-
-/*
+<span id='MeiLib-method-id2tstamp'>/**
+</span> * @method id2tstamp
  * Calculates a timestamp value for an event in a given context. (Event refers
  * to musical events such as notes, rests and chords).
- * 
- * @param eventid {String} the xml:id of the event 
+ *
+ * @param eventid {String} the xml:id of the event
  * @param context {Array} of
  * contextual objects {layer, meter}. Time signature is mandatory for the first
  * one, but optional for the rest. All layers belong to a single logical layer.
- * They are the layer elements from some consequtive measures. 
- * @return {String} the MEI timestamp value (expressed in beats relative to the meter of the
+ * They are the layer elements from some consequtive measures.
+ * @return {String} the MEI timestamp value (expressed in beats relative to the
+ * meter of the
  * measure containing the event) of all events that happened before the given
  * event in the given context. If the event is not in the first measure (layer)
  * the timestamp value contains a 'measure part', that is for example 2m+2 if
@@ -309,8 +328,7 @@ MeiLib.id2tstamp = function(eventid, context) {
     if (context[i].meter)
       meter = context[i].meter;
     if (i === 0 &amp;&amp; !meter)
-      throw new MeiLib.RuntimeError('MeiLib.id2tstamp:E001',
-          'No time signature specified');
+      throw new MeiLib.RuntimeError('MeiLib.id2tstamp:E001', 'No time signature specified');
 
     var result = MeiLib.sumUpUntil(eventid, context[i].layer, meter);
     if (result.found) {
@@ -318,44 +336,44 @@ MeiLib.id2tstamp = function(eventid, context) {
       return i.toString() + 'm' + '+' + (result.beats + 1).toString();
     }
   }
-  throw new MeiLib.RuntimeError('MeiLib.id2tstamp:E002',
-      'No event with xml:id=&quot;' + eventid
-          + '&quot; was found in the given MEI context.');
+  throw new MeiLib.RuntimeError('MeiLib.id2tstamp:E002', 'No event with xml:id=&quot;' + eventid + '&quot; was found in the given MEI context.');
 };
 
-/*
+<span id='MeiLib-method-dur2beats'>/**
+</span> * @method dur2beats
  * Convert absolute duration into relative duration (nuber of beats) according
  * to time signature.
- * 
+ *
  * @param dur {Number} reciprocal value of absolute duration (e.g. 4-&gt;quarter
- * note, 8-&gt;eighth note, etc.) @param meter the time signature object { count,
- * unit } @return {Number}
+ * note, 8-&gt;eighth note, etc.)
+ * @param {Object} meter the time signature object { count,
+ * unit }
+ * @return {Number}
  */
 MeiLib.dur2beats = function(dur, meter) {
   return (meter.unit / dur);
 }
-
-/*
+<span id='MeiLib-method-beats2dur'>/**
+</span> * @method beats2dur
  * Convert relative duration (nuber of beats) into absolute duration (e.g.
  * quarter note, eighth note, etc) according to time signature.
- * 
+ *
  * @param beats {Number} duration in beats @param meter time signature object {
- * count, unit } @return {Number} reciprocal value of absolute duration (e.g. 4 -&gt;
- * quarter note, 8 -&gt; eighth note, etc.)
+ * count, unit } @return {Number} reciprocal value of absolute duration (e.g. 4
+ * -&gt; quarter note, 8 -&gt; eighth note, etc.)
  */
 MeiLib.beats2dur = function(beats, meter) {
   return (meter.unit / beats);
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Converts the &lt;code&gt;dots&lt;/code&gt; attribute value into a duration multiplier.
- * 
- * @param node
- *            XML DOM object containing a node which may have &lt;code&gt;dots&lt;/code&gt;
- *            attribute
- * @return {Number} The result is 1 if no &lt;code&gt;dots&lt;/code&gt; attribute is
- *         present. For &lt;code&gt;dots=&quot;1&quot;&lt;/code&gt; the result is 1.5, for
- *         &lt;code&gt;dots=&quot;2&quot;&lt;/code&gt; the result is 1.75, etc.
+<span id='MeiLib-method-dotsMult'>/**
+</span> * @method dotsMult
+ * Converts the &lt;code&gt;dots&lt;/code&gt; attribute value into a duration multiplier.
+ *
+ * @param node XML DOM object containing a node which may have &lt;code&gt;dots&lt;/code&gt;
+ * attribute
+ * @return {Number} The result is 1 if no &lt;code&gt;dots&lt;/code&gt; attribute is present.
+ * For &lt;code&gt;dots=&quot;1&quot;&lt;/code&gt; the result is 1.5, for &lt;code&gt;dots=&quot;2&quot;&lt;/code&gt; the
+ * result is 1.75, etc.
  */
 MeiLib.dotsMult = function(node) {
   var dots = $(node).attr('dots');
@@ -367,21 +385,16 @@ MeiLib.dotsMult = function(node) {
   return mult;
 }
 
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * For a given event (such as note, rest chord or space) calculates the combined
+<span id='MeiLib-method-sumUpUntil'>/**
+</span> * @method sumUpUntil
+ * For a given event (such as note, rest chord or space) calculates the combined
  * legth of preceding events, or the combined lenght of all events if the given
  * event isn't present.
- * 
- * @param eventid
- *            {String} the value of the xml:id attribute of the event
- * @param layer
- *            {Object} an XML DOM object containing the MEI &lt;Layer&gt; element
- * @param meter
- *            the time signature object { count, unit }
- * @return an object { beats:number, found:boolean }. 1. 'found' is true and
- *         'beats' is the total duration of the events that happened before the
- *         event 'eventid' within 'layer', or 2. 'found' is false and 'beats is
- *         the total duration of the events in 'layer'.
+ *
+ * @param {String} eventid the value of the xml:id attribute of the event
+ * @param {Object} layer an XML DOM object containing the MEI &lt;Layer&gt; element
+ * @param {Object} meter the time signature object { count, unit }
+ * @return {Object} an object { beats:number, found:boolean }. 1. 'found' is true and 'beats' is the total duration of the events that happened before the event 'eventid' within 'layer', or 2. 'found' is false and 'beats is the total duration of the events in 'layer'.
  */
 MeiLib.sumUpUntil = function(eventid, layer, meter) {
 
@@ -398,12 +411,10 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
       } else {
         dur = Number(node.attr('dur'));
         if (!dur)
-          throw new MeiLib.RuntimeError('MeiLib.sumUpUntil:E001',
-              &quot;Duration is not a number ('breve' and 'long' are not supported).&quot;);
+          throw new MeiLib.RuntimeError('MeiLib.sumUpUntil:E001', &quot;Duration is not a number ('breve' and 'long' are not supported).&quot;);
         dots = node.attr('dots');
         dots = Number(dots || &quot;0&quot;);
-        beats = MeiLib.dotsMult(node)
-            * MeiLib.dur2beats(dur, meter);
+        beats = MeiLib.dotsMult(node) * MeiLib.dur2beats(dur, meter);
 
         return {
           beats : beats,
@@ -421,7 +432,8 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
         return {
           beats : meter.count,
           found : false
-        }; // the duration of a whole bar expressed in number of beats.
+        };
+        // the duration of a whole bar expressed in number of beats.
       }
     } else if (node_name === 'layer' || node_name === 'beam') {
 
@@ -429,7 +441,7 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
       beats = 0;
       children = node.children();
       found = false;
-      for (i = 0; i &lt; children.length &amp;&amp; !found; ++i) {
+      for ( i = 0; i &lt; children.length &amp;&amp; !found; ++i) {
         subtotal = sumUpUntil_inNode(children[i]);
         beats += subtotal.beats;
         found = subtotal.found;
@@ -463,7 +475,7 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
         } else {
           children = node.children();
           found = false;
-          for (i = 0; i &lt; children.length &amp;&amp; !found; ++i) {
+          for ( i = 0; i &lt; children.length &amp;&amp; !found; ++i) {
             subtotal = sumUpUntil_inNode(children[i]);
             beats = subtotal.beats;
             found = subtotal.found;
@@ -484,24 +496,25 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
   return sumUpUntil_inNode(layer);
 }
 
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Returns a slice of the MEI. The slice is specified by the number of the
+// TODO make name lower case?
+<span id='MeiLib-method-SliceMEI'>/**
+</span> * @method SliceMEI
+ * Returns a slice of the MEI. The slice is specified by the number of the
  * starting and ending measures.
- * 
+ *
  * About the &lt;code&gt;staves&lt;/code&gt; parameter: it specifies a list of staff
  * numbers. If it is defined, only the listed staves will be kept in the
  * resulting slice. The following elements will be removed from: 1. &lt;staffDef&gt;
  * elements (@staff value is matched against the specified list) 2. &lt;staff&gt;
  * elements (@n value is matched against the specified list) 3. any other child
  * element of measures that has
- * 
+ *
  * @staff specified AND it is not listed.
- * 
+ *
  * Note that &lt;staff&gt; elements without
  * @n will be removed.
- * 
- * @param params
- *            {obejct} like { start_n:NUMBER, end_n:NUMBER, noKey:BOOLEAN,
+ *
+ * @param {Object} params like { start_n:NUMBER, end_n:NUMBER, noKey:BOOLEAN,
  *            noClef:BOOLEAN, noMeter:BOOLEAN, noConnectors, staves:[NUMBER] },
  *            where &lt;code&gt;noKey&lt;/code&gt;, &lt;code&gt;noClef&lt;/code&gt; and
  *            &lt;code&gt;noMeter&lt;/code&gt; and &lt;code&gt;noConnectors&lt;/code&gt; are
@@ -514,15 +527,14 @@ MeiLib.SliceMEI = function(MEI, params) {
 
   var setVisibles = function(elements, params) {
     $.each(elements, function(i, elem) {
-          if (params.noClef)
-            $(elem).attr('clef.visible', 'false');
-          if (params.noKey)
-            $(elem).attr('key.sig.show', 'false');
-          if (params.noMeter)
-            $(elem).attr('meter.rend', 'false');
-        });
+      if (params.noClef)
+        $(elem).attr('clef.visible', 'false');
+      if (params.noKey)
+        $(elem).attr('key.sig.show', 'false');
+      if (params.noMeter)
+        $(elem).attr('meter.rend', 'false');
+    });
   }
-
   var paramsStaves = params.staves;
   if (paramsStaves) {
     var staffDefSelector = '';
@@ -553,7 +565,7 @@ MeiLib.SliceMEI = function(MEI, params) {
   var inside_slice = false;
   var found = false;
 
-<span id='MeiLib-RuntimeError-property-section_children'>  /**
+<span id='MeiLib-property-section_children'>  /**
 </span>   * Iterate through each child of the seciont and remove everything outside
    * the slice. Remove
    */
@@ -562,8 +574,7 @@ MeiLib.SliceMEI = function(MEI, params) {
     var child = this;
 
     if (!inside_slice) {
-      if (child.localName === 'measure'
-          &amp;&amp; Number($(child).attr('n')) === params.start_n) {
+      if (child.localName === 'measure' &amp;&amp; Number($(child).attr('n')) === params.start_n) {
         inside_slice = true;
         found = true;
       } else {
@@ -586,8 +597,7 @@ MeiLib.SliceMEI = function(MEI, params) {
       }
 
       // finish inside_slice state if it's the end of slice.
-      if (child.localName === 'measure'
-          &amp;&amp; Number($(child).attr('n')) === params.end_n) {
+      if (child.localName === 'measure' &amp;&amp; Number($(child).attr('n')) === params.end_n) {
         inside_slice = false;
       }
     }
@@ -597,15 +607,15 @@ MeiLib.SliceMEI = function(MEI, params) {
   return slice;
 }
 
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Represents an MEI &lt;app&gt; or &lt;choice&gt; element.
- * 
- * @param xmlID
- *            {String} the xml:id attribute value of the &lt;app&gt; or &lt;choice&gt;
- *            element.
- * @param parentID
- *            {String} the xml:id attribute value of the direct parent element
- *            of the &lt;app&gt; or &lt;choice&gt; element.
+<span id='MeiLib-Alt-method-constructor'><span id='MeiLib-Alt'>/**
+</span></span> * @class MeiLib.Alt
+ * Represents an MEI &lt;app&gt; or &lt;choice&gt; element.
+ *
+ * @constructor
+ * @param {String} xmlID the xml:id attribute value of the &lt;app&gt; or &lt;choice&gt;
+ * element.
+ * @param {String} parentID the xml:id attribute value of the direct parent
+ * element of the &lt;app&gt; or &lt;choice&gt; element.
  */
 MeiLib.Alt = function(xmlID, parentID) {
   this.xmlID = xmlID;
@@ -613,9 +623,11 @@ MeiLib.Alt = function(xmlID, parentID) {
   this.parentID = parentID;
 }
 
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Represents a &lt;lem&gt;, &lt;rdg&gt;, &lt;sic&gt; or &lt;corr&gt; element.
- * 
+<span id='MeiLib-Variant-method-constructor'><span id='MeiLib-Variant'>/**
+</span></span> * @class MeiLib.Variant
+ * Represents a &lt;lem&gt;, &lt;rdg&gt;, &lt;sic&gt; or &lt;corr&gt; element.
+ *
+ * @constructor
  * @param xmlID
  *            {String} the xml:id attribute value of the element.
  * @param tagname
@@ -638,21 +650,23 @@ MeiLib.Variant = function(xmlID, tagname, source, resp, n) {
   this.n = n;
 }
 
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * A Rich MEI is an MEI that contain ambiguity represented by Critical Apparatus (&lt;app&gt;,
- * &lt;rdg&gt;, etc.), or Editorial Transformation (&lt;choice&gt;, &lt;corr&gt;, etc.) elements.
- * 
- * @param meiDoc
- *            is the MEI document.
+<span id='MeiLib-MeiDoc-method-constructor'><span id='MeiLib-MeiDoc'>/**
+</span></span> * @class MeiLib.MeiDoc
+ * A Rich MEI is an MEI that contain ambiguity represented by Critical Apparatus
+ * (&lt;app&gt;, &lt;rdg&gt;, etc.), or Editorial Transformation (&lt;choice&gt;, &lt;corr&gt;, etc.)
+ * elements.
+ *
+ * @constructor
+ * @param {XMLDocument} meiXmlDoc the MEI document.
  */
 MeiLib.MeiDoc = function(meiXmlDoc) {
   if (meiXmlDoc)
     this.init(meiXmlDoc);
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Initializes a &lt;code&gt;MeiLib.MeiDoc&lt;/code&gt; object.
- * 
+<span id='MeiLib-MeiDoc-method-init'>/**
+</span> * @method init
+ * Initializes a &lt;code&gt;MeiLib.MeiDoc&lt;/code&gt; object.
+ *
  * The constructor extracts information about alternative encodings and compiles
  * them into a JS object (this.ALTs). The obejcts are exposed as per the
  * following: 1. &lt;code&gt;sourceList&lt;/code&gt; is the list of sources as defined in
@@ -663,16 +677,15 @@ MeiLib.MeiDoc = function(meiXmlDoc) {
  * of the elements. 4. &lt;code&gt;altgroups&lt;/code&gt; is the obejct that contains how
  * &lt;app&gt; and &lt;choice&gt; elements are grouped together to form a logical unit of
  * alternative encoding.
- * 
- * @param meiXmlDoc
- *            is an XML document containing the rich MEI
+ *
+ * @param {XMLDocument} meiXmlDoc an XML document containing the rich MEI
  */
 MeiLib.MeiDoc.prototype.init = function(meiXmlDoc) {
   this.xmlDoc = meiXmlDoc;
   this.rich_head = meiXmlDoc.getElementsByTagNameNS(
-      &quot;http://www.music-encoding.org/ns/mei&quot;, 'meiHead')[0];
+  &quot;http://www.music-encoding.org/ns/mei&quot;, 'meiHead')[0];
   this.rich_music = meiXmlDoc.getElementsByTagNameNS(
-      &quot;http://www.music-encoding.org/ns/mei&quot;, 'music')[0];
+  &quot;http://www.music-encoding.org/ns/mei&quot;, 'music')[0];
   this.rich_score = $(this.rich_music).find('score')[0];
   this.parseSourceList();
   this.parseEditorList();
@@ -680,30 +693,40 @@ MeiLib.MeiDoc.prototype.init = function(meiXmlDoc) {
   this.initAltgroups();
   this.initSectionView();
 }
-
+<span id='MeiLib-MeiDoc-method-getRichScore'>/**
+</span> * @method getRichScore
+ */
 MeiLib.MeiDoc.prototype.getRichScore = function() {
   return this.rich_score;
 }
-
+<span id='MeiLib-MeiDoc-method-getPlainScore'>/**
+</span> * @method getPlainScore
+ */
 MeiLib.MeiDoc.prototype.getPlainScore = function() {
   return this.plain_score;
 }
-
+<span id='MeiLib-MeiDoc-method-getALTs'>/**
+</span> * @method getALTs
+ */
 MeiLib.MeiDoc.prototype.getALTs = function() {
   return this.ALTs;
 }
-
+<span id='MeiLib-MeiDoc-method-getSourceList'>/**
+</span> * @method getSourceList
+ */
 MeiLib.MeiDoc.prototype.getSourceList = function() {
   return this.sourceList;
 }
-
+<span id='MeiLib-MeiDoc-method-getEditorList'>/**
+</span> * @method getEditorList
+ */
 MeiLib.MeiDoc.prototype.getEditorList = function() {
   return this.editorList;
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Extracts information about the sources as defined in the MEI header.
- * 
+<span id='MeiLib-MeiDoc-method-parseSourceList'>/**
+</span> * @method parseSourceList
+ * Extracts information about the sources as defined in the MEI header.
+ *
  * @return {Object} is a container indexed by the xml:id attribute value of the
  *         &lt;sourceDesc&gt; element.
  */
@@ -721,7 +744,9 @@ MeiLib.MeiDoc.prototype.parseSourceList = function() {
   this.sources = $(this.rich_head).find('sourceDesc').children();
   return this.sources;
 }
-
+<span id='MeiLib-MeiDoc-method-parseEditorList'>/**
+</span> * @method parseEditorList
+ */
 MeiLib.MeiDoc.prototype.parseEditorList = function() {
   // var edtrs = $(this.rich_head).find('titleStmt').children('editor');
   // this.editorList = {};
@@ -734,10 +759,11 @@ MeiLib.MeiDoc.prototype.parseEditorList = function() {
   this.editors = $(this.rich_head).find('titleStmt').children('editor');
   return this.editors;
 }
-<span id='MeiLib-RuntimeError-property-'>/**
-</span> * Extracts information about the elements encoding alternatives. The method
+<span id='MeiLib-MeiDoc-method-parseALTs'>/**
+</span> * @method parseALTs
+ * Extracts information about the elements encoding alternatives. The method
  * stores its result in the &lt;code&gt;ALTs&lt;/code&gt; property.
- * 
+ *
  * &lt;code&gt;ALTs&lt;/code&gt; is a container of MeiLib.Alt obejcts indexed by the
  * xml:id attribute value of the &lt;app&gt; or &lt;choice&gt; elements.
  */
@@ -746,36 +772,36 @@ MeiLib.MeiDoc.prototype.parseALTs = function() {
   this.ALTs = {};
   // console.log(this.rich_score);
   var apps = $(this.rich_score).find('app, choice');
-  for (i = 0; i &lt; apps.length; i++) {
+  for ( i = 0; i &lt; apps.length; i++) {
     var app = apps[i];
     var parent = app.parentNode;
     var altitems = $(app).find('rdg, lem, sic, corr');
     var AppsItem = new MeiLib.Alt(MeiLib.XMLID(app), MeiLib.XMLID(parent));
     AppsItem.altitems = {};
-    for (j = 0; j &lt; altitems.length; j++) {
+    for ( j = 0; j &lt; altitems.length; j++) {
       var altitem = altitems[j];
       var source = $(altitem).attr('source');
       var resp = $(altitem).attr('resp');
       var n = $(altitem).attr('n');
       var tagname = $(altitem).prop('localName');
       var varXMLID = MeiLib.XMLID(altitem);
-      AppsItem.altitems[varXMLID] = new MeiLib.Variant(varXMLID, tagname,
-          source, resp, n);
+      AppsItem.altitems[varXMLID] = new MeiLib.Variant(varXMLID, tagname, source, resp, n);
     }
     this.ALTs[MeiLib.XMLID(app)] = AppsItem;
   }
 }
-
+<span id='MeiLib-MeiDoc-method-initAltgroups'>/**
+</span> * @method initAltgroups
+ */
 MeiLib.MeiDoc.prototype.initAltgroups = function() {
   var i, j;
   var ALTs = this.ALTs;
-  annots = $(this.rich_score)
-      .find('annot[type=&quot;appGrp&quot;], annot[type=&quot;choiceGrp&quot;]');
+  annots = $(this.rich_score).find('annot[type=&quot;appGrp&quot;], annot[type=&quot;choiceGrp&quot;]');
   this.altgroups = {};
-  for (i = 0; i &lt; annots.length; i++) {
+  for ( i = 0; i &lt; annots.length; i++) {
     altgroup = [];
     token_list = $(annots[i]).attr('plist').split(' ');
-    for (j = 0; j &lt; token_list.length; j++) {
+    for ( j = 0; j &lt; token_list.length; j++) {
       altgroup.push(token_list[j].replace('#', ''));
     }
     for (j in altgroup) {
@@ -783,10 +809,11 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
     }
   };
 }
-<span id='MeiLib-RuntimeError-property-'>/**
-</span> * The MeiLib.MeiDoc.initSectionView transforms the rich MEI (this.rich_score)
+<span id='MeiLib-MeiDoc-method-initSectionView'>/**
+</span> * @method initSectionView
+ * The MeiLib.MeiDoc.initSectionView transforms the rich MEI (this.rich_score)
  * into a plain MEI (this.sectionview_score)
- * 
+ *
  * An MEI is called 'plain' MEI if it contains no &lt;app&gt; or &lt;choice&gt; elements.
  * Such an MEI can also be referred after the analogy of 2D section views of a
  * 3D object: the rich MEI is a higher-dimensional object, of which we would
@@ -798,13 +825,13 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
  * measure #10 (let's call those ones variants C, D and E). In this case the
  * section plane would contain two elements the first one is either A or B, the
  * second one is C, D or E.
- * 
+ *
  * The extracted information about all the &lt;app&gt; and &lt;choice&gt; elements are
  * stored in an array. Using this array the application can access information
  * such as what alternative encodings are present in the score, what source a
  * variant comes from, etc. This array is exposed by te &lt;code&gt;ALTs&lt;/code&gt;
  * property.
- * 
+ *
  */
 MeiLib.MeiDoc.prototype.initSectionView = function(altReplacements) {
   altReplacements = altReplacements || {};
@@ -841,12 +868,9 @@ MeiLib.MeiDoc.prototype.initSectionView = function(altReplacements) {
       // apply replacement, or...
       alt_item_xml_id = replacement.xmlID;
       var alt_item = $(this_score).find(replacement.tagname
-          + '[xml\\:id=&quot;' + alt_item_xml_id + '&quot;]')[0];
+      + '[xml\\:id=&quot;' + alt_item_xml_id + '&quot;]')[0];
       if (!alt_item)
-        throw new MeiLib.RuntimeError(
-            'MeiLib.MeiDoc.prototype.initSectionView():E01',
-            &quot;Cannot find &lt;lem&gt;, &lt;rdg&gt;, &lt;sic&gt;, or &lt;corr&gt; with @xml:id '&quot;
-                + alt_item_xml_id + &quot;'.&quot;);
+        throw new MeiLib.RuntimeError('MeiLib.MeiDoc.prototype.initSectionView():E01', &quot;Cannot find &lt;lem&gt;, &lt;rdg&gt;, &lt;sic&gt;, or &lt;corr&gt; with @xml:id '&quot; + alt_item_xml_id + &quot;'.&quot;);
       alt_instance2insert = alt_item.childNodes;
     } else {
       if (alt.localName === 'choice') {
@@ -880,14 +904,12 @@ MeiLib.MeiDoc.prototype.initSectionView = function(altReplacements) {
       }
     }
     var parent = alt.parentNode;
-    var PIStart = xmlDoc.createProcessingInstruction('MEI2VF', 'rdgStart=&quot;'
-            + alt_xml_id + '&quot;');
+    var PIStart = xmlDoc.createProcessingInstruction('MEI2VF', 'rdgStart=&quot;' + alt_xml_id + '&quot;');
     parent.insertBefore(PIStart, alt);
     $.each(alt_instance2insert, function() {
-          parent.insertBefore(this.cloneNode(true), alt);
-        });
-    var PIEnd = xmlDoc.createProcessingInstruction('MEI2VF', 'rdgEnd=&quot;'
-            + alt_xml_id + '&quot;');
+      parent.insertBefore(this.cloneNode(true), alt);
+    });
+    var PIEnd = xmlDoc.createProcessingInstruction('MEI2VF', 'rdgEnd=&quot;' + alt_xml_id + '&quot;');
     parent.insertBefore(PIEnd, alt);
     parent.removeChild(alt);
 
@@ -897,11 +919,11 @@ MeiLib.MeiDoc.prototype.initSectionView = function(altReplacements) {
   return this.sectionview_score;
 
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Updates the sectionview score (plain MEI) by replacing one or more
+<span id='MeiLib-MeiDoc-method-updateSectionView'>/**
+</span> * @method updateSectionView
+ * Updates the sectionview score (plain MEI) by replacing one or more
  * alternative instance with other alternatives.
- * 
+ *
  * @param sectionplaneUpdate
  *            {object} the list of changes. It is an container of xml:id
  *            attribute values of &lt;rdg&gt;, &lt;lem&gt;, &lt;sic&gt; or &lt;corr&gt; elements,
@@ -938,7 +960,6 @@ MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
     }
     return corresponding_item;
   }
-
   for (altID in sectionplaneUpdate) {
     var alt_instance2insert = this.ALTs[altID].altitems[sectionplaneUpdate[altID]];
     altgroup = this.altgroups[altID];
@@ -947,31 +968,29 @@ MeiLib.MeiDoc.prototype.updateSectionView = function(sectionplaneUpdate) {
       // alts with the
       // alt_item that correspons to alt_instance2insert
       var i;
-      for (i = 0; i &lt; altgroup.length; i++) {
+      for ( i = 0; i &lt; altgroup.length; i++) {
         altID__ = altgroup[i];
-        alt_instance2insert__ = corresponding_alt_item(
-            this.ALTs[altID__].altitems, alt_instance2insert);
+        alt_instance2insert__ = corresponding_alt_item(this.ALTs[altID__].altitems, alt_instance2insert);
         this.replaceAltInstance({
-              appXmlID : altID__,
-              replaceWith : alt_instance2insert__
-            });
+          appXmlID : altID__,
+          replaceWith : alt_instance2insert__
+        });
       }
     } else {
       // otherwise just replace alt[xml:id=altID]
       this.replaceAltInstance({
-            appXmlID : altID,
-            replaceWith : alt_instance2insert
-          });
+        appXmlID : altID,
+        replaceWith : alt_instance2insert
+      });
     }
   }
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Replace an alternative instance in the sectionview score and in the
+<span id='MeiLib-MeiDoc-method-replaceAltInstance'>/**
+</span> * @method replaceAltInstance
+ * Replace an alternative instance in the sectionview score and in the
  * sectionplane
- * 
- * @param alt_inst_update
- *            {object}
+ *
+ * @param {Object} alt_inst_update
  * @return the updated score
  */
 MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
@@ -981,8 +1000,8 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
   if (alt_inst_update.replaceWith) {
     var replaceWith_xmlID = alt_inst_update.replaceWith.xmlID;
     var var_inst_elem = $(this.rich_score)
-        .find(alt_inst_update.replaceWith.tagname + '[xml\\:id=&quot;'
-            + replaceWith_xmlID + '&quot;]')[0];
+    .find(alt_inst_update.replaceWith.tagname + '[xml\\:id=&quot;'
+    + replaceWith_xmlID + '&quot;]')[0];
     alt_instance2insert = var_inst_elem.childNodes;
   }
 
@@ -991,9 +1010,8 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
     data2 = data2.replace(&quot;'&quot;, '&quot;');
     return data1 === data2;
   }
-
   var parent = $(this.sectionview_score).find('[xml\\:id='
-      + this.ALTs[app_xml_id].parentID + ']')[0];
+  + this.ALTs[app_xml_id].parentID + ']')[0];
   var children = parent.childNodes;
   var inside_inst = false;
   var found = false;
@@ -1001,14 +1019,10 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
   $(children).each(function() {
     var child = this;
     if (child.nodeType === 7) {
-      if (child.nodeName === 'MEI2VF'
-          &amp;&amp; match_pseudo_attrValues(child.nodeValue, 'rdgStart=&quot;'
-                  + app_xml_id + '&quot;')) {
+      if (child.nodeName === 'MEI2VF' &amp;&amp; match_pseudo_attrValues(child.nodeValue, 'rdgStart=&quot;' + app_xml_id + '&quot;')) {
         inside_inst = true;
         found = true;
-      } else if (child.nodeName === 'MEI2VF'
-          &amp;&amp; match_pseudo_attrValues(child.nodeValue, 'rdgEnd=&quot;'
-                  + app_xml_id + '&quot;')) {
+      } else if (child.nodeName === 'MEI2VF' &amp;&amp; match_pseudo_attrValues(child.nodeValue, 'rdgEnd=&quot;' + app_xml_id + '&quot;')) {
         inside_inst = false;
         insert_before_this = child;
       }
@@ -1034,17 +1048,17 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
   }
 
   $.each(alt_instance2insert, function() {
-        insert_method(this.cloneNode(true));
-      });
+    insert_method(this.cloneNode(true));
+  });
 
   this.sectionplane[app_xml_id] = alt_inst_update.replaceWith;
 
   return this.sectionview_score;
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Get a slice of the sectionview_score.
- * 
+<span id='MeiLib-MeiDoc-method-getSectionViewSlice'>/**
+</span> * @method getSectionViewSlice
+ * Get a slice of the sectionview_score.
+ *
  * @param params
  *            {Obejct} contains the parameters for slicing. For more info see at
  *            documentation of MeiLib.SliceMEI
@@ -1053,10 +1067,10 @@ MeiLib.MeiDoc.prototype.replaceAltInstance = function(alt_inst_update) {
 MeiLib.MeiDoc.prototype.getSectionViewSlice = function(params) {
   return MeiLib.SliceMEI(this.sectionview_score, params);
 }
-
-<span id='MeiLib-RuntimeError-method-'>/**
-</span> * Get a slice of the whole rich MEI document.
- * 
+<span id='MeiLib-MeiDoc-method-getRichSlice'>/**
+</span> * @method getRichSlice
+ * Get a slice of the whole rich MEI document.
+ *
  * @param params
  *            {Obejct} contains the parameters for slicing. For more info see at
  *            documentation of MeiLib.SliceMEI

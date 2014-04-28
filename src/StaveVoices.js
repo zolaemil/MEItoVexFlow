@@ -61,6 +61,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         this.all_voices = [];
       },
 
+      // TODO store the voices staffwise instead of extracting information at this point!?
       preFormat : function() {
         var me = this, all, staff_n, i;
         all = me.all_voices;
@@ -80,7 +81,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return me.formatter.getMinTotalWidth();
       },
 
-      // TODO store the voices staffwise instead of extracting information at this point!?
       /**
        *
        * @param {Object} staff a staff in the current measure used to set
