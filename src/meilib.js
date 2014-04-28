@@ -1,6 +1,4 @@
 /*
-* MeiLib - General purpose JavaScript functions for processing MEI documents.
-*
 * meilib.js
 *
 * Author: Zoltan Komives Created: 05.07.2013
@@ -23,6 +21,7 @@
 
 /**
  * @class MeiLib
+ * MeiLib - General purpose JavaScript functions for processing MEI documents.
  * @singleton
  */
 var MeiLib = {};
@@ -143,7 +142,7 @@ MeiLib.EventEnumerator.prototype.step_ahead = function() {++this.i_next;
  * meter.
  *
  * Event refers to musical event such as notes, rests, chords. The MEI element
- * <space/> is also considered an event.
+ * <b>space</b> is also considered an event.
  *
  * @param evnt an XML DOM object
  * @param meter the time signature object { count, unit }
@@ -156,7 +155,7 @@ MeiLib.durationOf = function(evnt, meter) {
   var durationOf_SimpleEvent = function(simple_evnt, meter) {
     var dur = $(simple_evnt).attr('dur');
     if (!dur)
-      throw new MeiLib.RuntimeError('MeiLib.durationOf:E04', '@dur of <note>, <rest> or <space> must be specified.');
+      throw new MeiLib.RuntimeError('MeiLib.durationOf:E04', '@dur of <b>note</b>, <b>rest</b> or <b>space</b> must be specified.');
     return MeiLib.dotsMult(simple_evnt) * MeiLib.dur2beats(Number(dur), meter);
   }
   var durationOf_Chord = function(chord, meter, layer_no) {
@@ -225,7 +224,7 @@ MeiLib.durationOf = function(evnt, meter) {
  * @param {Object} meter the effective time signature object { count, unit } in
  * the measure containing layer.
  * @return {String} the xml:id of the closest element, or
- * undefined if <code>layer</code> contains no events.
+ * undefined if <b>layer</b> contains no events.
  */
 MeiLib.tstamp2id = function(tstamp, layer, meter) {
   var ts = Number(tstamp);
@@ -350,7 +349,7 @@ MeiLib.beats2dur = function(beats, meter) {
 }
 /**
  * @method dotsMult
- * Converts the <code>dots</code> attribute value into a duration multiplier.
+ * Converts the <b>dots</b> attribute value into a duration multiplier.
  *
  * @param node XML DOM object containing a node which may have <code>dots</code>
  * attribute
@@ -375,7 +374,7 @@ MeiLib.dotsMult = function(node) {
  * event isn't present.
  *
  * @param {String} eventid the value of the xml:id attribute of the event
- * @param {Object} layer an XML DOM object containing the MEI <Layer> element
+ * @param {Object} layer an XML DOM object containing the MEI <b>Layer</b> element
  * @param {Object} meter the time signature object { count, unit }
  * @return {Object} an object { beats:number, found:boolean }. 1. 'found' is true and 'beats' is the total duration of the events that happened before the event 'eventid' within 'layer', or 2. 'found' is false and 'beats is the total duration of the events in 'layer'.
  */
@@ -487,14 +486,14 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
  *
  * About the <code>staves</code> parameter: it specifies a list of staff
  * numbers. If it is defined, only the listed staves will be kept in the
- * resulting slice. The following elements will be removed from: 1. <staffDef>
- * elements (@staff value is matched against the specified list) 2. <staff>
+ * resulting slice. The following elements will be removed from: 1. <b>staffDef</b>
+ * elements (@staff value is matched against the specified list) 2. <b>staff</b>
  * elements (@n value is matched against the specified list) 3. any other child
  * element of measures that has
  *
  * @staff specified AND it is not listed.
  *
- * Note that <staff> elements without
+ * Note that <b>staff</b> elements without
  * @n will be removed.
  *
  * @param {Object} params like { start_n:NUMBER, end_n:NUMBER, noKey:BOOLEAN,
@@ -548,8 +547,8 @@ MeiLib.SliceMEI = function(MEI, params) {
   var inside_slice = false;
   var found = false;
 
-  /**
-   * Iterate through each child of the seciont and remove everything outside
+  /*
+   * Iterate through each child of the section and remove everything outside
    * the slice. Remove
    */
   var section_children = section.childNodes;
@@ -592,13 +591,13 @@ MeiLib.SliceMEI = function(MEI, params) {
 
 /**
  * @class MeiLib.Alt
- * Represents an MEI <app> or <choice> element.
+ * Represents an MEI <b>app</b> or <b>choice</b> element.
  *
  * @constructor
- * @param {String} xmlID the xml:id attribute value of the <app> or <choice>
+ * @param {String} xmlID the xml:id attribute value of the <b>app</b> or <b>choice</b>
  * element.
  * @param {String} parentID the xml:id attribute value of the direct parent
- * element of the <app> or <choice> element.
+ * element of the <b>app</b> or <b>choice</b> element.
  */
 MeiLib.Alt = function(xmlID, parentID) {
   this.xmlID = xmlID;
@@ -608,13 +607,13 @@ MeiLib.Alt = function(xmlID, parentID) {
 
 /**
  * @class MeiLib.Variant
- * Represents a <lem>, <rdg>, <sic> or <corr> element.
+ * Represents a <b>lem</b>, <b>rdg</b>, <b>sic</b> or <b>corr</b> element.
  *
  * @constructor
  * @param xmlID
  *            {String} the xml:id attribute value of the element.
  * @param tagname
- *            {String} 'lem' for <lem> and 'rdg for <rdg> elements.
+ *            {String} 'lem' for <b>lem</b> and 'rdg for <b>rdg</b> elements.
  * @param source
  *            {String} space-separated list of the source IDs what the given
  *            item belongs to.
@@ -636,7 +635,7 @@ MeiLib.Variant = function(xmlID, tagname, source, resp, n) {
 /**
  * @class MeiLib.MeiDoc
  * A Rich MEI is an MEI that contain ambiguity represented by Critical Apparatus
- * (<app>, <rdg>, etc.), or Editorial Transformation (<choice>, <corr>, etc.)
+ * (<b>app</b>, <b>rdg</b>, etc.), or Editorial Transformation (<b>choice</b>, <b>corr</b>, etc.)
  * elements.
  *
  * @constructor
@@ -656,9 +655,9 @@ MeiLib.MeiDoc = function(meiXmlDoc) {
  * the MEI header (meiHead). 2. <code>editorList</code> is the list of editors
  * listed in the MEI header. 3. <code>ALTs</code> is the object that contains
  * information about the alternative encodings. It contains one entry per for
- * each <app> or <choice> element. It is indexed by the xml:id attribute value
+ * each <b>app</b> or <b>choice</b> element. It is indexed by the xml:id attribute value
  * of the elements. 4. <code>altgroups</code> is the obejct that contains how
- * <app> and <choice> elements are grouped together to form a logical unit of
+ * <b>app</b> and <b>choice</b> elements are grouped together to form a logical unit of
  * alternative encoding.
  *
  * @param {XMLDocument} meiXmlDoc an XML document containing the rich MEI
@@ -711,7 +710,7 @@ MeiLib.MeiDoc.prototype.getEditorList = function() {
  * Extracts information about the sources as defined in the MEI header.
  *
  * @return {Object} is a container indexed by the xml:id attribute value of the
- *         <sourceDesc> element.
+ *         <b>sourceDesc</b> element.
  */
 MeiLib.MeiDoc.prototype.parseSourceList = function() {
   // var srcs = $(this.rich_head).find('sourceDesc').children();
@@ -748,7 +747,7 @@ MeiLib.MeiDoc.prototype.parseEditorList = function() {
  * stores its result in the <code>ALTs</code> property.
  *
  * <code>ALTs</code> is a container of MeiLib.Alt obejcts indexed by the
- * xml:id attribute value of the <app> or <choice> elements.
+ * xml:id attribute value of the <b>app</b> or <b>choice</b> elements.
  */
 MeiLib.MeiDoc.prototype.parseALTs = function() {
   var i, j;
@@ -797,7 +796,7 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
  * The MeiLib.MeiDoc.initSectionView transforms the rich MEI (this.rich_score)
  * into a plain MEI (this.sectionview_score)
  *
- * An MEI is called 'plain' MEI if it contains no <app> or <choice> elements.
+ * An MEI is called 'plain' MEI if it contains no <b>app</b> or <b>choice</b> elements.
  * Such an MEI can also be referred after the analogy of 2D section views of a
  * 3D object: the rich MEI is a higher-dimensional object, of which we would
  * like to display a 'flat' section view. The term 'section plane' refers to a
@@ -809,7 +808,7 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
  * section plane would contain two elements the first one is either A or B, the
  * second one is C, D or E.
  *
- * The extracted information about all the <app> and <choice> elements are
+ * The extracted information about all the <b>app</b> and <b>choice</b> elements are
  * stored in an array. Using this array the application can access information
  * such as what alternative encodings are present in the score, what source a
  * variant comes from, etc. This array is exposed by te <code>ALTs</code>
@@ -909,13 +908,13 @@ MeiLib.MeiDoc.prototype.initSectionView = function(altReplacements) {
  *
  * @param sectionplaneUpdate
  *            {object} the list of changes. It is an container of xml:id
- *            attribute values of <rdg>, <lem>, <sic> or <corr> elements,
- *            indexed by the xml:id attribute values of the corresponding <app>
- *            or <choice> elements. sectionplaneUpdate[altXmlID] = altInstXmlID
- *            is the xml:id attribute value of the <rdg>, <lem>, <sic> or <corr>
+ *            attribute values of <b>rdg</b>, <b>lem</b>, <b>sic</b> or <b>corr</b> elements,
+ *            indexed by the xml:id attribute values of the corresponding <b>app</b>
+ *            or <b>choice</b> elements. sectionplaneUpdate[altXmlID] = altInstXmlID
+ *            is the xml:id attribute value of the <b>rdg</b>, <b>lem</b>, <b>sic</b> or <b>corr</b>
  *            element, which is to be inserted in place of the original <app
- *            xml:id=altXmlID> or <choice xml:id=altXmlID> When replacing an
- *            <app> or <choice> that is part of a group of such elements
+ *            xml:id=altXmlID> or <b>choice xml:id=altXmlID</b> When replacing an
+ *            <b>app</b> or <b>choice</b> that is part of a group of such elements
  *            (defined by this.altgroups), then those other elements needs to be
  *            replaced as well.
  */
