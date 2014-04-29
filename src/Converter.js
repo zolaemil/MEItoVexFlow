@@ -118,7 +118,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * to vexFlow (which requires the name 'weight'), so the name is
          * 'weight'
          */
-        
         lyricsFont : {
           family : 'Times',
           size : 15
