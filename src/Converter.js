@@ -90,7 +90,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         autoStaveConnectorLine : true,
         /**
-         * @cfg {String} labelMode Specifies the way voice labels are added
+         * @cfg {"full"/"abbr"/null} labelMode Specifies the way voice labels are added
          * to staves. Values:
          *
          * - 'full': renders full labels in the first system, abbreviated labels
@@ -110,12 +110,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         /**
          * @cfg {Object} lyricsFont The font used for rendering lyrics (and
          * hyphens)
-         *
+         * @cfg {String} lyricsFont.family the font family
+         * @cfg {Number} lyricsFont.size the font size
+         * 
          * NB the weight properties can be used to specify style, weight
          * or both (space separated); some of the objects are passed directly
          * to vexFlow (which requires the name 'weight'), so the name is
          * 'weight'
          */
+        
         lyricsFont : {
           family : 'Times',
           size : 15
@@ -123,6 +126,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         /**
          * @cfg {Object} annotFont the font used for annotations (for example,
          * 'pizz.')
+         * @cfg {String} annotFont.family the font family
+         * @cfg {Number} annotFont.size the font size
+         * @cfg {String} annotFont.weight the font weight
          */
         annotFont : {
           family : 'Times',
@@ -131,6 +137,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         },
         /**
          * @cfg {Object} tempoFont The tempo font
+         * @cfg {String} tempoFont.family the font family
+         * @cfg {Number} tempoFont.size the font size
+         * @cfg {String} tempoFont.weight the font weight
          */
         tempoFont : {
           family : "Times",
@@ -205,7 +214,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.systems = [];
         /**
-         * Contains all Vex.Flow.Stave objects in a 2d array. Addressing scheme:
+         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all Vex.Flow.Stave objects. Addressing scheme:
          * [measure_n][staff_n]
          */
         me.allVexMeasureStaffs = [];
@@ -343,7 +352,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * returns a 2d array of all Vex.Flow.Stave objects, arranged by
        * [measure_n][staff_n]
-       * @return {Array}
+       * @return {Vex.Flow.Stave[][]}
        */
       getAllVexMeasureStaffs : function() {
         return this.allVexMeasureStaffs;
@@ -351,7 +360,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * returns all systems created when processing the MEI document
-       * @return {Array} an array of {@link MEI2VF.System} objects
+       * @return {MEI2VF.System[]}
        */
       getSystems : function() {
         return this.systems;

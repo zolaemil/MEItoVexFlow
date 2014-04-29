@@ -201,7 +201,7 @@
        *
        * Supported elements: &lt;b&gt;staffGrp&lt;/b&gt; &lt;b&gt;pgHead&lt;/b&gt;
        *
-       * @param {Element} element the scoreDef element to process
+       * @param {XMLElement} element the scoreDef element to process
        */
       processScoreDef_child : function(element) {
         var me = this;
@@ -226,7 +226,7 @@
 
 <span id='MEI2VF-SystemInfo-method-processStaffGrp'>      /**
 </span>       *
-       * @param {Element} staffGrp
+       * @param {XMLElement} staffGrp
        * @param {Boolean} isChild specifies if the staffGrp is a child of another
        *            staffGrp (auto staff connectors only get attached
        *            to the outermost staffGrp elements)
@@ -253,7 +253,7 @@
        *
        * Supported elements: &lt;b&gt;staffGrp&lt;/b&gt; &lt;b&gt;staffDef&lt;/b&gt;
        *
-       * @param {Element} element
+       * @param {XMLElement} element
        * @return {Object} the range of staffs. Properties: first_n, last_n
        */
       processStaffGrp_child : function(element) {
@@ -275,7 +275,7 @@
 <span id='MEI2VF-SystemInfo-method-processStaffDef'>      /**
 </span>       * reads a staffDef, writes it to currentStaffInfos
        *
-       * @param {Element} staffDef
+       * @param {XMLElement} staffDef
        * @return {Number} the staff number of the staffDef
        */
       processStaffDef : function(staffDef) {
