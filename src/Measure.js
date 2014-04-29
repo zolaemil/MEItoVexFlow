@@ -18,7 +18,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       init : function(config) {
         var me = this;
         /**
-         * @cfg {Element} element the MEI element of the current measure
+         * @cfg {XMLElement} element the MEI element of the current measure
          */
         me.element = config.element;
         /**
@@ -72,7 +72,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *  reads the width attribute of the specified element and converts it to a
        * number
-       * @param {Element} element the element to process
+       * @param {XMLElement} element the element to process
        * @return {Number} the number of the attribute or null if NaN
        */
       readMEIW : function(element) {

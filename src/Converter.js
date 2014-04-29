@@ -90,7 +90,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         autoStaveConnectorLine : true,
         /**
-         * @cfg {String} labelMode Specifies the way voice labels are added
+         * @cfg {"full"/"abbr"/null} labelMode Specifies the way voice labels are added
          * to staves. Values:
          *
          * - 'full': renders full labels in the first system, abbreviated labels
@@ -110,7 +110,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         /**
          * @cfg {Object} lyricsFont The font used for rendering lyrics (and
          * hyphens)
-         *
+         * @cfg {String} lyricsFont.family the font family
+         * @cfg {Number} lyricsFont.size the font size
+         * 
          * NB the weight properties can be used to specify style, weight
          * or both (space separated); some of the objects are passed directly
          * to vexFlow (which requires the name 'weight'), so the name is
@@ -123,6 +125,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         /**
          * @cfg {Object} annotFont the font used for annotations (for example,
          * 'pizz.')
+         * @cfg {String} annotFont.family the font family
+         * @cfg {Number} annotFont.size the font size
+         * @cfg {String} annotFont.weight the font weight
          */
         annotFont : {
           family : 'Times',
@@ -131,6 +136,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         },
         /**
          * @cfg {Object} tempoFont The tempo font
+         * @cfg {String} tempoFont.family the font family
+         * @cfg {Number} tempoFont.size the font size
+         * @cfg {String} tempoFont.weight the font weight
          */
         tempoFont : {
           family : "Times",
@@ -205,7 +213,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.systems = [];
         /**
-         * Contains all Vex.Flow.Stave objects in a 2d array. Addressing scheme:
+         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all Vex.Flow.Stave objects. Addressing scheme:
          * [measure_n][staff_n]
          */
         me.allVexMeasureStaffs = [];
@@ -343,7 +351,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * returns a 2d array of all Vex.Flow.Stave objects, arranged by
        * [measure_n][staff_n]
-       * @return {Array}
+       * @return {Vex.Flow.Stave[][]}
        */
       getAllVexMeasureStaffs : function() {
         return this.allVexMeasureStaffs;
@@ -351,7 +359,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * returns all systems created when processing the MEI document
-       * @return {Array} an array of {@link MEI2VF.System} objects
+       * @return {MEI2VF.System[]}
        */
       getSystems : function() {
         return this.systems;
@@ -483,7 +491,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * Processes a MEI measure element and calls functions to process a
        * selection of ancestors: .//staff, ./slur, ./tie, ./hairpin, .//tempo
-       * @param {Element} element the MEI measure element
+       * @param {XMLElement} element the MEI measure element
        */
       processMeasure : function(element) {
         var me = this, measure_n, atSystemStart, left_barline, right_barline, atSystemTop = true, system;
@@ -579,7 +587,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        * @param {MEI2VF.System} the current system
        * @param {Array} staffs
-       * @param {Element} staff_element the MEI staff element
+       * @param {XMLElement} staff_element the MEI staff element
        * @param {Number} measure_n the measure number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
@@ -873,7 +881,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * processes a note like element by calling the adequate processing
        * function
-       * @param {Element} element the element to process
+       * @param {XMLElement} element the element to process
        * @param {} staff
        * @param {Number} staff_n the number of the staff as given in the MEI
        * document
@@ -1372,7 +1380,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * converts the pitch of an MEI <b>note</b> element to a VexFlow pitch
        *
-       * @param {Element} mei_note
+       * @param {XMLElement} mei_note
        * @return {String} the VexFlow pitch
        */
       processAttsPitch : function(mei_note) {
