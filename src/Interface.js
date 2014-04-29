@@ -19,6 +19,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         },
         getAllVexMeasureStaffs : function() {
           return m2v.Converter.prototype.getAllVexMeasureStaffs();
+        },
+        getStaffArea : function() {
+          return m2v.Converter.prototype.getStaffArea();
         }
       }
     };

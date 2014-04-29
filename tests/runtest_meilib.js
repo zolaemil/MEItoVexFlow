@@ -338,12 +338,19 @@ MeiLibTest = function(){
   //    * sectionplane is... 
   console.log(meiDoc.sectionplane);
   apps = $(meiDoc.sectionview_score).find('app');
-  choices = $(meiDoc.sectionview_score).find('app');
+  choices = $(meiDoc.sectionview_score).find('choice');
   assert(apps.length, 0);
   assert(choices.length, 0);
-  assert(meiDoc.sectionplane["app-recon"], undefined);
-  assert(meiDoc.sectionplane["choice01"].tagname, "corr");
-  assert(meiDoc.sectionplane["app-var"].tagname, "lem");
+  console.log(meiDoc.sectionview_score.innerHTML);
+  //TODO: Assert that default reading/choice is inserted:
+  // 1. Find processing Instruction <?MEI2VF rdgStart="choice01"?>
+  // 2. Get next sibling and
+  // 3. Assert it's a <note> with @dur="2"
+  assert(meiDoc.sectionplane["app-recon"][0], undefined);
+  assert(meiDoc.sectionplane["choice01"].length, 1);
+  assert(meiDoc.sectionplane["app-var"].length, 1);
+  assert(meiDoc.sectionplane["choice01"][0].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var"][0].tagname, "lem");
   end_test();
 
   console.log('********* TEST: MeiLib.MeiDoc - Altgroups ***********');
@@ -370,11 +377,11 @@ MeiLibTest = function(){
   choices = $(meiDoc.sectionview_score).find('app');
   assert(apps.length, 0);
   assert(choices.length, 0);
-  assert(meiDoc.sectionplane["app-recon-01"], undefined);
-  assert(meiDoc.sectionplane["app-recon-02"], undefined);
-  assert(meiDoc.sectionplane["choice01"].tagname, "corr");
-  assert(meiDoc.sectionplane["app-var-01"].tagname, "lem");
-  assert(meiDoc.sectionplane["app-var-02"].tagname, "lem");
+  assert(meiDoc.sectionplane["app-recon-01"].length, 0);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 0);
+  assert(meiDoc.sectionplane["choice01"][0].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var-01"][0].tagname, "lem");
+  assert(meiDoc.sectionplane["app-var-02"][0].tagname, "lem");
   
   assert(meiDoc.altgroups["app-recon-01"][0], "app-recon-01");
   assert(meiDoc.altgroups["app-recon-01"][1], "app-recon-02");
@@ -394,13 +401,15 @@ MeiLibTest = function(){
 
   console.log('sectionplane after init: ');
   console.log(meiDoc.sectionplane);
-  assert(meiDoc.sectionplane["app-recon-01"], undefined);
-  assert(meiDoc.sectionplane["app-recon-02"], undefined);
-  assert(meiDoc.sectionplane["choice01"].tagname, "corr");
-  assert(meiDoc.sectionplane["app-var-01"].tagname, "lem");
-  assert(meiDoc.sectionplane["app-var-02"].tagname, "lem");
+  assert(meiDoc.sectionplane["app-recon-01"].length, 0);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 0);
+  assert(meiDoc.sectionplane["choice01"][0].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var-01"][0].tagname, "lem");
+  assert(meiDoc.sectionplane["app-var-02"][0].tagname, "lem");
     
   var sectionplaneUpdate = {};
+  // single replacements can be defined as a string instead of 
+  // a one item long list (backward compatibility)
   sectionplaneUpdate["app-recon-01"] = "rdgA.app-recon-01";
   sectionplaneUpdate["choice01"] = "sic-choice01";
   sectionplaneUpdate["app-var-01"] = "rdg.app-var-01";
@@ -409,12 +418,84 @@ MeiLibTest = function(){
   console.log('sectionplane after modifySectionview: ');
   console.log(meiDoc.sectionplane);
   // print_xml(meiDoc.sectionview_score);
-  assert(meiDoc.sectionplane["app-recon-01"].xmlID, "rdgA.app-recon-01");
-  assert(meiDoc.sectionplane["app-recon-02"].xmlID, "rdgA.app-recon-02");
-  assert(meiDoc.sectionplane["choice01"].xmlID, "sic-choice01");
-  assert(meiDoc.sectionplane["app-var-01"].xmlID, "rdg.app-var-01");
-  assert(meiDoc.sectionplane["app-var-02"].xmlID, "rdg.app-var-02");
+  assert(meiDoc.sectionplane["app-recon-01"][0].xmlID, "rdgA.app-recon-01");
+  assert(meiDoc.sectionplane["app-recon-02"][0].xmlID, "rdgA.app-recon-02");
+  assert(meiDoc.sectionplane["choice01"][0].xmlID, "sic-choice01");
+  assert(meiDoc.sectionplane["app-var-01"][0].xmlID, "rdg.app-var-01");
+  assert(meiDoc.sectionplane["app-var-02"][0].xmlID, "rdg.app-var-02");
+
+
+  sectionplaneUpdate["choice01"] = []; // Replace with initial choice: corr
+  sectionplaneUpdate["app-var-01"] = []; // Replace with initial reading: lem
+  meiDoc.updateSectionView(sectionplaneUpdate);
+  assert(meiDoc.sectionplane["choice01"].length, 1);
+  assert(meiDoc.sectionplane["app-var-01"].length, 1);
+  assert(meiDoc.sectionplane["choice01"][0].tagname, "corr");
+  assert(meiDoc.sectionplane["app-var-01"][0].tagname, "lem");
+
   end_test();
+  
+
+  console.log('********* TEST: MeiLib.MeiDoc - Modify Section View (Multiple Choice) ***********');
+  start_test('MeiDoc-SectionView-MultipleChoice');
+  xmlDoc_rich_mei = loadXMLDoc('TC.CanonicalMEI.02.xml');
+  meiDoc = new MeiLib.MeiDoc(xmlDoc_rich_mei);
+  meiDoc.initSectionView();
+
+  var sectionplaneUpdate = {};
+  sectionplaneUpdate["app-recon-01"] = [ "rdgA.app-recon-01", "rdgB.app-recon-01" ];
+  meiDoc.updateSectionView(sectionplaneUpdate);
+  console.log('sectionplane after modifySectionview: ');
+  console.log(meiDoc.sectionplane);
+  assert(meiDoc.sectionplane["app-recon-01"].length, 2);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 2);
+  assert(meiDoc.sectionplane["app-recon-01"][0].xmlID, "rdgA.app-recon-01" );
+  assert(meiDoc.sectionplane["app-recon-01"][1].xmlID, "rdgB.app-recon-01");
+  assert(meiDoc.sectionplane["app-recon-02"][0].xmlID, "rdgA.app-recon-02" );
+  assert(meiDoc.sectionplane["app-recon-02"][1].xmlID, "rdgB.app-recon-02");
+  assert($(meiDoc.sectionview_score).find('staff[n="3"]').length, 2);
+  assert($(meiDoc.sectionview_score).find('staff[n="4"]').length, 2);
+
+
+  sectionplaneUpdate["app-recon-01"] = [ "rdgB.app-recon-01" ];
+  meiDoc.updateSectionView(sectionplaneUpdate);
+  assert(meiDoc.sectionplane["app-recon-01"].length, 1);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 1);
+  assert(meiDoc.sectionplane["app-recon-01"][0].xmlID, "rdgB.app-recon-01" );
+  assert(meiDoc.sectionplane["app-recon-02"][0].xmlID, "rdgB.app-recon-02" );
+  assert($(meiDoc.sectionview_score).find('staff[n="3"]').length, 0);
+  assert($(meiDoc.sectionview_score).find('staff[n="4"]').length, 2);
+
+  sectionplaneUpdate["app-recon-01"] = [ "rdgA.app-recon-01" ];
+  meiDoc.updateSectionView(sectionplaneUpdate);
+  assert(meiDoc.sectionplane["app-recon-01"].length, 1);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 1);
+  assert(meiDoc.sectionplane["app-recon-01"][0].xmlID, "rdgA.app-recon-01" );
+  assert(meiDoc.sectionplane["app-recon-02"][0].xmlID, "rdgA.app-recon-02" );
+  assert($(meiDoc.sectionview_score).find('staff[n="3"]').length, 2);
+  assert($(meiDoc.sectionview_score).find('staff[n="4"]').length, 0);
+
+  delete sectionplaneUpdate["app-recon-01"];
+  sectionplaneUpdate["app-recon-02"] = []; // Replace with initial reading: none
+  meiDoc.updateSectionView(sectionplaneUpdate);
+  assert(meiDoc.sectionplane["app-recon-01"].length, 0);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 0);
+  assert($(meiDoc.sectionview_score).find('staff[n="3"]').length, 0);
+  assert($(meiDoc.sectionview_score).find('staff[n="4"]').length, 0);
+
+  sectionplaneUpdate["app-recon-02"] = [ "rdgA.app-recon-02", "rdgB.app-recon-02" ];
+  meiDoc.updateSectionView(sectionplaneUpdate);
+  assert(meiDoc.sectionplane["app-recon-01"].length, 2);
+  assert(meiDoc.sectionplane["app-recon-02"].length, 2);
+  assert(meiDoc.sectionplane["app-recon-01"][0].xmlID, "rdgA.app-recon-01" );
+  assert(meiDoc.sectionplane["app-recon-01"][1].xmlID, "rdgB.app-recon-01");
+  assert(meiDoc.sectionplane["app-recon-02"][0].xmlID, "rdgA.app-recon-02" );
+  assert(meiDoc.sectionplane["app-recon-02"][1].xmlID, "rdgB.app-recon-02");
+  assert($(meiDoc.sectionview_score).find('staff[n="3"]').length, 2);
+  assert($(meiDoc.sectionview_score).find('staff[n="4"]').length, 2);
+
+  end_test();
+  
   
   console.log('Done');
   

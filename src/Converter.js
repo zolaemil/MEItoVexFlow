@@ -335,6 +335,43 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
+       * Returns the width and the height of the area that contains all drawn staves as per
+       * the last processing.
+       *
+       * @return {Object} the width and height of the area that contains all staves.
+       *                  Properties: width, height
+       */
+      getStaffArea : function() {
+        var width, height, i;
+        height = this.currentLowestY;
+        var allVexMeasureStaffs = this.getAllVexMeasureStaffs();
+        var i, k, max_start_x, area_width, staff;
+        i = allVexMeasureStaffs.length;
+        area_width = 0;
+        while (i--) {
+          if (allVexMeasureStaffs[i]) {
+            max_start_x = 0;
+            // get maximum start_x of all staffs in measure
+            k = allVexMeasureStaffs[i].length;
+            while (k--) {
+              staff = allVexMeasureStaffs[i][k];
+              if (staff)
+                max_start_x = Math.max(max_start_x, staff.getNoteStartX());
+            }
+            k = allVexMeasureStaffs[i].length;
+            while (k--) {
+              // get maximum width of all staffs in measure
+              staff = allVexMeasureStaffs[i][k];
+              if (staff) {
+                area_width = Math.max(area_width, max_start_x + staff.getWidth());
+              }
+            }
+          }
+        }
+        return { width: area_width, height: height };
+      },
+
+      /**
        * assigns an external function for processing anchoredText elements. By
        * default, anchoredText elements are ignored in MEI2VF.
        * @param {Function} fn the callback function. Parameter: element
@@ -753,8 +790,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, refLocationIndex;
         // check if there's an unresolved TStamp2 reference to this location
         // (measure, staff, layer):
-        if (!measure_n)
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.me.extract_events:', '<measure> must have @n specified');
+        if (isNaN(measure_n))
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_events', '<measure> must have @n specified');
         staff_n = staff_n || 1;
         refLocationIndex = measure_n + ':' + staff_n + ':' + ($(layer).attr('n') || '1');
         if (me.unresolvedTStamp2[refLocationIndex]) {
