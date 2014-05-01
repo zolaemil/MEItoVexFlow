@@ -90,7 +90,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         autoStaveConnectorLine : true,
         /**
-         * @cfg {"full"/"abbr"/null} labelMode Specifies the way voice labels are added
+         * @cfg {"full"/"abbr"/null} labelMode Specifies the way voice labels are
+         * added
          * to staves. Values:
          *
          * - 'full': renders full labels in the first system, abbreviated labels
@@ -112,7 +113,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * hyphens)
          * @cfg {String} lyricsFont.family the font family
          * @cfg {Number} lyricsFont.size the font size
-         * 
+         *
          * NB the weight properties can be used to specify style, weight
          * or both (space separated); some of the objects are passed directly
          * to vexFlow (which requires the name 'weight'), so the name is
@@ -213,7 +214,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.systems = [];
         /**
-         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all Vex.Flow.Stave objects. Addressing scheme:
+         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all
+         * Vex.Flow.Stave objects. Addressing scheme:
          * [measure_n][staff_n]
          */
         me.allVexMeasureStaffs = [];
@@ -335,10 +337,26 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * Returns the width and the height of the area that contains all drawn staves as per
+       * assigns an external function for processing anchoredText elements. By
+       * default, anchoredText elements are ignored in MEI2VF.
+       * @param {Function} fn the callback function. Parameter: element
+       */
+      setAnchoredTextProcessor : function(staffFn, layerFn) {
+        if (staffFn) {
+          this.processAnchoredStaffText = staffFn;
+        };
+        if (layerFn) {
+          this.processAnchoredLayerText = layerFn;
+        }
+      },
+
+      /**
+       * Returns the width and the height of the area that contains all drawn
+       * staves as per
        * the last processing.
        *
-       * @return {Object} the width and height of the area that contains all staves.
+       * @return {Object} the width and height of the area that contains all
+       * staves.
        *                  Properties: width, height
        */
       getStaffArea : function() {
@@ -368,21 +386,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             }
           }
         }
-        return { width: area_width, height: height };
-      },
-
-      /**
-       * assigns an external function for processing anchoredText elements. By
-       * default, anchoredText elements are ignored in MEI2VF.
-       * @param {Function} fn the callback function. Parameter: element
-       */
-      setAnchoredTextProcessor : function(staffFn, layerFn) {
-        if (staffFn) {
-          this.processAnchoredStaffText = staffFn;
+        return {
+          width : area_width,
+          height : height
         };
-        if (layerFn) {
-          this.processAnchoredLayerText = layerFn;
-        }
       },
 
       /**
@@ -400,6 +407,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        */
       getSystems : function() {
         return this.systems;
+      },
+
+      /**
+       * returns all note-like objects created when processing the MEI document
+       * @return {Object} for the object properties, see {@link #notes_by_id}
+       */
+      getNotes : function() {
+        return this.notes_by_id;
       },
 
       /**
@@ -1235,6 +1250,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           if (atts.fermata) {
             me.addFermata(rest, atts.fermata);
           }
+          me.notes_by_id[xml_id] = {
+            meiNote : element,
+            vexNote : rest
+          };
           return {
             vexNote : rest,
             id : xml_id
@@ -1272,6 +1291,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.addFermata(mRest, atts.fermata);
           }
           mRest.setStave(staff);
+          // me.notes_by_id[xml_id] = {
+          // meiNote : element,
+          // vexNote : mRest
+          // };
           return {
             vexNote : mRest
             // ,
@@ -1291,7 +1314,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           space = new VF.GhostNote({
             duration : me.processAttsDuration(element, true) + 'r'
           });
-          space.setStave(staff);
+          // space.setStave(staff);
+          // me.notes_by_id[xml_id] = {
+          // meiNote : element,
+          // vexNote : space
+          // };
           return {
             vexNote : space
             // ,
