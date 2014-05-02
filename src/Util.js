@@ -39,7 +39,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       drawBoundingBoxes : function(ctx, options) {
-        var me = this, i, j, k, l, measure, m, inner, coords, y;
+        var me = this, i, j, k, l, measure, m, coords;
         options = options || {};
         ctx.save();
         if (options.staffs && options.staffs.data) {
@@ -72,16 +72,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           }
         }
         if (options.voices && options.voices.data) {
-          $.each(options.voices.data, function(i, voices) {
-            if (voices && voices.staveVoices && voices.staveVoices.all_voices) {
-              $.each(voices.staveVoices.all_voices, function(i, voice) {
-                if (voice && voice.voice) {
-                  if (voice.voice.boundingBox && options.voices.drawFrame) {
-                    voice.voice.getBoundingBox().draw(ctx);
+          $.each(options.voices.data, function() {
+            if (this && this.staveVoices && this.staveVoices.all_voices) {
+              $.each(this.staveVoices.all_voices, function() {
+                if (this && this.voice) {
+                  if (this.voice.boundingBox && options.voices.drawFrame) {
+                    this.voice.getBoundingBox().draw(ctx);
                   }
                   if (options.voices.drawTickables) {
-                    $.each(voice.voice.tickables, function(i, tickable) {
-                      tickable.getBoundingBox().draw(ctx);
+                    $.each(this.voice.tickables, function() {
+                      this.getBoundingBox().draw(ctx);
                     });
                   }
                 }

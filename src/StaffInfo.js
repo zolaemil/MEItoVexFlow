@@ -21,8 +21,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
      * @class MEI2VF.StaffInfo
-     * Contains the staff definition and the rendering information (i.e. what
-     * clef modifiers are to be rendered)
+     * Contains the definition and the rendering information (i.e. what
+     * clef modifiers are to be rendered) of a single staff
      * @private
      *
      * @constructor
@@ -69,7 +69,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       updateSpacing : function() {
-        var me = this, spacingAttr;
+        var me = this, spacing;
         spacing = +me.staffDefObj.spacing;
         if (!isNaN(spacing))
           me.spacing = spacing;

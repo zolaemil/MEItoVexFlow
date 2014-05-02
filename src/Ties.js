@@ -8,7 +8,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      * @param {Object} config
      */
 
-    m2v.Ties = function(config) {
+    m2v.Ties = function() {
       this.init();
     };
 
@@ -36,7 +36,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       // TODO: separate tie & slur specific functions in separate objects!?
       terminate_tie : function(endid, linkCond) {
-        var me = this, cmpLinkCond, found, i, tie, allTies;
+        var cmpLinkCond, found, i, tie, allTies;
 
         allTies = this.getAll();
 
@@ -100,19 +100,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       createVexFromLinks : function(notes_by_id) {
-        var me = this, f_note, l_note, ctx = this.ctx, vexTie, bezier, bezierArray, cps, xy;
-        $.each(me.allTieInfos, function(ii, link) {
+        var me = this, f_note, l_note, vexTie, bezier, cps;
+        $.each(me.allTieInfos, function() {
 
-          f_note = notes_by_id[link.getFirstId()];
-          l_note = notes_by_id[link.getLastId()];
-          bezier = link.params.bezier;
+          f_note = notes_by_id[this.getFirstId()];
+          l_note = notes_by_id[this.getLastId()];
+          bezier = this.params.bezier;
 
           if (bezier) {
             cps = me.bezierStringToCps(bezier);
             vexTie = new VF.Curve((f_note) ? f_note.vexNote : undefined, (l_note) ? l_note.vexNote : undefined, {
               cps : cps,
-              y_shift_start : +link.params.startvo,
-              y_shift_end : +link.params.endvo
+              y_shift_start : +this.params.startvo,
+              y_shift_end : +this.params.endvo
             });
           } else {
             vexTie = new VF.StaveTie({
@@ -121,7 +121,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               first_indices : (f_note) ? f_note.index : undefined,
               last_indices : (l_note) ? l_note.index : undefined
             });
-            vexTie.setDir(link.params.curvedir);
+            vexTie.setDir(this.params.curvedir);
           }
           me.allVexTies.push(vexTie);
         });
@@ -145,10 +145,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return this;
       },
 
-      draw : function(notes_by_id) {
+      draw : function() {
         var ctx = this.ctx;
-        $.each(this.allVexTies, function(i, vexTie) {
-          vexTie.setContext(ctx).draw();
+        $.each(this.allVexTies, function() {
+          this.setContext(ctx).draw();
         });
       }
     };

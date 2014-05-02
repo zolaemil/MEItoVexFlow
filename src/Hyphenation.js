@@ -49,9 +49,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // TODO add support for hyphens in lines where neither the first nor the
       // second syllable occur
       draw : function() {
-        var me = this, i, k, first, second, hyphenCount, halfHyphenWidth, endFirst, hyphenY, distance, hyphenCount, singleWidth, hyphenStart;
-
-        var maxHyphenDistance = me.maxHyphenDistance;
+        var me = this, i, k, first, second, hyphenWidth;
 
         me.ctx.setFont(me.font.family, me.font.size, me.font.weight);
 
@@ -68,16 +66,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               if (first !== me.WORDBOUND && second !== me.WORDBOUND) {
                 var opts = {
                   hyphen_width : hyphenWidth,
-                  max_hyphen_distance : maxHyphenDistance
+                  max_hyphen_distance : me.maxHyphenDistance
                 };
-                if ( typeof first === 'number') {
+                if (first.system) {
                   opts.first_annot = {
-                    x : first
+                    x : first.system.getMeasures()[0].getX()
                   };
                 } else {
                   opts.first_annot = first;
                 }
-                if ( typeof second === 'number' || second === undefined) {
+                if (second === undefined || second.system) {
                   opts.last_annot = {
                     x : me.printSpaceRight
                   };

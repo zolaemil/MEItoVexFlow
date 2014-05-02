@@ -1,27 +1,25 @@
 /*
-* MEItoVexFlow
-*
-* Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
-*
-* See README for details of this library
-*
-* Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
-* University of Maryland
-*
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not
-* use this file except in compliance with the License. You may obtain a copy of
-* the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-* License for the specific language governing permissions and limitations under
-* the License.
-*/
-
-// TODO auto left indent for labels
+ * MEItoVexFlow
+ *
+ * Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
+ *
+ * See README for details of this library
+ *
+ * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
+ * University of Maryland
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
@@ -33,17 +31,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      * Usage:
      *
      * - Either pass a config object to the constructor function or (if no config
-     * object has been passed) call {@link MEI2VF.Converter#initConfig
-     * initConfig()} after construction.
-     * - Call {@link MEI2VF.Converter#process process()} to process an MEI XML
-     * document
-     * - Call {@link MEI2VF.Converter#draw draw()} to draw the processed VexFlow
-     * objects to a canvas
+     * object has been passed) call {@link #initConfig} after construction.
+     * - Call {@link #process} to process an MEI XML document
+     * - Call {@link #draw} to draw the processed VexFlow objects to a canvas
      *
      * @constructor
-     * @param {Object} config A config object (optional)
+     * @param {Object} [config]
      * @chainable
-     * @return {MEI2VF.Converter} the Converter object
+     * @return {MEI2VF.Converter} this
      */
     m2v.Converter = function(config) {
       if (config)
@@ -53,8 +48,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Converter.prototype = {
 
-      // STAVE_HEIGHT, HALF_LINE_DISTANCE are currently fixed
-      STAVE_HEIGHT : 40, // VF.Staff.spacing_between_lines_px * 4;
+      // TODO calculate now, that should not be too expensive
+      // currently fixed
       HALF_LINE_DISTANCE : 5, // VF.Staff.spacing_between_lines_px / 2;
 
       BOTTOM : VF.Annotation.VerticalJustify.BOTTOM,
@@ -65,7 +60,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         page_width : 800,
         /**
-         * @cfg {Number} page_margin_top The left page margin
+         * @cfg {Number} page_margin_top The top page margin
          */
         page_margin_top : 60,
         /**
@@ -77,24 +72,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         page_margin_right : 20,
         /**
-         * @cfg {Number} systemLeftMar The default indent for staff systems;
-         * overridden by spacing attributes in the MEI code
-         */
-        systemLeftMar : 0,
-        /**
-         * @cfg {Number} systemSpacing The default spacing between two staff
-         * systems; overridden by XXX
+         * @cfg {Number} systemSpacing The spacing between two staff
+         * systems
          */
         systemSpacing : 90,
         /**
-         * @cfg {Number} staveSpacing The default spacing between tho staffs
-         * within a system; overridden by XXX
+         * @cfg {Number} staveSpacing The default spacing between two staffs
+         * within a system; overridden by the spacing attribute of a staffDef
+         * element in the MEI code
          */
         staveSpacing : 60,
-        /**
-         * @cfg {Number} measurePaddingRight XXX; VexFlows's default value is 20
-         */
-        measurePaddingRight : 10,
         /**
          * @cfg {Boolean} autoStaveConnectorLine Specifies if a stave connector
          * line is drawn on the left of systems by default; if set to true, the
@@ -103,25 +90,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         autoStaveConnectorLine : true,
         /**
-         * @cfg {Boolean} autoMeasureNumbers Specifies if measure numbers should
-         * automatically be added to each system start
-         */
-        autoMeasureNumbers : false,
-        /**
-         * @cfg {String} labelMode Specifies the way voice labels are added
+         * @cfg {"full"/"abbr"/null} labelMode Specifies the way voice labels are added
          * to staves. Values:
          *
          * - 'full': renders full labels in the first system, abbreviated labels
          * in all following systems
          * - 'abbr': only render abbreviated labels
-         *
-         * If set to null or undefined, no labels are rendered
+         * - null or undefined: renders no labels
          */
-        labelMode : null,
+        labelMode : null, // 'full',
         /**
          * @cfg {Number} maxHyphenDistance The maximum distance (in pixels)
-         * between two
-         * hyphens in the lyrics lines
+         * between two hyphens in the lyrics lines
          */
         maxHyphenDistance : 75,
         //sectionsOnNewLine : false, // TODO: add feature
@@ -130,7 +110,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         /**
          * @cfg {Object} lyricsFont The font used for rendering lyrics (and
          * hyphens)
-         *
+         * @cfg {String} lyricsFont.family the font family
+         * @cfg {Number} lyricsFont.size the font size
+         * 
          * NB the weight properties can be used to specify style, weight
          * or both (space separated); some of the objects are passed directly
          * to vexFlow (which requires the name 'weight'), so the name is
@@ -143,6 +125,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         /**
          * @cfg {Object} annotFont the font used for annotations (for example,
          * 'pizz.')
+         * @cfg {String} annotFont.family the font family
+         * @cfg {Number} annotFont.size the font size
+         * @cfg {String} annotFont.weight the font weight
          */
         annotFont : {
           family : 'Times',
@@ -150,15 +135,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           weight : 'Italic'
         },
         /**
-         * @cfg {Object} staffFont The staff font (used for barlines)
-         */
-        staffFont : {
-          family : 'Times',
-          size : 14,
-          weight : 'Italic'
-        },
-        /**
          * @cfg {Object} tempoFont The tempo font
+         * @cfg {String} tempoFont.family the font family
+         * @cfg {Number} tempoFont.size the font size
+         * @cfg {String} tempoFont.weight the font weight
          */
         tempoFont : {
           family : "Times",
@@ -181,15 +161,33 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * initializes the Converter
        * @param {Object} config A config object (optional)
        * @chainable
-       * @return {MEI2VF.Converter} the Converter object
+       * @return {MEI2VF.Converter} this
        */
       initConfig : function(config) {
         var me = this;
         me.cfg = $.extend(true, {}, me.defaults, config);
+        /**
+         *  @property {MEI2VF.SystemInfo} systemInfo an instance of
+         * MEI2VF.SystemInfo dealing with the staff info derived from the
+         * current MEI document
+         */
+        me.systemInfo = new m2v.SystemInfo();
+
+        // TODO see if the values of this property should better be calculated
+        // in the viewer object
+        /**
+         * @property {Object} printSpace The print space coordinates calculated
+         * from the page config. Values:
+         *
+         * -  `top`
+         * -  `left`
+         * -  `right`
+         * -  `width`
+         */
         me.printSpace = {
           // substract four line distances (40px) from page_margin_top in order
-          // to
-          // compensate VexFlow's default top spacing / allow specifying absolute
+          // to compensate VexFlow's default top spacing / allow specifying
+          // absolute
           // values
           top : me.cfg.page_margin_top - 40,
           left : me.cfg.page_margin_left,
@@ -197,21 +195,112 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           width : Math.floor(me.cfg.page_width - me.cfg.page_margin_right - me.cfg.page_margin_left) - 1
         };
         return me;
+
+      },
+
+      // TODO instead of creating new objects each time on reset, call reset functions in the generated objects
+      /**
+       * Resets all data.
+       * Called by {@link #process}.
+       * @chainable
+       * @return {MEI2VF.Converter} this
+       */
+      reset : function() {
+        var me = this;
+        me.systemInfo.init(me.cfg, me.printSpace);
+        /**
+         * Contains all {@link MEI2VF.System} objects
+         */
+        me.systems = [];
+        /**
+         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all Vex.Flow.Stave objects. Addressing scheme:
+         * [measure_n][staff_n]
+         */
+        me.allVexMeasureStaffs = [];
+        /**
+         * Contains all Vex.Flow.Beam objects. Data is just pushed in
+         * and later processed as a whole, so the array index is currently
+         * irrelevant.
+         });
+         */
+        me.allBeams = [];
+        /**
+         * @property {MEI2VF.Ties} ties an instance of MEI2VF.Ties dealing with
+         * and storing all ties found in the MEI document
+         */
+        me.ties = new m2v.Ties();
+        /**
+         * @property {MEI2VF.Ties} slurs an instance of MEI2VF.Ties dealing with
+         * and storing all slurs found in the MEI document
+         */
+        me.slurs = new m2v.Ties();
+        /**
+         * @property {MEI2VF.Hairpins} hairpins an instance of MEI2VF.Hairpins
+         * dealing with
+         * and storing all hairpins found in the MEI document
+         */
+        me.hairpins = new m2v.Hairpins();
+        /**
+         * @property {MEI2VF.Hyphenation} hyphenation an instance of
+         * MEI2VF.Hyphenation dealing with
+         * and storing all lyrics hyphens found in the MEI document
+         */
+        me.hyphenation = new m2v.Hyphenation(me.cfg.lyricsFont, me.printSpace.right, me.cfg.maxHyphenDistance);
+        /**
+         * contains all notes in the current MEI document, addressable by their
+         * xml:id. Each of the object properties has the xml:id as a name and
+         * refers to an object with two properties:
+         *
+         * - `meiNote`: the XML Element of the note
+         * - `vexNote`: the Vex.Flow.StaveNote }
+         */
+        me.notes_by_id = {};
+        /**
+         * @property {Number} currentSystem_n the number of the current system
+         */
+        me.currentSystem_n = 0;
+        /**
+         * @property {Boolean} pendingSystemBreak indicates if a system break is
+         * currently to be processed
+         */
+        me.pendingSystemBreak = false;
+        /**
+         * @property {Boolean} pendingSectionBreak indicates if a system break is
+         * currently to be processed
+         */
+        me.pendingSectionBreak = true;
+        /**
+         * @property {Object} currentVoltaType Contains information about the
+         * volta type of the current staff. Properties:
+         *
+         * -  `start` {String} indicates the number to render to the volta. When
+         * falsy, it is assumed that the volta does not start in the current
+         * measure
+         * -  `end` {Boolean} indicates if there is a volta end in the current
+         * measure
+         *
+         * If null, no volta is rendered
+         */
+        me.currentVoltaType = null;
+        /**
+         *
+         */
+        me.unresolvedTStamp2 = [];
+        return me;
       },
 
       /**
-       * Calls {@link MEI2VF.Converter#reset reset()} and then processes the
-       * specified MEI document or document fragment. The generated objects can
-       * be processed further or drawn to a canvas via {@link
-       * MEI2VF.Converter#draw
-       * draw()}.
+       * Calls {@link #reset} and then processes the specified MEI document or
+       * document fragment. The generated objects can
+       * be processed further or drawn immediately to a canvas via {@link #draw}.
        * @chainable
-       * @return {MEI2VF.Converter} the Converter object
+       * @param {XMLDocument} xmlDoc the XML document
+       * @return {MEI2VF.Converter} this
        */
       process : function(xmlDoc) {
-        var me = this, xmlDoc;
+        var me = this;
         me.reset();
-        me.processScoreDef($(xmlDoc).find('scoreDef')[0]);
+        me.systemInfo.processScoreDef($(xmlDoc).find('scoreDef')[0]);
         me.processSections(xmlDoc);
         me.ties.createVexFromLinks(me.notes_by_id);
         me.slurs.createVexFromLinks(me.notes_by_id);
@@ -220,80 +309,29 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * Resets the internal data objects. Called by {@link
-       * MEI2VF.Converter#reset
-       * reset()}.
-       * @chainable
-       * @return {MEI2VF.Converter} the Converter object
-       */
-      reset : function() {
-        var me = this;
-        /**
-         * contains all Vex.Flow.Stave objects in a 2d array
-         * [measure_n][staff_n]
-         */
-        me.allVexMeasureStaffs = [];
-        me.allStaffVoices = [];
-        me.allAnchoredTexts = [];
-        me.allBeams = [];
-
-        me.texts = new m2v.Texts();
-        me.startConnectors = new m2v.Connectors(me.cfg.labelMode);
-        me.inlineConnectors = new m2v.Connectors();
-        me.ties = new m2v.Ties();
-        me.slurs = new m2v.Ties();
-        me.hairpins = new m2v.Hairpins();
-        me.hyphenation = new m2v.Hyphenation(me.cfg.lyricsFont, me.printSpace.right, me.cfg.maxHyphenDistance);
-        /**
-         * properties: xmlid: { meiNote: val, vexNote: val }
-         */
-        me.notes_by_id = {};
-        me.currentSystem = 0;
-        me.currentSystemMarginLeft = me.cfg.systemLeftMar;
-        me.pendingSystemBreak = false;
-        me.pendingSectionBreak = true;
-        me.currentLowestY = 0;
-        me.currentVoltaType = null;
-        // me.currentMeasureX = null;
-        me.unresolvedTStamp2 = [];
-        /**
-         * contains the currently effective MEI2VF.StaffInfo objects
-         */
-        me.currentStaffInfos = [];
-        // TODO change to {xmlid1: [dir1, dir2], xmlid2: [dir3]} !?
-        me.directionsInCurrentMeasure = [];
-        return me;
-      },
-
-      /**
        * Draws the internal data objects to a canvas
        * @chainable
        * @param ctx The canvas context
-       * @return {MEI2VF.Converter} the Converter object
+       * @return {MEI2VF.Converter} this
        */
       draw : function(ctx) {
         var me = this;
-        me.drawVexStaffs(me.allVexMeasureStaffs, ctx);
-        me.startConnectors.setContext(ctx).draw();
-        me.inlineConnectors.setContext(ctx).draw();
-        me.drawVexVoices(me.allStaffVoices, ctx);
+        me.drawSystems(ctx);
         me.drawVexBeams(me.allBeams, ctx);
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
         me.hairpins.setContext(ctx).draw();
-        me.texts.setContext(ctx).draw();
-        me.drawAnchoredTexts(me.allAnchoredTexts, me.HALF_LINE_DISTANCE, ctx);
         me.hyphenation.setContext(ctx).draw();
         return me;
       },
 
       /**
-       * returns a 2d array of all VexFlow staff objects, arranged by
-       * [measure_n][staff_n]
-       * @return {Array}
+       * assigns an external function for processing pgHead elements. By default,
+       * pgHead elements are ignored in MEI2VF.
+       * @param {Function} fn the callback function. Parameter: element
        */
-      getAllVexMeasureStaffs : function() {
-        return this.allVexMeasureStaffs;
+      setPgHeadProcessor : function(fn) {
+        this.systemInfo.processPgHead = fn;
       },
 
       /**
@@ -305,7 +343,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        */
       getStaffArea : function() {
         var width, height, i;
-        height = this.currentLowestY;
+        height = this.systemInfo.getCurrentLowestY();
         var allVexMeasureStaffs = this.getAllVexMeasureStaffs();
         var i, k, max_start_x, area_width, staff;
         i = allVexMeasureStaffs.length;
@@ -334,318 +372,74 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * assigns an external function for processing anchoredText elements. By
+       * default, anchoredText elements are ignored in MEI2VF.
+       * @param {Function} fn the callback function. Parameter: element
        */
-      processScoreDef : function(scoredef) {
-        var me = this, i, j, children, systemLeftmar;
-        systemLeftmar = $(scoredef).attr('system.leftmar');
-        if ( typeof systemLeftmar === 'string') {
-          me.currentSystemMarginLeft = +systemLeftmar;
-        }
-        children = $(scoredef).children();
-        for ( i = 0, j = children.length; i < j; i += 1) {
-          me.processScoreDef_child(children[i]);
-        }
-      },
-
-      /**
-       * MEI element <b>scoreDef</b> may contain (MEI v2.1.0):
-       * MEI.cmn: <b>meterSig</b> <b>meterSigGrp</b>
-       * MEI.harmony: <b>chordTable</b> MEI.linkalign:
-       * <b>timeline</b> MEI.midi: <b>instrGrp</b> MEI.shared:
-       * <b>keySig</b> <b>pgFoot</b> <b>pgFoot2</b> <b>pgHead</b>
-       * <b>pgHead2</b> <b>staffGrp</b> MEI.usersymbols:
-       * <b>symbolTable</b>
-       *
-       * Supported elements: <b>staffGrp</b> <b>pgHead</b>
-       *
-       * @param {Element} element the scoreDef element to read
-       */
-      processScoreDef_child : function(element) {
-        var me = this, staff_n;
-        switch (element.localName) {
-          case 'staffGrp' :
-            me.processStaffGrp(element);
-            break;
-          case 'pgHead' :
-            me.processPgHead(element);
-            break;
-          default :
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <scoreDef>');
+      setAnchoredTextProcessor : function(staffFn, layerFn) {
+        if (staffFn) {
+          this.processAnchoredStaffText = staffFn;
+        };
+        if (layerFn) {
+          this.processAnchoredLayerText = layerFn;
         }
       },
 
       /**
-       *
+       * returns a 2d array of all Vex.Flow.Stave objects, arranged by
+       * [measure_n][staff_n]
+       * @return {Vex.Flow.Stave[][]}
        */
-      processPgHead : function(element) {
-        var me = this;
-        me.texts.addComplexText(element, {
-          x : me.printSpace.left,
-          y : 200,
-          w : me.printSpace.width
-        });
+      getAllVexMeasureStaffs : function() {
+        return this.allVexMeasureStaffs;
       },
 
       /**
-       *
-       * @param {Element} staffGrp
-       * @param {Boolean} isChild specifies if the staffGrp is a child of another
-       *            staffGrp (effect: auto staff connectors only get attached
-       *            to the outermost staffGrp elements)
-       * @return {Object} the range of the current staff group. Properties:
-       *         first_n, last_n
+       * returns all systems created when processing the MEI document
+       * @return {MEI2VF.System[]}
        */
-      processStaffGrp : function(staffGrp, isChild) {
-        var me = this, range = {};
-        $(staffGrp).children().each(function(i, childElement) {
-          var childRange = me.processStaffGrp_child(childElement);
-          m2v.L('Converter.processStaffGrp() {1}.{a}', 'childRange.first_n: ' + childRange.first_n, ' childRange.last_n: ' + childRange.last_n);
-          if (i === 0)
-            range.first_n = childRange.first_n;
-          range.last_n = childRange.last_n;
-        });
-        me.setConnectorModels(staffGrp, range, isChild);
-        return range;
+      getSystems : function() {
+        return this.systems;
       },
 
       /**
-       *
+       * creates in initializes a new {@link MEI2VF.System} and updates the staff
+       * modifier infos
        */
-      setConnectorModels : function(staffGrp, range, isChild) {
-        var me = this, symbol, barthru, first_n, last_n;
+      createNewSystem : function() {
+        var me = this, system, coords;
 
-        first_n = range.first_n;
-        last_n = range.last_n;
-        symbol = $(staffGrp).attr('symbol');
-        barthru = $(staffGrp).attr('barthru');
-
-        m2v.L('Converter.setConnectorModels() {2}', 'symbol: ' + symbol, ' range.first_n: ' + first_n, ' range.last_n: ' + last_n);
-
-        // # left connectors specified in the MEI file
-        me.startConnectors.setModelForStaveRange({
-          top_staff_n : first_n,
-          bottom_staff_n : last_n,
-          symbol : symbol || 'line',
-          label : $(staffGrp).attr('label'),
-          labelAbbr : $(staffGrp).attr('label.abbr')
-        });
-
-        // # left auto line, only (if at all) attached to
-        // //staffGrp[not(ancestor::staffGrp)]
-        if (!isChild && me.cfg.autoStaveConnectorLine) {
-          me.startConnectors.setModelForStaveRange({
-            top_staff_n : first_n,
-            bottom_staff_n : last_n,
-            symbol : (symbol === 'none') ? 'none' : 'line'
-          }, 'autoline');
-        }
-
-        // # inline connectors
-        if (barthru === 'true') {
-          me.inlineConnectors.setModelForStaveRange({
-            top_staff_n : first_n,
-            bottom_staff_n : last_n,
-            symbol : 'singleright' // default
-          });
-        }
-      },
-
-      /**
-       * MEI element <b>staffGrp</b> may contain (MEI v2.1.0): MEI.cmn: meterSig
-       * meterSigGrp MEI.mensural: mensur proport MEI.midi: instrDef
-       * MEI.shared: clef clefGrp keySig label layerDef
-       *
-       * Supported elements: <b>staffGrp</b> <b>staffDef</b>
-       *
-       * @param {Element} element
-       * @return {Object} the range of staffs. Properties: first_n, last_n
-       */
-      processStaffGrp_child : function(element) {
-        var me = this, staff_n;
-        switch (element.localName) {
-          case 'staffDef' :
-            staff_n = me.processStaffDef(element);
-            return {
-              first_n : staff_n,
-              last_n : staff_n
-            };
-          case 'staffGrp' :
-            return me.processStaffGrp(element, true);
-          default :
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <staffGrp>');
-        }
-      },
-
-      /**
-       * reads a staffDef, writes it to currentStaffInfos
-       *
-       * @param {Element} staffDef
-       * @return {Number} the staff number of the staffDef
-       */
-      processStaffDef : function(staffDef) {
-        var me = this, staff_n, staff_info;
-        staff_n = +$(staffDef).attr('n');
-        staff_info = me.currentStaffInfos[staff_n];
-        if (staff_info) {
-          staff_info.updateDef(staffDef);
-        } else {
-          me.currentStaffInfos[staff_n] = new m2v.StaffInfo(staffDef, true, true, true);
-        }
-        return staff_n;
-      },
-
-      /**
-       * resets the x coordinates, sets the y coordinates of all staves in the
-       * current system and updates the staff modifier infos
-       */
-      startSystem : function(measure) {
-        var me = this, i, currentSystemY, currentStaffY, lowestYCandidate, updateFn, spacing;
-
-        m2v.L('Converter.startSystem()', '{enter}');
+        m2v.L('Converter.createNewSystem()', '{enter}');
 
         me.pendingSystemBreak = false;
-        me.currentSystem += 1;
-        me.initStaffYs();
-        me.currentMeasureX = me.printSpace.left + me.currentSystemMarginLeft;
-        me.measureWidthsInSystem = me.getMeasureWidths(measure);
+        me.currentSystem_n += 1;
+
+        coords = {
+          x : me.printSpace.left,
+          y : (me.currentSystem_n === 1) ? me.printSpace.top : me.systemInfo.getCurrentLowestY() + me.cfg.systemSpacing,
+          w : me.printSpace.width
+        };
+
+        system = new m2v.System({
+          leftMar : me.systemInfo.getLeftMar(),
+          coords : coords,
+          staffYs : me.systemInfo.getYs(coords.y),
+          labels : me.getStaffLabels()
+        });
 
         if (me.pendingSectionBreak) {
           me.pendingSectionBreak = false;
-          updateFn = 'forceSectionStartInfo';
+          me.systemInfo.forceSectionStartInfos();
         } else {
-          updateFn = 'forceStaveStartInfo';
+          me.systemInfo.forceStaveStartInfos();
         }
-        i = me.currentStaffInfos.length;
-        while (i--) {
-          if (me.currentStaffInfos[i])
-            me.currentStaffInfos[i][updateFn]();
-        }
-      },
 
-      /**
-       *
-       */
-      initStaffYs : function() {
-        var me = this, currentSystemY, currentStaffY, lowestYCandidate, i, j, isFirstStaff = true, infoSpacing;
-        currentSystemY = (me.currentSystem === 1) ? me.printSpace.top : me.currentLowestY + me.cfg.systemSpacing;
-        currentStaffY = 0;
-        for ( i = 1, j = me.currentStaffInfos.length; i < j; i += 1) {
-          if (me.currentStaffInfos[i]) {
-            infoSpacing = me.currentStaffInfos[i].spacing;
-            currentStaffY += (isFirstStaff) ? 0 : (infoSpacing !== null) ? me.STAVE_HEIGHT + me.currentStaffInfos[i].spacing : me.STAVE_HEIGHT + me.cfg.staveSpacing;
-            me.currentStaffInfos[i].absoluteY = currentSystemY + currentStaffY;
-            isFirstStaff = false;
-          }
-        }
-        lowestYCandidate = currentSystemY + currentStaffY + me.STAVE_HEIGHT;
-        if (lowestYCandidate > me.currentLowestY)
-          me.currentLowestY = lowestYCandidate;
-      },
+        me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {
+          system : system
+        });
 
-      /**
-       * provides the width of all measures in a system, beginning with the
-       * element startMeasure and ending before the next sb element
-       *
-       * @param {Element} startMeasure the start measure
-       * @return {array} the widths of all measures in the current system
-       */
-      getMeasureWidths : function(startMeasure) {
-        var me = this, widths;
-        widths = me.addMissingMeasureWidths(me.getMEIWidthsTillSb(startMeasure));
-        m2v.L('Converter.getMeasureWidths()', '#' + widths.length);
-        return widths;
-      },
-
-      /**
-       *
-       * @param {Element} startElement
-       * @return {Array} an array of all measure widths in the current stave
-       */
-      getMEIWidthsTillSb : function(startElement) {
-        var me = this, currentElement = startElement, specifiedWidths = [];
-        m2v.L('Converter.getMEIWidthsTillSb()', '{}');
-        while (currentElement) {
-          switch (currentElement.localName) {
-            case 'measure' :
-              specifiedWidths.push(Math.floor(+currentElement.getAttribute('width')) || null);
-              break;
-            case 'sb' :
-              return specifiedWidths;
-          }
-          currentElement = me.getNext(currentElement);
-          // currentElement = currentElement.nextSibling;
-        }
-        return specifiedWidths;
-      },
-
-      /**
-       * gets the next sibling node or -- if it is undefined -- the first
-       * element in the parent's following sibling
-       */
-      getNext : function(currentElement) {
-        var me = this, parentElement, next;
-        next = me.getNextElement(currentElement);
-        if (next)
-          return next;
-        parentElement = currentElement.parentNode;
-        next = me.getNextElement(parentElement);
-        if (next)
-          return next.firstChild;
-      },
-
-      /**
-       *
-       */
-      getNextElement : function(element) {
-        var n = element;
-        do
-          n = n.nextSibling;
-        while (n && n.nodeType != 1);
-        return n;
-      },
-
-      /**
-       * calculates the width of all measures in a stave which don't have a
-       * width specified in the MEI file
-       *
-       * @param {array} widths
-       * @return {array} the complete measure widths array
-       */
-      addMissingMeasureWidths : function(widths) {
-        var me = this, i, j, totalSpecifiedMeasureWidth = 0, nonSpecifiedMeasureWidth, nonSpecified_n = 0;
-        for ( i = 0, j = widths.length; i < j; i += 1) {
-          if (widths[i] === null) {
-            nonSpecified_n += 1;
-          } else {
-            totalSpecifiedMeasureWidth += widths[i];
-          }
-        }
-        nonSpecifiedMeasureWidth = Math.floor((me.printSpace.width - me.currentSystemMarginLeft - totalSpecifiedMeasureWidth) / nonSpecified_n);
-        for ( i = 0, j = widths.length; i < j; i += 1) {
-          if (widths[i] === null)
-            widths[i] = nonSpecifiedMeasureWidth;
-        }
-        return widths;
-      },
-
-      /**
-       * sets the x coordinate for each (but the first) measure in a system
-       */
-      setNewMeasureX : function() {
-        var me = this, previous_measure;
-        // TODO check: is it necessary to check if there is a preceding
-        // measure?
-
-        previous_measure = me.allVexMeasureStaffs[me.allVexMeasureStaffs.length - 1][1];
-
-        if (previous_measure) {
-          me.currentMeasureX = previous_measure.x + previous_measure.width;
-          m2v.L('Converter.setNewMeasureX()', 'currentMeasureX: ' + me.currentMeasureX);
-        } else {
-          me.currentMeasureX = me.printSpace.left + me.currentSystemMarginLeft;
-          m2v.L('Converter.setNewMeasureX()', ' NO PREVIOUS MEASURE FOUND (!)');
-        }
+        me.systems[me.currentSystem_n] = system;
+        return system;
       },
 
       // TODO: add rule: if an ending is followed by another ending, add
@@ -655,12 +449,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processSections : function(xmlDoc) {
-        var me = this, i, j, sectionChildren;
-        $(xmlDoc).find('section, ending').each(function(i, section) {
-          if (section.localName === 'ending') {
-            me.processEnding(section);
+        var me = this;
+        $(xmlDoc).find('section, ending').each(function() {
+          if (this.localName === 'ending') {
+            me.processEnding(this);
           } else {
-            me.processSection(section);
+            me.processSection(this);
           }
         });
       },
@@ -685,7 +479,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           if (i === 0)
             me.currentVoltaType.start = $(element).attr('n');
           if (i === j - 1)
-            me.currentVoltaType.end = '1';
+            me.currentVoltaType.end = true;
           me.processSectionChild(sectionChildren[i]);
         }
         me.currentVoltaType = null;
@@ -708,10 +502,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.processMeasure(element);
             break;
           case 'scoreDef' :
-            me.processScoreDef(element);
+            me.systemInfo.processScoreDef(element);
             break;
           case 'staffDef' :
-            me.processStaffDef(element);
+            me.systemInfo.processStaffDef(element);
             break;
           case 'sb' :
             me.setPendingSystemBreak(element);
@@ -722,186 +516,219 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * sets the property {@link #pendingSystemBreak} to `true`. When true, a
+       * new system will be initialized when {@link #processMeasure} is called
+       * the next time.
        */
       setPendingSystemBreak : function() {
         this.pendingSystemBreak = true;
       },
 
+      // TODO extract function for measure_child (see the staffDef functions)!?
       /**
-       *
+       * Processes a MEI measure element and calls functions to process a
+       * selection of ancestors: .//staff, ./slur, ./tie, ./hairpin, .//tempo
+       * @param {XMLElement} element the MEI measure element
        */
       processMeasure : function(element) {
-        var me = this, measure_n, width, connectors, atSystemStart, left_barline, right_barline, currentStaveVoices, currentMeasureWidth, atSystemTop = true;
+        var me = this, measure_n, atSystemStart, left_barline, right_barline, atSystemTop = true, system;
 
         if (me.pendingSectionBreak || me.pendingSystemBreak) {
-          me.startSystem(element);
+          system = me.createNewSystem();
           atSystemStart = true;
-          me.hyphenation.addLineBreaks(me.currentStaffInfos, me.currentMeasureX);
         } else {
-          me.setNewMeasureX();
+          system = me.systems[me.systems.length - 1];
           atSystemStart = false;
         }
 
-        currentMeasureWidth = me.measureWidthsInSystem.shift();
+        m2v.L('Converter.processMeasure()', '{enter}');
 
-        m2v.L('Converter.processMeasure()', '{enter}', 'currentMeasureWidth: ' + currentMeasureWidth);
-
-        currentStaveVoices = new m2v.StaveVoices();
-
-        measure_n = +$(element).attr('n');
-
+        measure_n = +element.getAttribute('n');
         left_barline = element.getAttribute('left');
         right_barline = element.getAttribute('right');
 
-        me.directionsInCurrentMeasure = me.getDirectionsInElement(element);
+        var staffElements = [], dirElements = [], slurElements = [], tieElements = [], hairpinElements = [], tempoElements = [];
 
-        $(element).find('staff').each(function() {
-          me.processStaffInMeasure(this, measure_n, left_barline, right_barline, atSystemStart, atSystemTop, currentStaveVoices, currentMeasureWidth);
+        $(element).find('*').each(function() {
+          switch (this.localName) {
+            case 'staff':
+              staffElements.push(this);
+              break;
+            case 'dir':
+              dirElements.push(this);
+              break;
+            case 'tie':
+              tieElements.push(this);
+              break;
+            case 'slur':
+              slurElements.push(this);
+              break;
+            case 'hairpin':
+              hairpinElements.push(this);
+              break;
+            case 'tempo':
+              tempoElements.push(this);
+              break;
+            default:
+              break;
+          }
+        });
+
+        var directions = me.dirToObj(dirElements);
+
+        // references to the staffs will be stored in two places:
+        // 1) in the measure objects
+        // 2) in this.allVexMeasureStaffs
+        var staffs = [];
+        me.allVexMeasureStaffs[measure_n] = staffs;
+
+        var currentStaveVoices = new m2v.StaveVoices();
+
+        // TODO create all staff objects before processing the voices so a
+        // reference to any staff object in the current measure can be set to the
+        // note-like objects (this is necessary when the attribute staff=n is
+        // used, for example)
+        $.each(staffElements, function() {
+          me.processStaffInMeasure(system, staffs, this, measure_n, left_barline, right_barline, currentStaveVoices, atSystemTop, directions);
           atSystemTop = false;
         });
 
-        me.allStaffVoices.push({
-          staveVoices : currentStaveVoices,
-          measureStaffs : me.allVexMeasureStaffs[measure_n]
-        });
+        me.extract_linkingElements(tieElements, element, 'tie', me.ties);
+        me.extract_linkingElements(slurElements, element, 'slur', me.slurs);
+        me.extract_linkingElements(hairpinElements, element, 'hairpin', me.hairpins);
 
-        if (atSystemStart) {
-          me.startConnectors.createVexFromModels(me.allVexMeasureStaffs[measure_n], null, null, me.currentSystem);
-        }
-        me.inlineConnectors.createVexFromModels(me.allVexMeasureStaffs[measure_n], left_barline, right_barline);
-
-        me.extract_linkingElements(element, 'tie', me.ties);
-        me.extract_linkingElements(element, 'slur', me.slurs);
-        me.extract_linkingElements(element, 'hairpin', me.hairpins);
-        me.extract_tempoElements(element, me.allVexMeasureStaffs[measure_n]);
-      },
-
-      // TODO handle timestamps! (it's possibly necessary to handle tempo element
-      // as annotations)
-      /**
-       *
-       */
-      extract_tempoElements : function(element, measure) {
-        var me = this, staff_n, staff, text, offsetX, vexTempo;
-        $(element).find('tempo').each(function(i, tempoElement) {
-          staff_n = $(tempoElement).attr('staff');
-          ho = $(tempoElement).attr('ho');
-          vo = $(tempoElement).attr('vo');
-          staff = measure[staff_n];
-          text = $(tempoElement).text();
-          vexTempo = new Vex.Flow.StaveTempo({
-            name : text,
-            duration : $(tempoElement).attr('mm.unit'),
-            dots : +$(tempoElement).attr('mm.dots'),
-            bpm : +$(tempoElement).attr('mm')
-          }, staff.x, 5);
-          if (vo)
-            vexTempo.setShiftY(+vo * me.HALF_LINE_DISTANCE);
-          offsetX = (staff.getModifierXShift() > 0) ? -14 : 14;
-          if (staff.hasTimeSignature)
-            offsetX -= 24;
-          if (ho)
-            offsetX += +ho * me.HALF_LINE_DISTANCE;
-          vexTempo.setShiftX(offsetX);
-          vexTempo.font = me.cfg.tempoFont;
-          staff.modifiers.push(vexTempo);
-        });
+        system.addMeasure(new m2v.Measure({
+          element : element,
+          n : measure_n,
+          staffs : staffs,
+          voices : currentStaveVoices,
+          startConnectorCfg : (atSystemStart) ? {
+            labelMode : me.cfg.labelMode,
+            models : me.systemInfo.startConnectorInfos,
+            staffs : staffs,
+            system_n : me.currentSystem_n
+          } : null,
+          inlineConnectorCfg : {
+            models : me.systemInfo.inlineConnectorInfos,
+            staffs : staffs,
+            barline_l : left_barline,
+            barline_r : right_barline
+          },
+          tempoElements : tempoElements,
+          tempoFont : me.cfg.tempoFont
+        }));
       },
 
       /**
+       * Processes a single stave in a measure
        *
+       * @param {MEI2VF.System} the current system
+       * @param {Array} staffs
+       * @param {XMLElement} staff_element the MEI staff element
+       * @param {Number} measure_n the measure number
+       * @param {String} left_barline the left barline
+       * @param {String} right_barline the right barline
+       * @param {MEI2VF.StaveVoices} currentStaveVoices The current MEI2VF
+       * StaveVoices object
+       * @param {Boolean} atSystemTop indicates if the current stave is the first
+       * stave in its system
        */
-      processStaffInMeasure : function(staff_element, measure_n, left_barline, right_barline, atSystemStart, atSystemTop, currentStaveVoices, currentMeasureWidth) {
-        var me = this, staff, staff_n, layers, anchoredTexts, readEvents, layer_events, labelText;
+      processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices, atSystemTop, directions) {
+        var me = this, staff, staff_n, readEvents, layer_events;
 
         staff_n = +$(staff_element).attr('n');
-
-        staff = me.createVexStaff(measure_n, staff_n, left_barline, right_barline, currentMeasureWidth, atSystemStart, atSystemTop);
-
-        if (me.allVexMeasureStaffs[measure_n] === undefined) {
-          me.allVexMeasureStaffs[measure_n] = [];
+        if (!staff_n) {
+          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
         }
-        me.allVexMeasureStaffs[measure_n][staff_n] = staff;
 
-        anchoredTexts = $(staff_element).children('anchoredText').each(function(i, anchoredText) {
-          me.processAnchoredStaffText(anchoredText, staff);
+        staff = me.createVexStaff(system.getStaffYs()[staff_n]);
+
+        me.addStaffModifiers(staff, staff_n, left_barline, right_barline, atSystemTop);
+
+        staffs[staff_n] = staff;
+
+        $(staff_element).children('anchoredText').each(function() {
+          me.processAnchoredStaffText(this, staff);
         });
 
-        layers = $(staff_element).find('layer');
-
-        readEvents = function(i, element) {
-          var event = me.processElement(element, this, measure_n, staff_n, staff);
+        readEvents = function() {
+          var event = me.processNoteLikeElement(this, staff, staff_n, directions);
+          // return event.vexNote;
           return event.vexNote || event;
         };
 
-        $.each(layers, function(i, layer) {
-          me.resolveUnresolvedTimestamps(layer, staff_n, measure_n);
-          layer_events = $(layer).children().map(readEvents).get();
+        $(staff_element).find('layer').each(function() {
+          me.resolveUnresolvedTimestamps(this, staff_n, measure_n);
+          layer_events = $(this).children().map(readEvents).get();
           currentStaveVoices.addVoice(me.createVexVoice(layer_events, staff_n), staff_n);
         });
 
       },
 
       /**
-       * Initialise staff #staff_n. Render necessary staff modifiers.
+       * Creates a new Vex.Flow.Stave object at the specified y coordinate. This
+       * method sets fixed x coordinates, which will later be substituted in
+       * {@link MEI2VF.System#format} - the Vex.Flow.Stave
+       * objects must be initialized with some x measurements, but the real
+       * values depend on values only available after modifiers, voices etc
+       * have been added.
        *
-       * @param {} staff_n
-       * @param {} left_barline
-       * @param {} right_barline
-       * @param {} measure_n
-       * @return {Vex.Flow.Stave}
+       * @param {Number} y the y coordinate of the staff
+       * @return {Vex.Flow.Stave} The initialized stave object
        */
-      createVexStaff : function(measure_n, staff_n, left_barline, right_barline, currentMeasureWidth, atSystemStart, atSystemTop) {
-        var me = this, staffdef, staff, renderWith, currentStaffInfo, hasStartModifier = false;
-        if (!staff_n) {
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
-        }
-
-        currentStaffInfo = me.currentStaffInfos[staff_n];
-
-        staff = new VF.Stave(me.currentMeasureX, currentStaffInfo.absoluteY, currentMeasureWidth, me.cfg.staff);
-
+      createVexStaff : function(y) {
+        var me = this, staff;
+        staff = new VF.Stave();
+        staff.init(0, y, 1000, me.cfg.staff);
         // temporary; (due to a bug?) in VexFlow, bottom_text_position does
-        // not
-        // work when it's passed in the config object
+        // not work when it's passed in the config object
         staff.options.bottom_text_position = me.cfg.staff.bottom_text_position;
+        return staff;
+      },
 
-        staff.font = me.cfg.staffFont;
+      /**
+       * Adds staff modifiers (bar lines, clef, time signature, key signature,
+       * volta) to a Vex.Flow.Staff.
+       *
+       * @param {Vex.Flow.Stave} The stave object
+       * @param {Number} staff_n the staff number
+       * @param {String} left_barline the left barline
+       * @param {String} right_barline the right barline
+       * @param {Boolean} atSystemTop indicates if the current stave is the first
+       * stave in its system
+       */
+      addStaffModifiers : function(staff, staff_n, left_barline, right_barline, atSystemTop) {
+        var me = this, currentStaffInfo;
+
+        currentStaffInfo = me.systemInfo.getStaffInfo(staff_n);
 
         if (currentStaffInfo.showClefCheck()) {
+          staff.clefIndex = 2;
           staff.addClef(currentStaffInfo.getClef());
-          hasStartModifier = true;
         }
         if (currentStaffInfo.showKeysigCheck()) {
+          staff.keySigIndex = staff.clefIndex + 1 || 2;
           staff.addKeySignature(currentStaffInfo.getKeySpec());
-          hasStartModifier = true;
 
         }
         if (currentStaffInfo.showTimesigCheck()) {
+          staff.timeSigIndex = staff.keySigIndex + 1 || staff.clefIndex + 1 || 2;
           staff.addTimeSignature(currentStaffInfo.getTimeSig());
-          staff.hasTimeSignature = true;
-          hasStartModifier = true;
         }
 
         staff.setBegBarType( left_barline ? m2v.tables.barlines[left_barline] : VF.Barline.type.NONE);
         if (right_barline)
           staff.setEndBarType(m2v.tables.barlines[right_barline]);
 
-        if (atSystemTop) {
-          if (atSystemStart && me.cfg.autoMeasureNumbers && measure_n !== 1)
-            staff.setMeasure(measure_n);
-          if (me.currentVoltaType)
-            me.addStaffVolta(staff);
+        if (atSystemTop && me.currentVoltaType) {
+          me.addStaffVolta(staff);
         }
-        if (atSystemStart)
-          me.addStaffLabel(staff, staff_n);
-
-        return staff;
       },
 
       /**
-       *
+       * Adds a volta to a staff. Currently not working due to the reworking of
+       * the measure width calulation (27/4/2014)
+       * @experimental
        */
       addStaffVolta : function(staff) {
         var volta = this.currentVoltaType;
@@ -916,34 +743,36 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      addStaffLabel : function(staff, staff_n) {
-        var me = this, labelText;
-        switch (me.cfg.labelMode) {
-          case 'full':
-            labelText = (me.currentSystem === 1) ? me.currentStaffInfos[staff_n].label : (me.currentStaffInfos[staff_n].labelAbbr);
-            break;
-          case 'abbr':
-            labelText = me.currentStaffInfos[staff_n].labelAbbr;
-            break;
-          default:
-            return;
+      getStaffLabels : function() {
+        var me = this, labels, i, infos, labelType;
+        labels = {};
+        if (!me.cfg.labelMode) {
+          return labels;
         }
-        if (labelText) {
-          staff.setText(labelText, Vex.Flow.Modifier.Position.LEFT, {
-            shift_y : -3
-          });
+        labelType = (me.cfg.labelMode === 'full' && me.currentSystem_n === 1) ? 'label' : 'labelAbbr';
+        infos = me.systemInfo.getAllStaffInfos();
+        i = infos.length;
+        while (i--) {
+          if (infos[i]) {
+            labels[i] = infos[i][labelType];
+          }
         }
+        return labels;
       },
 
       /**
-       *
+       * Creates a new Vex.Flow.Voice
+       * @param {Array} voice_contents The contents of the voice, an array of
+       * tickables
+       * @param {Number} staff_n The number of the enclosing staff element
+       * return {Vex.Flow.Voice}
        */
       createVexVoice : function(voice_contents, staff_n) {
         var me = this, voice, meter;
         if (!$.isArray(voice_contents)) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'me.createVexVoice() voice_contents argument must be an array.');
         }
-        meter = me.currentStaffInfos[staff_n].meter;
+        meter = me.systemInfo.getStaffInfo(staff_n).meter;
         voice = new VF.Voice({
           num_beats : meter.count,
           beat_value : meter.unit,
@@ -951,26 +780,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
         voice.setStrict(false);
         voice.addTickables(voice_contents);
-        // $.each(voice_contents, function(i, o) { voice.addTickables([o]);
-        // });
         return voice;
-      },
-
-      // TODO: better attach to staff instead of writing an own array!?!?
-      // TODO allow anchored text relative to other elements than <staff>
-      /**
-       *
-       */
-      processAnchoredStaffText : function(element, staff) {
-        var me = this, $element = $(element);
-        me.allAnchoredTexts.push({
-          text : $element.text(),
-          container : staff,
-          x : $element.attr('x'),
-          y : $element.attr('y'),
-          ho : $element.attr('ho'),
-          vo : $element.attr('vo')
-        });
       },
 
       /**
@@ -985,10 +795,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         staff_n = staff_n || 1;
         refLocationIndex = measure_n + ':' + staff_n + ':' + ($(layer).attr('n') || '1');
         if (me.unresolvedTStamp2[refLocationIndex]) {
-          $(me.unresolvedTStamp2[refLocationIndex]).each(function(i, eventLink) {
-            eventLink.setContext({
+          $(me.unresolvedTStamp2[refLocationIndex]).each(function(i) {
+            this.setContext({
               layer : layer,
-              meter : me.currentStaffInfos[staff_n].meter
+              meter : me.systemInfo.getStaffInfo(staff_n).meter
             });
             // TODO: remove eventLink from the list
             me.unresolvedTStamp2[refLocationIndex][i] = null;
@@ -1000,10 +810,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * Extract <b>tie</b>, <b>slur</b> or <b>hairpin</b> elements and create
-       * EventLink
-       * objects
+       * EventLink objects
        */
-      extract_linkingElements : function(measure, element_name, eventlink_container) {
+      extract_linkingElements : function(link_elements, measure, element_name, eventlink_container) {
         var me = this;
 
         var link_staffInfo = function(lnkelem) {
@@ -1025,7 +834,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             if (!layer)
               throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E01', 'Cannot find layer');
           }
-          var staffdef = me.currentStaffInfos[stffinf.staff_n];
+          var staffdef = me.systemInfo.getStaffInfo(stffinf.staff_n);
           if (!staffdef)
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E02', 'Cannot determine staff definition.');
           var meter = staffdef.meter;
@@ -1042,20 +851,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           return tstamp2.substring(tstamp2.indexOf('+') + 1);
         };
 
-        var link_elements = $(measure).find(element_name);
-
-        $.each(link_elements, function(i, lnkelem) {
+        $.each(link_elements, function() {
           var eventLink, atts, startid, tstamp, endid, tstamp2, measures_ahead;
 
           eventLink = new m2v.EventLink(null, null);
 
-          atts = m2v.Util.attsToObj(lnkelem);
+          atts = m2v.Util.attsToObj(this);
 
           if (element_name === 'hairpin' && !atts.form) {
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:extract_linkingElements', '@form is mandatory in <hairpin> - make sure the xml is valid.');
           }
 
-          eventLink.setParams(m2v.Util.attsToObj(lnkelem));
+          eventLink.setParams(atts);
 
           // find startid for eventLink. if tstamp is provided in the
           // element,
@@ -1066,7 +873,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           } else {
             tstamp = atts.tstamp;
             if (tstamp) {
-              startid = local_tstamp2id(tstamp, lnkelem, measure);
+              startid = local_tstamp2id(tstamp, this, measure);
               eventLink.setFirstId(startid);
             }
             // else {
@@ -1088,14 +895,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
                 // register that eventLink needs context;
                 // need to save: measure.n, link.staff_n,
                 // link.layer_n
-                var staffinfo = link_staffInfo(lnkelem);
+                var staffinfo = link_staffInfo(this);
                 var target_measure_n = +$(measure).attr('n') + measures_ahead;
                 var refLocationIndex = target_measure_n.toString() + ':' + staffinfo.staff_n + ':' + staffinfo.layer_n;
                 if (!me.unresolvedTStamp2[refLocationIndex])
                   me.unresolvedTStamp2[refLocationIndex] = [];
                 me.unresolvedTStamp2[refLocationIndex].push(eventLink);
               } else {
-                endid = local_tstamp2id(beat_partOf(tstamp2), lnkelem, measure);
+                endid = local_tstamp2id(beat_partOf(tstamp2), this, measure);
                 eventLink.setLastId(endid);
               }
             }
@@ -1109,34 +916,48 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * processes a note like element by calling the adequate processing
+       * function
+       * @param {XMLElement} element the element to process
+       * @param {} staff
+       * @param {Number} staff_n the number of the staff as given in the MEI
+       * document
+       * @param {} directions the directions of the current measure
        */
-      processElement : function(element, parent_layer, measure_n, staff_n, staff) {
+      processNoteLikeElement : function(element, staff, staff_n, directions) {
         var me = this;
         switch (element.localName) {
           case 'rest' :
-            return me.processRest(element, staff, parent_layer, measure_n, staff_n);
+            return me.processRest(element, staff, staff_n, directions);
           case 'mRest' :
-            return me.processmRest(element, staff, parent_layer, measure_n, staff_n);
+            return me.processmRest(element, staff, staff_n, directions);
           case 'space' :
-            return me.processSpace(element, staff, parent_layer, measure_n, staff_n);
+            return me.processSpace(element, staff, staff_n, directions);
           case 'note' :
-            return me.processNote(element, staff, parent_layer, measure_n, staff_n);
+            return me.processNote(element, staff, staff_n, directions);
           case 'beam' :
-            return me.processBeam(element, staff, parent_layer, measure_n, staff_n);
+            return me.processBeam(element, staff, staff_n, directions);
           case 'chord' :
-            return me.processChord(element, staff, parent_layer, measure_n, staff_n);
+            return me.processChord(element, staff, staff_n, directions);
           case 'anchoredText' :
-            return me.processAnchoredText(element, staff, parent_layer, measure_n, staff_n);
+            return me.processAnchoredLayerText(element, staff, staff_n, directions);
           default :
-            throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element_type + '" is not supported.');
+            throw new m2v.RUNTIME_ERROR('BadArguments', 'Rendering of element "' + element.localName + '" is not supported.');
         }
       },
 
       /**
        *
        */
-      processAnchoredText : function() {
+      processAnchoredStaffText : function() {
+        // override
+        return;
+      },
+
+      /**
+       *
+       */
+      processAnchoredLayerText : function() {
         // TODO
         return;
       },
@@ -1144,20 +965,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      getClefForStaffNr : function(staff_n) {
-        var me = this, staff_info;
-        staff_info = me.currentStaffInfos[staff_n];
-        if (!staff_info) {
-          throw new m2v.RUNTIME_ERROR('MEI2VF.getClefForStaffNr():E01', 'No staff definition for staff n=' + staff_n);
-        }
-        return staff_info.getClef();
-      },
-
-      /**
-       *
-       */
-      processNote : function(element, staff, parent_layer, measure_n, staff_n) {
-        var me = this, dots, mei_acci, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, i, atts, note_opts, note;
+      processNote : function(element, staff, staff_n, directions) {
+        var me = this, dots, mei_accid, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, mei_staff_n, i, atts, note_opts, note;
 
         atts = m2v.Util.attsToObj(element);
 
@@ -1168,7 +977,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         oct = atts.oct;
         mei_tie = atts.tie;
         mei_slur = atts.slur;
-        note_staff_n = +atts.staff || staff_n;
+        mei_staff_n = +atts.staff || staff_n;
 
         xml_id = atts['xml:id'];
         // If xml:id is missing, create it
@@ -1181,17 +990,17 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
           note_opts = {
             keys : [me.processAttsPitch(element)],
-            clef : me.getClefForStaffNr(staff_n),
+            clef : me.systemInfo.getClef(staff_n),
             duration : me.processAttsDuration(element)
           };
 
           me.setStemDir(element, note_opts);
           note = new VF.StaveNote(note_opts);
 
-          if (note_staff_n === staff_n) {
+          if (mei_staff_n === staff_n) {
             note.setStave(staff);
           } else {
-            var otherStaff = me.allVexMeasureStaffs[measure_n][note_staff_n];
+            var otherStaff = me.allVexMeasureStaffs[me.allVexMeasureStaffs.length - 1][mei_staff_n];
             if (otherStaff) {
               // TODO: the note is correctly assigned to the new staff
               // here, but
@@ -1205,20 +1014,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               // one staff
               // n = note;
               note.setStave(otherStaff);
-              // console.log(note);
-              // throw null;
-              // console.log(measure_n);
-              // console.log(note_staff_n + '###############' +
-              // staff_n);
-              // console.log(otherStaff);
-              // console.log(me.allVexMeasureStaffs[measure_n]);
             } else {
-              throw new m2v.RUNTIME_ERROR('Error', 'Note has staff attribute "' + note_staff_n + '", but the staff does not exist.');
+              throw new m2v.RUNTIME_ERROR('Error', 'Note has staff attribute "' + mei_staff_n + '", but the staff does not exist.');
             }
           }
 
           me.processSyllables(note, element, staff_n);
-          me.addDirections(note, xml_id);
+          me.addDirections(note, directions, xml_id);
 
           try {
             for ( i = 0; i < dots; i += 1) {
@@ -1233,12 +1035,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           if (mei_ho)
             me.processAttrHo(mei_ho, note);
 
-          $.each($(element).find('artic'), function(i, ar) {
-            me.addArticulation(note, ar);
+          $.each($(element).find('artic'), function() {
+            me.addArticulation(note, this);
           });
+          if (atts.fermata) {
+            me.addFermata(note, atts.fermata);
+          }
+
           // FIXME For now, we'll remove any child nodes of <note>
-          $.each($(element).children(), function(i, child) {
-            $(child).remove();
+          $.each($(element).children(), function() {
+            $(this).remove();
           });
 
           // Build a note object that keeps the xml:id
@@ -1249,9 +1055,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
 
           if (mei_tie)
-            me.processAttrTie(mei_tie, xml_id, pname, oct, me.currentSystem);
+            me.processAttrTie(mei_tie, xml_id, pname, oct, me.currentSystem_n);
           if (mei_slur)
-            me.processAttrSlur(mei_slur, xml_id, pname, oct, me.currentSystem);
+            me.processAttrSlur(mei_slur, xml_id, me.currentSystem_n);
 
           me.notes_by_id[xml_id] = {
             meiNote : element,
@@ -1274,18 +1080,17 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processChord : function(element, staff, parent_layer, measure_n, staff_n) {
-        var me = this, i, j, hasDots, $children, dots = [], keys = [], duration, durations = [], mei_accid, durAtt, xml_id, mei_tie, mei_slur, mei_ho, chord, chord_opts;
+      processChord : function(element, staff, staff_n) {
+        var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], durAtt, xml_id, mei_slur, mei_ho, chord, chord_opts, atts, note_atts;
 
         $children = $(element).children();
 
         atts = m2v.Util.attsToObj(element);
         durAtt = atts.dur;
-        mei_ho = atts.ho;
         // mei_tie = atts.tie;
         // mei_slur = atts.slur;
 
-        var xml_id = atts['xml:id'];
+        xml_id = atts['xml:id'];
         // If xml:id is missing, create it
         if (!xml_id) {
           xml_id = MeiLib.createPseudoUUID();
@@ -1311,14 +1116,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
               hasDots = true;
           }
 
-          // TODO handle dots with ledger lines (has to be fixed in
-          // VexFlow)
           if (hasDots)
             duration += 'd';
 
           chord_opts = {
             keys : keys,
-            clef : me.getClefForStaffNr(staff_n),
+            clef : me.systemInfo.getClef(staff_n),
             duration : duration
           };
 
@@ -1328,40 +1131,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
           var allNoteIndices = [];
 
-          $children.each(function(i, mei_note) {
-
-            note_atts = m2v.Util.attsToObj(mei_note);
-
+          $children.each(function(i) {
+            me.processNoteInChord(i, this, element, chord);
             allNoteIndices.push(i);
-            var note_mei_tie = note_atts.tie;
-            var note_mei_slur = note_atts.slur;
-            var note_xml_id = note_atts['xml:id'];
-            // If xml:id is missing, create it
-            if (!note_xml_id) {
-              note_xml_id = MeiLib.createPseudoUUID();
-              $(mei_note).attr('xml:id', note_xml_id);
-            }
-
-            if (note_mei_tie)
-              me.processAttrTie(note_mei_tie, note_xml_id, note_atts.pname, note_atts.oct, me.currentSystem);
-            if (mei_slur)
-              me.processAttrSlur(note_mei_slur, note_xml_id, note_atts.pname, note_atts.oct, me.currentSystem);
-
-            me.notes_by_id[note_xml_id] = {
-              meiNote : element,
-              vexNote : chord,
-              index : [i]
-            };
-
-            mei_accid = $(mei_note).attr('accid');
-            if (mei_accid)
-              me.processAttrAccid(mei_accid, chord, i);
           });
 
-          if (hasDots)
+          if (hasDots) {
             chord.addDotToAll();
-          if (mei_ho)
-            me.processAttrHo(mei_ho, chord);
+          }
+          if (atts.ho) {
+            me.processAttrHo(atts.ho, chord);
+          }
+          if (atts.fermata) {
+            me.addFermata(chord, atts.fermata);
+          }
 
           // TODO add support for chord/@tie and chord/@slur
 
@@ -1371,7 +1154,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             index : allNoteIndices
           };
 
-          return chord;
+          return {
+            vexNote : chord,
+            id : xml_id
+          };
         } catch (e) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <chord>:' + e.toString());
           // 'A problem occurred processing the <chord>: ' +
@@ -1382,12 +1168,45 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
+      processNoteInChord : function(i, element, chordElement, chord) {
+        var me = this, atts, xml_id;
+
+        atts = m2v.Util.attsToObj(element);
+
+        var xml_id = atts['xml:id'];
+        // If xml:id is missing, create it
+        if (!xml_id) {
+          xml_id = MeiLib.createPseudoUUID();
+          $(element).attr('xml:id', xml_id);
+        }
+
+        if (atts.tie)
+          me.processAttrTie(atts.tie, xml_id, atts.pname, atts.oct, me.currentSystem_n);
+        if (atts.slur)
+          me.processAttrSlur(atts.slur, xml_id, me.currentSystem_n);
+
+        me.notes_by_id[xml_id] = {
+          meiNote : chordElement,
+          vexNote : chord,
+          index : [i]
+        };
+
+        if (atts.accid) {
+          me.processAttrAccid(atts.accid, chord, i);
+        }
+        if (atts.fermata) {
+          me.addFermata(chord, atts.fermata, i);
+        }
+      },
+
       /**
        *
        */
-      processRest : function(element, staff, parent_layer, measure_n, staff_n) {
-        var me = this, dur, rest, mei_ho, xml_id;
+      processRest : function(element, staff, unused_staff_n, directions) {
+        var me = this, dur, rest, xml_id, atts;
         try {
+          atts = m2v.Util.attsToObj(element);
+
           dur = me.processAttsDuration(element, true);
           // assign whole rests to the fourth line, all others to the
           // middle line:
@@ -1396,18 +1215,30 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             duration : dur + 'r'
           });
 
-          xml_id = $(element).attr('xml:id');
+          xml_id = atts['xml:id'];
 
-          me.addDirections(rest, xml_id);
+          // If xml:id is missing, create it
+          if (!xml_id) {
+            xml_id = MeiLib.createPseudoUUID();
+            $(element).attr('xml:id', xml_id);
+          }
 
-          mei_ho = $(element).attr('ho');
-          if (mei_ho)
-            me.processAttrHo(mei_ho, rest);
+          me.addDirections(rest, directions, xml_id);
 
+          if (atts.ho) {
+            me.processAttrHo(atts.ho, rest);
+          }
           rest.setStave(staff);
-          if ($(element).attr('dots') === '1')
+          if (atts.dots === '1') {
             rest.addDotToAll();
-          return rest;
+          }
+          if (atts.fermata) {
+            me.addFermata(rest, atts.fermata);
+          }
+          return {
+            vexNote : rest,
+            id : xml_id
+          };
         } catch (e) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <rest>: ' + m2v.Util.attsToString(element));
         }
@@ -1416,19 +1247,36 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processmRest : function(element, staff, parent_layer, measure_n, staff_n) {
-        var me = this, mRest, mei_ho;
+      processmRest : function(element, staff) {
+        var me = this, mRest, atts;
 
         try {
+          atts = m2v.Util.attsToObj(element);
+
           mRest = new VF.StaveNote({
             keys : ['d/5'],
             duration : 'wr'
           });
-          mei_ho = $(element).attr('ho');
-          if (mei_ho)
-            me.processAttrHo(mei_ho, mRest);
+
+          // mRest.ignore_ticks = true;
+          // mRest.addToModifierContext = function() {
+          // return this;
+          // };
+          // console.log(mRest);
+          // me.processAttrHo(10, mRest);
+
+          if (atts.ho) {
+            me.processAttrHo(atts.ho, mRest);
+          }
+          if (atts.fermata) {
+            me.addFermata(mRest, atts.fermata);
+          }
           mRest.setStave(staff);
-          return mRest;
+          return {
+            vexNote : mRest
+            // ,
+            // id : xml_id
+          };
         } catch (x) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <mRest>: ' + m2v.Util.attsToString(element));
         }
@@ -1437,14 +1285,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processSpace : function(element, staff, parent_layer, measure_n, staff_n) {
+      processSpace : function(element, staff) {
         var me = this, space;
         try {
           space = new VF.GhostNote({
             duration : me.processAttsDuration(element, true) + 'r'
           });
           space.setStave(staff);
-          return space;
+          return {
+            vexNote : space
+            // ,
+            // id : xml_id
+          };
         } catch (e) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <space>: ' + m2v.Util.attsToString(element));
         }
@@ -1453,13 +1305,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processBeam : function(element, staff, parent_layer, measure_n, staff_n) {
+      processBeam : function(element, staff, staff_n, directions) {
         var me = this, elements;
-        elements = $(element).children().map(function(i, note) {
+        var process = function() {
           // make sure to get vexNote out of wrapped note objects
-          var proc_element = me.processElement(note, parent_layer, measure_n, staff_n, staff);
+          var proc_element = me.processNoteLikeElement(this, staff, staff_n, directions);
           return proc_element.vexNote || proc_element;
-        }).get();
+        };
+        elements = $(element).children().map(process).get();
         me.allBeams.push(new VF.Beam(elements));
         return elements;
       },
@@ -1468,7 +1321,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processAttrAccid : function(mei_accid, vexObject, i) {
-        var me = this, val = m2v.tables.accidentals[mei_accid];
+        var val = m2v.tables.accidentals[mei_accid];
         if (!val) {
           throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadAttributeValue', 'Invalid attribute value: ' + mei_accid);
         }
@@ -1492,20 +1345,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         // mei_tie = "";
         // }
         for ( i = 0, j = mei_tie.length; i < j; ++i) {
-          switch (mei_tie[i]) {
-            case 'i' :
-              me.ties.start_tieslur(xml_id, {
-                pname : pname,
-                oct : oct,
-                system : system
-              });
-              break;
-            case 't' :
-              me.ties.terminate_tie(xml_id, {
-                pname : pname,
-                oct : oct,
-                system : system
-              });
+          if (mei_tie[i] === 'i') {
+            me.ties.start_tieslur(xml_id, {
+              pname : pname,
+              oct : oct,
+              system : system
+            });
+          } else if (mei_tie[i] === 't') {
+            me.ties.terminate_tie(xml_id, {
+              pname : pname,
+              oct : oct,
+              system : system
+            });
           }
         }
       },
@@ -1513,25 +1364,22 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processAttrSlur : function(mei_slur, xml_id, pname, oct, system) {
+      processAttrSlur : function(mei_slur, xml_id, system) {
         var me = this, tokens;
         if (mei_slur) {
           // create a list of { letter, num }
           tokens = me.parse_slur_attribute(mei_slur);
-          $.each(tokens, function(i, token) {
-            switch (token.letter) {
-              case 'i' :
-                me.slurs.start_tieslur(xml_id, {
-                  nesting_level : token.nesting_level,
-                  system : system
-                });
-                break;
-              case 't' :
-                me.slurs.terminate_slur(xml_id, {
-                  nesting_level : token.nesting_level,
-                  system : system
-                });
-                break;
+          $.each(tokens, function() {
+            if (this.letter === 'i') {
+              me.slurs.start_tieslur(xml_id, {
+                nesting_level : this.nesting_level,
+                system : system
+              });
+            } else if (this.letter === 't') {
+              me.slurs.terminate_slur(xml_id, {
+                nesting_level : this.nesting_level,
+                system : system
+              });
             }
           });
         }
@@ -1567,13 +1415,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * reads and converts the pitch of a <b>note</b> element
+       * converts the pitch of an MEI <b>note</b> element to a VexFlow pitch
        *
-       * @param {Element} mei_note
+       * @param {XMLElement} mei_note
        * @return {String} the VexFlow pitch
        */
       processAttsPitch : function(mei_note) {
-        var me = this, pname, oct;
+        var pname, oct;
         pname = $(mei_note).attr('pname');
         oct = $(mei_note).attr('oct');
         if (!pname || !oct) {
@@ -1586,27 +1434,25 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      getDirectionsInElement : function(element) {
+      dirToObj : function(elements) {
         var me = this, directions = [];
-
-        $(element).find('dir').each(function() {
+        $.each(elements, function() {
           directions.push({
             text : $(this).text().trim(),
             startid : me.getMandatoryAttr(this, 'startid'),
             place : me.getMandatoryAttr(this, 'place')
           });
         });
-
         return directions;
       },
 
       /**
        *
        */
-      addDirections : function(note, xml_id) {
-        var me = this, thisDir, i = me.directionsInCurrentMeasure.length;
+      addDirections : function(note, directions, xml_id) {
+        var me = this, thisDir, i = directions.length;
         while (i--) {
-          thisDir = me.directionsInCurrentMeasure[i];
+          thisDir = directions[i];
           if (thisDir.startid === xml_id) {
             note.addAnnotation(0, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setVerticalJustification(me.BOTTOM) : me.createAnnot(thisDir.text, me.cfg.annotFont));
           }
@@ -1626,6 +1472,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
+       * adds a fermata to a note-like object
+       * @param {Vex.Flow.StaveNote} note the note the fermata will be attached
+       * to
+       * @param {String} place The place of the fermata (values: 'above' or
+       * 'below')
+       * @param {Number} index The index of the note in a chord (optional)
+       */
+      addFermata : function(note, place, index) {
+        var vexArtic = new VF.Articulation(m2v.tables.fermata[place]);
+        vexArtic.setPosition(m2v.tables.positions[place]);
+        note.addArticulation(index || 0, vexArtic);
+      },
+
+      /**
        *
        */
       processSyllables : function(note, element, staff_n) {
@@ -1640,9 +1500,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
         } else {
           // TODO currently, *syllables* are added to the vexNote even if
-          // there are no acutal mei_syl elements. This seems to improve
-          // spacing
-          // in VexFlow but should be changed eventually
+          // there are no actual mei_syl elements. This seems to improve
+          // spacing in VexFlow but should be changed eventually
           annot = me.createAnnot('', me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
         }
         note.addAnnotation(0, annot);
@@ -1666,13 +1525,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processSyllable : function(mei_note) {
-        var me = this, syl, full_syl = '', dash, wordpos;
-        syl = $(mei_note).find('syl')[0];
+        var syl = $(mei_note).find('syl')[0];
         if (syl) {
-          wordpos = $(syl).attr('wordpos');
           return {
             text : $(syl).text(),
-            wordpos : wordpos
+            wordpos : $(syl).attr('wordpos')
           };
         }
       },
@@ -1682,7 +1539,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       createAnnot : function(text, annotFont) {
-        var me = this;
         return (new VF.Annotation(text)).setFont(annotFont.family, annotFont.size, annotFont.weight);
       },
 
@@ -1690,8 +1546,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       getMandatoryAttr : function(element, attribute) {
-        var me = this, result;
-        result = $(element).attr(attribute);
+        var result = $(element).attr(attribute);
         if (!result) {
           throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.MissingAttribute', 'Attribute ' + attribute + ' is mandatory.');
         }
@@ -1702,14 +1557,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       translateDuration : function(mei_dur) {
-        var me = this, result;
-        mei_dur += '';
-        result = m2v.tables.durations[mei_dur];
+        var result = m2v.tables.durations[mei_dur + ''];
         if (result)
           return result;
         throw new m2v.RUNTIME_ERROR('BadArguments', 'The MEI duration "' + mei_dur + '" is not supported.');
       },
 
+      // TODO: dots should work with the lastest VexFlow, so try to remove the noDots
+      // parameter there. Can the noDots condition be removed entirely or will there
+      // be dots rendered with space elements?
       /**
        *
        */
@@ -1724,18 +1580,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (!noDots && $(mei_note).attr('dots') === '1')
           dur += 'd';
         return dur;
-        // return me.translateDuration($(mei_note).attr('dur')) +
-        // (allow_dotted
-        // === true && $(mei_note).attr('dots') === '1') ? 'd' : '';
-        // return me.translateDuration($(mei_note).attr('dur'));
       },
 
       /**
        *
        */
       setStemDir : function(element, optionsObj) {
-        var me = this, specified_dir;
-        specified_dir = {
+        var specified_dir = {
         down : VF.StaveNote.STEM_DOWN,
         up : VF.StaveNote.STEM_UP
         }[$(element).attr('stem.dir')];
@@ -1746,61 +1597,12 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
-      // TODO align start modifiers (changes in vexflow necessary??)
-      /**
-       *
-       */
-      drawVexStaffs : function(allVexMeasureStaffs, ctx) {
-        var i, k, max_start_x, startModifiers, staff;
-        i = allVexMeasureStaffs.length;
+      drawSystems : function(ctx) {
+        var me = this, i = me.systems.length;
         while (i--) {
-          if (allVexMeasureStaffs[i]) {
-            max_start_x = 0;
-            // get maximum start_x of all staffs in measure
-            k = allVexMeasureStaffs[i].length;
-            while (k--) {
-              staff = allVexMeasureStaffs[i][k];
-              if (staff)
-                max_start_x = Math.max(max_start_x, staff.getNoteStartX());
-            }
-            k = allVexMeasureStaffs[i].length;
-            while (k--) {
-              staff = allVexMeasureStaffs[i][k];
-              if (staff) {
-                staff.setNoteStartX(max_start_x);
-                staff.setContext(ctx).draw();
-              }
-            }
+          if (me.systems[i]) {
+            me.systems[i].format(ctx).draw(ctx);
           }
-        }
-      },
-
-      // NB checks only once for the first defined staff; this has to be
-      // changed
-      // when the number of staffs changes in the course of a piece
-      /**
-       *
-       */
-      getFirstDefinedStaff : function(staffsInMeasure) {
-        var i = staffsInMeasure.length;
-        while (i--) {
-          if (staffsInMeasure[i])
-            return i;
-        }
-        throw new m2v.RUNTIME_ERROR('ERROR', 'getFirstDefinedStaff(): no staff found in the current measure.');
-      },
-
-      /**
-       *
-       */
-      drawVexVoices : function(allStaffVoices, ctx) {
-        var me = this, i, j, start_x, staffsInMeasure, firstDefined;
-        for ( i = 0, j = allStaffVoices.length; i < j; i += 1) {
-          staffsInMeasure = allStaffVoices[i].measureStaffs;
-          if (!firstDefined)
-            firstDefined = me.getFirstDefinedStaff(staffsInMeasure);
-          allStaffVoices[i].staveVoices.format(staffsInMeasure[firstDefined].getNoteEndX() - staffsInMeasure[firstDefined].getNoteStartX() - me.cfg.measurePaddingRight);
-          allStaffVoices[i].staveVoices.draw(ctx, staffsInMeasure);
         }
       },
 
@@ -1808,25 +1610,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       drawVexBeams : function(beams, ctx) {
-        $.each(beams, function(i, beam) {
-          beam.setContext(ctx).draw();
-        });
-      },
-
-      // TODO make anchored texts staff modifiers
-      /**
-       *
-       */
-      drawAnchoredTexts : function(allAnchoredTexts, halfLineDistance, ctx) {
-        var me = this, x, y, staff;
-        $.each(allAnchoredTexts, function(i, obj) {
-          staff = obj.container;
-          y = +obj.y || staff.getYForLine(3) - 4 + (+obj.vo * halfLineDistance || 0);
-          x = +obj.x || staff.glyph_start_x + (+obj.ho * halfLineDistance || 0);
-          ctx.font = obj.font || '20px Times';
-          if (obj.align)
-            ctx.textAlign = obj.align;
-          ctx.fillText(obj.text, x, y);
+        $.each(beams, function() {
+          this.setContext(ctx).draw();
         });
       }
     };

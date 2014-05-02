@@ -5,9 +5,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      * @private
      * 
      * @constructor
-     * @param {Object} config
      */
-    m2v.Hairpins = function(config) {
+    m2v.Hairpins = function() {
       this.init();
     };
 
@@ -29,11 +28,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           left_shift_px : 0,
           r_shift_px : 0
         };
-        $.each(me.allHairpinInfos, function(i, link) {
-          f_note = notes_by_id[link.getFirstId()];
-          l_note = notes_by_id[link.getLastId()];
-          place = m2v.tables.positions[link.params.place];
-          type = m2v.tables.hairpins[link.params.form];
+        $.each(me.allHairpinInfos, function() {
+          f_note = notes_by_id[this.getFirstId()];
+          l_note = notes_by_id[this.getLastId()];
+          place = m2v.tables.positions[this.params.place];
+          type = m2v.tables.hairpins[this.params.form];
 
           hairpin = new VF.StaveHairpin({
             first_note : (f_note) ? f_note.vexNote : undefined,
@@ -56,8 +55,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       draw : function() {
         var ctx = this.ctx;
-        $.each(this.allVexHairpins, function(i, vexHairpin) {
-          vexHairpin.setContext(ctx).draw();
+        $.each(this.allVexHairpins, function() {
+          this.setContext(ctx).draw();
         });
       }
     };
