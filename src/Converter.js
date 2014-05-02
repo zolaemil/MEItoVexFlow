@@ -343,7 +343,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        */
       getStaffArea : function() {
         var width, height, i;
-        height = this.currentLowestY;
+        height = this.systemInfo.getCurrentLowestY();
         var allVexMeasureStaffs = this.getAllVexMeasureStaffs();
         var i, k, max_start_x, area_width, staff;
         i = allVexMeasureStaffs.length;
