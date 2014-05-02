@@ -438,11 +438,23 @@ Vex.Flow.Annotation = ( function() {
         // ############# ADDITON #############
         this.x = x;
         this.y = y;
+        this.text_width = text_width; 
 
         L("Rendering annotation: ", this.text, x, y);
         this.context.fillText(this.text, x, y);
         this.context.restore();
+      },
+      
+      // ############# ADDITON #############
+      setMeiElement: function(element) {
+        this.meiElement = element;
+        return this;
+      },
+      // ############# ADDITON #############
+      getMeiElement: function(e) {
+        return this.meiElement;
       }
+      
     });
 
     return Annotation;

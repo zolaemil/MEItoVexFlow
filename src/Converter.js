@@ -352,12 +352,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * Returns the width and the height of the area that contains all drawn
-       * staves as per
-       * the last processing.
+       * staves as per the last processing.
        *
        * @return {Object} the width and height of the area that contains all
        * staves.
-       *                  Properties: width, height
+       * Properties: width, height
        */
       getStaffArea : function() {
         var width, height, i;
@@ -1467,7 +1466,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           directions.push({
             text : $(this).text().trim(),
             startid : me.getMandatoryAttr(this, 'startid'),
-            place : me.getMandatoryAttr(this, 'place')
+            place : me.getMandatoryAttr(this, 'place'),
+            element : this
           });
         });
         return directions;
@@ -1481,7 +1481,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         while (i--) {
           thisDir = directions[i];
           if (thisDir.startid === xml_id) {
-            note.addAnnotation(0, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setVerticalJustification(me.BOTTOM) : me.createAnnot(thisDir.text, me.cfg.annotFont));
+            note.addAnnotation(0, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setMeiElement(thisDir.element).setVerticalJustification(me.BOTTOM) : me.createAnnot(thisDir.text, me.cfg.annotFont).setMeiElement(thisDir.element));
           }
         }
       },
@@ -1519,19 +1519,19 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, annot, syl;
         syl = me.processSyllable(element);
         if (syl) {
-          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
+          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setMeiElement(syl.element).setVerticalJustification(me.BOTTOM);
           // TODO handle justification
           // .setJustification(VF.Annotation.Justify.LEFT);
-
+          note.addAnnotation(0, annot);
           if (syl.wordpos)
             me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
         } else {
           // TODO currently, *syllables* are added to the vexNote even if
           // there are no actual mei_syl elements. This seems to improve
           // spacing in VexFlow but should be changed eventually
-          annot = me.createAnnot('', me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
+          annot = me.createAnnot('', me.cfg.lyricsFont).setMeiElement(element).setVerticalJustification(me.BOTTOM);
+          note.addAnnotation(0, annot);
         }
-        note.addAnnotation(0, annot);
       },
 
       // Add annotation (lyrics)
@@ -1556,7 +1556,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (syl) {
           return {
             text : $(syl).text(),
-            wordpos : $(syl).attr('wordpos')
+            wordpos : $(syl).attr('wordpos'),
+            element : syl
           };
         }
       },
