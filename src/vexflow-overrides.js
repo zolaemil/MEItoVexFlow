@@ -71,7 +71,7 @@ Vex.Flow.Hyphen = ( function() {
         var first = cfg.first_annot;
         var last = cfg.last_annot;
 
-        var start_x = (first.text) ? first.x + ctx.measureText(first.text).width : first.x;
+        var start_x = (first.text) ? first.x + first.text_width : first.x;
         var end_x = last.x;
 
         var distance = end_x - start_x;
@@ -438,7 +438,8 @@ Vex.Flow.Annotation = ( function() {
         // ############# ADDITON #############
         this.x = x;
         this.y = y;
-        this.text_width = text_width; 
+        this.text_height = text_height;
+        this.text_width = text_width;
 
         L("Rendering annotation: ", this.text, x, y);
         this.context.fillText(this.text, x, y);
