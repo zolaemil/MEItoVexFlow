@@ -1456,6 +1456,32 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return pname + '/' + oct;
       },
 
+      /**
+       * adds an articulation to a note-like object
+       * @param {Vex.Flow.StaveNote} note the note-like VexFlow object
+       * @param {XMLElement} ar the articulation element
+       */
+      addArticulation : function(note, ar) {
+        var vexArtic = new VF.Articulation(m2v.tables.articulations[ar.getAttribute('artic')]);
+        var place = ar.getAttribute('place');
+        if (place) {
+          vexArtic.setPosition(m2v.tables.positions[place]);
+        }
+        note.addArticulation(0, vexArtic);
+      },
+
+      /**
+       * adds a fermata to a note-like object
+       * @param {Vex.Flow.StaveNote} note the note-like VexFlow object
+       * @param {'above'/'below'} place The place of the fermata
+       * @param {Number} index The index of the note in a chord (optional)
+       */
+      addFermata : function(note, place, index) {
+        var vexArtic = new VF.Articulation(m2v.tables.fermata[place]);
+        vexArtic.setPosition(m2v.tables.positions[place]);
+        note.addArticulation(index || 0, vexArtic);
+      },
+
       // called from <measure>
       /**
        *
@@ -1466,8 +1492,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           directions.push({
             text : $(this).text().trim(),
             startid : me.getMandatoryAttr(this, 'startid'),
-            place : me.getMandatoryAttr(this, 'place'),
-            element : this
+            place : me.getMandatoryAttr(this, 'place')
           });
         });
         return directions;
@@ -1481,35 +1506,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         while (i--) {
           thisDir = directions[i];
           if (thisDir.startid === xml_id) {
-            note.addAnnotation(0, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setMeiElement(thisDir.element).setVerticalJustification(me.BOTTOM) : me.createAnnot(thisDir.text, me.cfg.annotFont).setMeiElement(thisDir.element));
+            note.addAnnotation(0, thisDir.place === 'below' ? me.createAnnot(thisDir.text, me.cfg.annotFont).setVerticalJustification(me.BOTTOM) : me.createAnnot(thisDir.text, me.cfg.annotFont));
           }
         }
-      },
-
-      /**
-       *
-       */
-      addArticulation : function(note, ar) {
-        var vexArtic = new VF.Articulation(m2v.tables.articulations[ar.getAttribute('artic')]);
-        var place = ar.getAttribute('place');
-        if (place) {
-          vexArtic.setPosition(m2v.tables.positions[place]);
-        }
-        note.addArticulation(0, vexArtic);
-      },
-
-      /**
-       * adds a fermata to a note-like object
-       * @param {Vex.Flow.StaveNote} note the note the fermata will be attached
-       * to
-       * @param {String} place The place of the fermata (values: 'above' or
-       * 'below')
-       * @param {Number} index The index of the note in a chord (optional)
-       */
-      addFermata : function(note, place, index) {
-        var vexArtic = new VF.Articulation(m2v.tables.fermata[place]);
-        vexArtic.setPosition(m2v.tables.positions[place]);
-        note.addArticulation(index || 0, vexArtic);
       },
 
       /**
@@ -1519,7 +1518,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this, annot, syl;
         syl = me.processSyllable(element);
         if (syl) {
-          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setMeiElement(syl.element).setVerticalJustification(me.BOTTOM);
+          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
           // TODO handle justification
           // .setJustification(VF.Annotation.Justify.LEFT);
           note.addAnnotation(0, annot);
@@ -1529,7 +1528,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           // TODO currently, *syllables* are added to the vexNote even if
           // there are no actual mei_syl elements. This seems to improve
           // spacing in VexFlow but should be changed eventually
-          annot = me.createAnnot('', me.cfg.lyricsFont).setMeiElement(element).setVerticalJustification(me.BOTTOM);
+          annot = me.createAnnot('', me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
           note.addAnnotation(0, annot);
         }
       },
@@ -1556,8 +1555,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         if (syl) {
           return {
             text : $(syl).text(),
-            wordpos : $(syl).attr('wordpos'),
-            element : syl
+            wordpos : $(syl).attr('wordpos')
           };
         }
       },
