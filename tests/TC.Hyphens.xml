@@ -129,24 +129,24 @@
 									<note xml:id="n30" pname="e" accid="n" oct="5" dur="2">
 										<syl wordpos="t">jagt,</syl>
 									</note>
-									<note xml:id="n32" pname="a" oct="4" dur="8">
+									<note xml:id="nc32" pname="a" oct="4" dur="8">
 										<syl wordpos="i">de</syl>
 									</note>
-									<note xml:id="n33" pname="b" accid="n" oct="4" dur="8">
+									<note xml:id="nc33" pname="b" accid="n" oct="4" dur="8">
 										<syl wordpos="t">nen</syl>
 									</note>
-									<note xml:id="n34" pname="c" accid="s" oct="5" dur="8">
+									<note xml:id="nc34" pname="c" accid="s" oct="5" dur="8">
 										<syl>du</syl>
 									</note>
-									<note xml:id="n35" pname="e" accid="n" oct="5" dur="8">
+									<note xml:id="nc35" pname="e" accid="n" oct="5" dur="8">
 										<syl>die</syl>
 									</note>
 								</layer>
 							</staff>
-							<dir startid="n32" place="above" type="pitch">a</dir>
-							<dir startid="n33" place="above" type="pitch">h</dir>
-							<dir startid="n34" place="above" type="pitch">cis</dir>
-							<dir startid="n35" place="above" type="pitch">e</dir>
+							<dir startid="nc32" place="above" type="pitch">a</dir>
+							<dir startid="nc33" place="above" type="pitch">h</dir>
+							<dir startid="nc34" place="above" type="pitch">cis</dir>
+							<dir startid="nc35" place="above" type="pitch">e</dir>
 						</measure>
 						<measure n="5" right="dbl">
 							<staff n="1">
