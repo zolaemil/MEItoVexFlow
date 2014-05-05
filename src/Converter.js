@@ -1,25 +1,33 @@
 /*
- * MEItoVexFlow
- *
- * Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
- *
- * See README for details of this library
- *
- * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
- * University of Maryland
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+* MEItoVexFlow
+*
+* Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
+*
+* See README for details of this library
+*
+* Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
+* University of Maryland
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not
+* use this file except in compliance with the License. You may obtain a copy of
+* the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations under
+* the License.
+*/
+
+// TODO use Vex.Flow.Textnote for lyrics!?!?!?
+
+// TODO add tstamp support to tempo and fermata
+
+// TODO use vexflow crescendo class for hairpins??
+
+// TODO support offsets with hairpins (already implemented in vexflow)
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
@@ -252,6 +260,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         // ########### TODO add documentation ########
         // ###########################################
         me.directives = [];
+        me.dynamics = [];
         /**
          * contains all notes in the current MEI document, addressable by their
          * xml:id. Each of the object properties has the xml:id as a name and
@@ -309,6 +318,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.systemInfo.processScoreDef($(xmlDoc).find('scoreDef')[0]);
         me.processSections(xmlDoc);
         me.createVexFromDirModels(me.directives);
+        me.createVexFromDynamModels(me.dynamics);
         me.ties.createVexFromLinks(me.notes_by_id);
         me.slurs.createVexFromLinks(me.notes_by_id);
         me.hairpins.createVexFromLinks(me.notes_by_id);
@@ -596,8 +606,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           }
         });
 
-        var dynam = me.dynamToObj(dynamElements);
-
         // references to the staffs will be stored in two places:
         // 1) in the measure objects
         // 2) in this.allVexMeasureStaffs
@@ -616,6 +624,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
 
         me.extract_event_pointers(dirElements, element, me.directives);
+        me.extract_event_pointers(dynamElements, element, me.dynamics);
 
         me.extract_linkingElements(tieElements, element, 'tie', me.ties);
         me.extract_linkingElements(slurElements, element, 'slur', me.slurs);
@@ -1618,7 +1627,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         });
       },
 
-
       // TODO move to separate file
       extract_event_pointers : function(elements, measure, target_container) {
         var me = this;
@@ -1688,21 +1696,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
-      // TODO add dynamics in a separate loop!???
-      // called from <measure>
-      /**
-       *
-       */
-      dynamToObj : function(elements) {
-        var me = this, dynam = [];
-        $.each(elements, function() {
-          dynam.push({
-            text : $(this).text().trim(),
-            startid : me.getMandatoryAttr(this, 'startid'),
-            place : me.getMandatoryAttr(this, 'place')
-          });
-        });
-        return dynam;
+      // TODO use Vex.Flow.Textnote instead of VF.Annotation!?
+      createVexFromDynamModels : function(models) {
+        var me = this, i, model, note, id, font, place;
+        font = me.cfg.annotFont;
+        i = models.length;
+        while (i--) {
+          model = models[i];
+          note = me.notes_by_id[model.startid];
+          if (note) {
+            note.vexNote.addAnnotation(0, model.atts.place === 'above' ? me.createAnnot($(model.element).text().trim(), font) : me.createAnnot($(model.element).text().trim(), font).setVerticalJustification(me.BOTTOM));
+          } else {
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
+          }
+        }
       }
     };
 
