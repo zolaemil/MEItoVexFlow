@@ -177,8 +177,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.cfg = $.extend(true, {}, me.defaults, config);
         /**
          *  @property {MEI2VF.SystemInfo} systemInfo an instance of
-         * MEI2VF.SystemInfo dealing with the staff info derived from the
-         * current MEI document
+         * MEI2VF.SystemInfo dealing with the system and staff info derived from
+         * the MEI data
          */
         me.systemInfo = new m2v.SystemInfo();
 
@@ -186,12 +186,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         // in the viewer object
         /**
          * @property {Object} printSpace The print space coordinates calculated
-         * from the page config. Values:
-         *
-         * -  `top`
-         * -  `left`
-         * -  `right`
-         * -  `width`
+         * from the page config.
+         * @property {Number} printSpace.top
+         * @property {Number} printSpace.left
+         * @property {Number} printSpace.right
+         * @property {Number} printSpace.width
          */
         me.printSpace = {
           // substract four line distances (40px) from page_margin_top in order
@@ -262,12 +261,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.directives = [];
         me.dynamics = [];
         /**
-         * contains all notes in the current MEI document, addressable by their
-         * xml:id. Each of the object properties has the xml:id as a name and
-         * refers to an object with two properties:
-         *
-         * - `meiNote`: the XML Element of the note
-         * - `vexNote`: the Vex.Flow.StaveNote }
+         * @property {Object} notes_by_id contains all note-like objects in the
+         * current MEI document
+         * @property {XMLElement} notes_by_id.meiNote the XML Element of the note
+         * @property {Vex.Flow.StaveNote} notes_by_id.vexNote the VexFlow note object
          */
         me.notes_by_id = {};
         /**
@@ -409,7 +406,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * returns a 2d array of all Vex.Flow.Stave objects, arranged by
        * [measure_n][staff_n]
-       * @return {Vex.Flow.Stave[][]}
+       * @return {Vex.Flow.Stave[][]} see {@link #allVexMeasureStaffs}
        */
       getAllVexMeasureStaffs : function() {
         return this.allVexMeasureStaffs;
