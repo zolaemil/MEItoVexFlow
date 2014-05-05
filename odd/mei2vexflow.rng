@@ -3,7 +3,7 @@
          xmlns:xlink="http://www.w3.org/1999/xlink"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://www.music-encoding.org/ns/mei"><!--
-Schema generated from ODD source 2014-05-05T02:25:18Z. 
+Schema generated from ODD source 2014-05-05T19:05:16Z. 
 Edition: 2013 Release
 Edition Location: http://www.tei-c.org/Vault/P5//
 
@@ -11835,6 +11835,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
       </attribute>
    </define>
    <define name="att.mei2vf.common.opt.attributes">
+      <ref name="att.id.attributes"/>
       <ref name="att.mei2vf.common.opt.attribute.label"/>
       <ref name="att.mei2vf.common.opt.attribute.xmlbase"/>
    </define>
