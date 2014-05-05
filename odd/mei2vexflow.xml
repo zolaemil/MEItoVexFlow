@@ -48,7 +48,7 @@
         <!--<moduleRef key="MEI.midi"/>-->
         <moduleRef key="MEI.namesdates"/>
         <!--<moduleRef key="MEI.performance"/>-->
-        <!--<moduleRef key="MEI.ptrref"/>-->
+        <moduleRef key="MEI.ptrref"/>
         <!--<moduleRef key="MEI.tablature"/>-->
         <!--<moduleRef key="MEI.text"/>-->
         <!--<moduleRef key="MEI.usersymbols"/>-->
