@@ -16,7 +16,7 @@
 					<scoreDef key.pname="c" key.mode="major">
 						<staffGrp>
 							<staffGrp barthru="false">
-								<staffDef n="1" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4"/>
+								<staffDef n="1" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4" lines="5"/>
 							</staffGrp>
 						</staffGrp>
 					</scoreDef>

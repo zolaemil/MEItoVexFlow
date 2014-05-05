@@ -14,8 +14,8 @@
 				<score>
 					<scoreDef>
 						<staffGrp symbol="brace">
-							<staffDef n="1" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4" key.pname="c"/>
-							<staffDef n="2" clef.line="4" clef.shape="F" meter.count="4" meter.unit="4" key.pname="c"/>
+							<staffDef n="1" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4" key.pname="c" lines="5"/>
+							<staffDef n="2" clef.line="4" clef.shape="F" meter.count="4" meter.unit="4" key.pname="c" lines="5"/>
 						</staffGrp>
 					</scoreDef>
 					<section>

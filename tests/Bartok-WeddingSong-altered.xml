@@ -40,8 +40,8 @@
 				<score>
 					<scoreDef>
 						<staffGrp symbol="brace">
-								<staffDef n="1" label="Violin I." clef.line="2" clef.shape="G" meter.count="2" meter.unit="4" key.pname="d" key.mode="minor"/>
-								<staffDef n="2" label="Violin II." clef.line="2" clef.shape="G" meter.count="2" meter.unit="4" key.pname="d" key.mode="minor"/>
+								<staffDef n="1" label="Violin I." clef.line="2" clef.shape="G" meter.count="2" meter.unit="4" key.pname="d" key.mode="minor" lines="5"/>
+								<staffDef n="2" label="Violin II." clef.line="2" clef.shape="G" meter.count="2" meter.unit="4" key.pname="d" key.mode="minor" lines="5"/>
 						</staffGrp>
 					</scoreDef>
 					<section>

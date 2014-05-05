@@ -47,12 +47,12 @@
                             <staff n="1">
                                 <layer n="1">
                                 			<chord>
-                                    <note xml:id="e03" pname="c" oct="5" dur="2" fermata="above"/>
-                                    <note xml:id="e04" pname="d" oct="5" dur="2" fermata="below"/>
+                                    <note xml:id="e003" pname="c" oct="5" dur="2" fermata="above"/>
+                                    <note xml:id="e004" pname="d" oct="5" dur="2" fermata="below"/>
                                </chord>
                                			<chord>
-                                    <note xml:id="e05" pname="c" oct="4" dur="2" fermata="above"/>
-                                    <note xml:id="e06" pname="d" oct="4" dur="2" fermata="below"/>
+                                    <note xml:id="e005" pname="c" oct="4" dur="2" fermata="above"/>
+                                    <note xml:id="e006" pname="d" oct="4" dur="2" fermata="below"/>
                                </chord>
 
                                 </layer>

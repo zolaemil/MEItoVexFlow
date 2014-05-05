@@ -14,7 +14,7 @@
 				<score>
 					<scoreDef>
 						<staffGrp>
-							<staffDef n="1" label="Voice" clef.line="4" clef.shape="C" meter.count="6" meter.unit="8"/>
+							<staffDef n="1" label="Voice" clef.line="4" clef.shape="C" meter.count="6" meter.unit="8" lines='5'/>
 						</staffGrp>
 					</scoreDef>
 					<section>
@@ -36,7 +36,7 @@
 									<note xml:id="e04-5" pname="g" oct="4" dur="8"/>
 									<note xml:id="e04-6" pname="a" oct="4" dur="8"/>
 									<note xml:id="e04-7" pname="b" oct="4" dur="8"/>
-									<note xml:id="e04-8" pname="c" oct="5" dur="8"/>
+									<note xml:id="e004-8" pname="c" oct="5" dur="8"/>
 								</layer>
 							</staff>
 						</measure>

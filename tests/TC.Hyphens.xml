@@ -47,7 +47,7 @@
 						</measure>
 						<scoreDef>
 							<staffGrp symbol="none">
-								<staffDef n="1" clef.line="2" clef.shape="G" meter.count="6" meter.unit="4"/>
+								<staffDef n="1" clef.line="2" clef.shape="G" meter.count="6" meter.unit="4" lines="5"/>
 							</staffGrp>
 						</scoreDef>
 						<measure n="1" unit="px">
@@ -178,16 +178,16 @@
 						<measure n="6">
 							<staff n="1">
 								<layer>
-									<note xml:id="n30" pname="g" accid="s" oct="5" dur="8">
+									<note xml:id="n030" pname="g" accid="s" oct="5" dur="8">
 										<syl wordpos="i">Bis</syl>
 									</note>
 									<note xml:id="n31" pname="a" accid="s" oct="4" dur="8">
 										<syl wordpos="t">sen</syl>
 									</note>
-									<note xml:id="n32" pname="e" accid="s" oct="5" dur="2">
+									<note xml:id="n032" pname="e" accid="s" oct="5" dur="2">
 										<syl wordpos="i">hin</syl>
 									</note>
-									<note xml:id="n33" pname="f" accid="s" oct="4" dur="4">
+									<note xml:id="n033" pname="f" accid="s" oct="4" dur="4">
 										<syl wordpos="m">ge</syl>
 									</note>
 								</layer>
