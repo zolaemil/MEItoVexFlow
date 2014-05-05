@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../odd/mei2vexflow.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="../odd/mei2vexflow.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <mei xmlns="http://www.music-encoding.org/ns/mei" xml:id="m-e76ae71c-133c-4540-997f-96a8f513fe53" meiversion="2013">
 <meiHead xml:id="m-31070f27-5d24-4194-b9dc-b0fd97a12fea">
 	<fileDesc xml:id="m-67ab5966-11f4-48ed-bb17-22b350e7c37c">
