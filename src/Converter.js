@@ -264,7 +264,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * @property {Object} notes_by_id contains all note-like objects in the
          * current MEI document
          * @property {XMLElement} notes_by_id.meiNote the XML Element of the note
-         * @property {Vex.Flow.StaveNote} notes_by_id.vexNote the VexFlow note object
+         * @property {Vex.Flow.StaveNote} notes_by_id.vexNote the VexFlow note
+         * object
          */
         me.notes_by_id = {};
         /**
@@ -1505,14 +1506,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           // TODO handle justification
           // .setJustification(VF.Annotation.Justify.LEFT);
           note.addAnnotation(0, annot);
-          if (syl.wordpos)
+          if (syl.wordpos) {
             me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
-        } else {
-          // TODO currently, *syllables* are added to the vexNote even if
-          // there are no actual mei_syl elements. This seems to improve
-          // spacing in VexFlow but should be changed eventually
-          annot = me.createAnnot('', me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
-          note.addAnnotation(0, annot);
+          }
         }
       },
 

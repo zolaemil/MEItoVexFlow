@@ -248,6 +248,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             // staff.glyph_end_x += x + offsetW;
           }
         }
+        me.voices.format(me.getFirstDefinedStaff());
       },
 
       /**
@@ -265,7 +266,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             staff.setContext(ctx).draw();
           }
         }
-        me.voices.format(me.getFirstDefinedStaff());
         me.voices.draw(ctx, staffs);
         me.startConnectors.setContext(ctx).draw();
         me.inlineConnectors.setContext(ctx).draw();
