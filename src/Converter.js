@@ -1,25 +1,25 @@
 /*
-* MEItoVexFlow
-*
-* Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
-*
-* See README for details of this library
-*
-* Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
-* University of Maryland
-*
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not
-* use this file except in compliance with the License. You may obtain a copy of
-* the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-* License for the specific language governing permissions and limitations under
-* the License.
-*/
+ * MEItoVexFlow
+ *
+ * Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
+ *
+ * See README for details of this library
+ *
+ * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
+ * University of Maryland
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
@@ -242,12 +242,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.allBeams = [];
         /**
-         * @property {MEI2VF.Dynamics} dynamics an instance of MEI2VF.Dynamics dealing with
+         * @property {MEI2VF.Dynamics} dynamics an instance of MEI2VF.Dynamics
+         * dealing with
          * and storing all dynamics found in the MEI document
          */
         me.dynamics = new m2v.Dynamics(me.systemInfo, me.cfg.dynamFont);
         /**
-         * @property {MEI2VF.Directives} directives an instance of MEI2VF.Directives dealing with
+         * @property {MEI2VF.Directives} directives an instance of
+         * MEI2VF.Directives dealing with
          * and storing all directives found in the MEI document
          */
         me.directives = new m2v.Directives(me.systemInfo, me.cfg.annotFont);
@@ -567,13 +569,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * @param {XMLElement} element the MEI measure element
        */
       processMeasure : function(element) {
-        var me = this, measure_n, atSystemStart, left_barline, right_barline, atSystemTop = true, system;
+        var me = this, measure_n, atSystemStart, left_barline, right_barline, atSystemTop = true, system, system_n;
 
         if (me.pendingSectionBreak || me.pendingSystemBreak) {
+          system_n = me.systems.length;
           system = me.createNewSystem();
           atSystemStart = true;
         } else {
-          system = me.systems[me.systems.length - 1];
+          system_n = me.systems.length - 1;
+          system = me.systems[system_n];
           atSystemStart = false;
         }
 
@@ -632,9 +636,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         me.directives.createInfos(dirElements, element);
         me.dynamics.createInfos(dynamElements, element);
-        me.ties.createInfos(tieElements, element);
-        me.slurs.createInfos(slurElements, element);
-        me.hairpins.createInfos(hairpinElements, element);
+        me.ties.createInfos(tieElements, element, me.systemInfo);
+        me.slurs.createInfos(slurElements, element, me.systemInfo);
+        me.hairpins.createInfos(hairpinElements, element, me.systemInfo);
 
         system.addMeasure(new m2v.Measure({
           element : element,
@@ -985,13 +989,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
 
           if (mei_tie)
-            me.processAttrTie(mei_tie, xml_id, pname, oct, me.currentSystem_n);
+            me.processAttrTie(mei_tie, xml_id, pname, oct);
           if (mei_slur)
-            me.processAttrSlur(mei_slur, xml_id, me.currentSystem_n);
+            me.processAttrSlur(mei_slur, xml_id);
 
           me.notes_by_id[xml_id] = {
             meiNote : element,
-            vexNote : note
+            vexNote : note,
+            system : me.currentSystem_n
           };
 
           // return note object
@@ -1081,7 +1086,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           me.notes_by_id[xml_id] = {
             meiNote : element,
             vexNote : chord,
-            index : allNoteIndices
+            index : allNoteIndices,
+            system : me.currentSystem_n
           };
 
           return {
@@ -1111,14 +1117,15 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
 
         if (atts.tie)
-          me.processAttrTie(atts.tie, xml_id, atts.pname, atts.oct, me.currentSystem_n);
+          me.processAttrTie(atts.tie, xml_id, atts.pname, atts.oct);
         if (atts.slur)
-          me.processAttrSlur(atts.slur, xml_id, me.currentSystem_n);
+          me.processAttrSlur(atts.slur, xml_id);
 
         me.notes_by_id[xml_id] = {
           meiNote : chordElement,
           vexNote : chord,
-          index : [i]
+          index : [i],
+          system : me.currentSystem_n
         };
 
         if (atts.accid) {
@@ -1165,7 +1172,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           }
           me.notes_by_id[xml_id] = {
             meiNote : element,
-            vexNote : rest
+            vexNote : rest,
+            system : me.currentSystem_n
           };
           return {
             vexNote : rest,
@@ -1180,7 +1188,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        */
       processmRest : function(element, staff) {
-        var me = this, mRest, atts;
+        var me = this, mRest, atts, xml_id;
 
         try {
           atts = m2v.Util.attsToObj(element);
@@ -1189,6 +1197,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             keys : ['d/5'],
             duration : 'wr'
           });
+
+          xml_id = atts['xml:id'];
+
+          // If xml:id is missing, create it
+          if (!xml_id) {
+            xml_id = MeiLib.createPseudoUUID();
+            $(element).attr('xml:id', xml_id);
+          }
 
           // mRest.ignore_ticks = true;
           // mRest.addToModifierContext = function() {
@@ -1204,14 +1220,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             me.addFermata(mRest, atts.fermata);
           }
           mRest.setStave(staff);
-          // me.notes_by_id[xml_id] = {
-          // meiNote : element,
-          // vexNote : mRest
-          // };
+          me.notes_by_id[xml_id] = {
+            meiNote : element,
+            vexNote : mRest,
+            system : me.currentSystem_n
+          };
           return {
-            vexNote : mRest
-            // ,
-            // id : xml_id
+            vexNote : mRest,
+            id : xml_id
           };
         } catch (x) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <mRest>: ' + m2v.Util.attsToString(element));
@@ -1279,7 +1295,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processAttrTie : function(mei_tie, xml_id, pname, oct, system) {
+      processAttrTie : function(mei_tie, xml_id, pname, oct) {
         var me = this, i, j;
         // if (!mei_tie) {
         // mei_tie = "";
@@ -1288,14 +1304,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           if (mei_tie[i] === 'i') {
             me.ties.start_tieslur(xml_id, {
               pname : pname,
-              oct : oct,
-              system : system
+              oct : oct
+              //,system : system
             });
           } else if (mei_tie[i] === 't') {
             me.ties.terminate_tie(xml_id, {
               pname : pname,
-              oct : oct,
-              system : system
+              oct : oct
+              //,system : system
             });
           }
         }
@@ -1304,7 +1320,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        *
        */
-      processAttrSlur : function(mei_slur, xml_id, system) {
+      processAttrSlur : function(mei_slur, xml_id) {
         var me = this, tokens;
         if (mei_slur) {
           // create a list of { letter, num }
@@ -1312,13 +1328,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           $.each(tokens, function() {
             if (this.letter === 'i') {
               me.slurs.start_tieslur(xml_id, {
-                nesting_level : this.nesting_level,
-                system : system
+                nesting_level : this.nesting_level
+                //,system : system
               });
             } else if (this.letter === 't') {
               me.slurs.terminate_slur(xml_id, {
-                nesting_level : this.nesting_level,
-                system : system
+                nesting_level : this.nesting_level
+                //,system : system
               });
             }
           });

@@ -1,5 +1,7 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
+    // TODO handle cross-system hairpins
+
     /**
      * @class MEI2VF.LinkCollection
      * @private
@@ -35,18 +37,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       validateAtts : function() {
-        throw new m2v.RUNTIME_ERROR('MEI2VF.DEVELOPMENT_ERROR.validateAtts', 'You have to prodide a validateAtts method when inheriting MEI2VF.LinkCollection.');
+        throw new m2v.RUNTIME_ERROR('MEI2VF.DEVELOPMENT_ERROR.validateAtts', 'Developers have to provide a validateAtts method when inheriting MEI2VF.LinkCollection.');
       },
-      
+
       createVexFromInfos : function() {
-        throw new m2v.RUNTIME_ERROR('MEI2VF.DEVELOPMENT_ERROR.createVexFromInfos', 'You have to prodide a createVexFromInfos method when inheriting MEI2VF.LinkCollection.');
+        throw new m2v.RUNTIME_ERROR('MEI2VF.DEVELOPMENT_ERROR.createVexFromInfos', 'Developers have to provide a createVexFromInfos method when inheriting MEI2VF.LinkCollection.');
       },
 
       /**
        * create EventLink objects from  <b>tie</b>, <b>slur</b> or <b>hairpin</b>
        * elements
        */
-      createInfos : function(link_elements, measureElement) {
+      createInfos : function(link_elements, measureElement, systemInfo) {
         var me = this;
 
         var link_staffInfo = function(lnkelem) {
@@ -68,7 +70,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             if (!layer)
               throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createInfos:E01', 'Cannot find layer');
           }
-          var staffdef = me.systemInfo.getStaffInfo(stffinf.staff_n);
+          var staffdef = systemInfo.getStaffInfo(stffinf.staff_n);
           if (!staffdef)
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createInfos:E02', 'Cannot determine staff definition.');
           var meter = staffdef.meter;
@@ -217,6 +219,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         $.each(me.allModels, function() {
           f_note = notes_by_id[this.getFirstId()];
           l_note = notes_by_id[this.getLastId()];
+
           place = m2v.tables.positions[this.params.place];
           type = m2v.tables.hairpins[this.params.form];
 
@@ -257,6 +260,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         return;
       },
 
+      // NB called from tie/slur attributes elements
       start_tieslur : function(startid, linkCond) {
         var eventLink = new m2v.EventLink(startid, null);
         eventLink.setParams({
@@ -272,7 +276,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         allTies = this.getModels();
 
         cmpLinkCond = function(lc1, lc2) {
-          return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct && lc1.system === lc2.system);
+          // return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct
+          // && lc1.system === lc2.system);
+          return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct);
         };
 
         if (!linkCond.pname || !linkCond.oct)
@@ -314,7 +320,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var allModels = this.getModels();
 
         cmpLinkCond = function(lc1, lc2) {
-          return lc1.nesting_level === lc2.nesting_level && lc1.system === lc2.system;
+          // return lc1.nesting_level === lc2.nesting_level && lc1.system ===
+          // lc2.system;
+          return lc1.nesting_level === lc2.nesting_level;
         };
 
         found = false;
@@ -331,32 +339,45 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       createVexFromInfos : function(notes_by_id) {
-        var me = this, f_note, l_note, vexTie, bezier, cps;
+        var me = this, f_note, l_note;
         $.each(me.allModels, function() {
+          f_note = notes_by_id[this.getFirstId()] || {};
+          l_note = notes_by_id[this.getLastId()] || {};
+          if (f_note.system !== undefined && l_note.system !== undefined && f_note.system !== l_note.system) {
+            me.createSingleStaveTie(f_note, {}, this.params);
 
-          f_note = notes_by_id[this.getFirstId()];
-          l_note = notes_by_id[this.getLastId()];
-          bezier = this.params.bezier;
-
-          if (bezier) {
-            cps = me.bezierStringToCps(bezier);
-            vexTie = new VF.Curve((f_note) ? f_note.vexNote : undefined, (l_note) ? l_note.vexNote : undefined, {
-              cps : cps,
-              y_shift_start : +this.params.startvo,
-              y_shift_end : +this.params.endvo
-            });
+            // temporary: set the same curve direction for the second note by
+            // evaluating the stem direction of the first note; change this when
+            // the curve dir of the first note is calculated differently in VexFlow
+            this.params.curvedir = (f_note.vexNote.getStemDirection() === -1) ? 'above' : 'below';
+            me.createSingleStaveTie({}, l_note, this.params);
           } else {
-            vexTie = new VF.StaveTie({
-              first_note : (f_note) ? f_note.vexNote : undefined,
-              last_note : (l_note) ? l_note.vexNote : undefined,
-              first_indices : (f_note) ? f_note.index : undefined,
-              last_indices : (l_note) ? l_note.index : undefined
-            });
-            vexTie.setDir(this.params.curvedir);
+            me.createSingleStaveTie(f_note, l_note, this.params);
           }
-          me.allVexObjects.push(vexTie);
         });
         return this;
+      },
+
+      createSingleStaveTie : function(f_note, l_note, params) {
+        var me = this, vexTie, bezier, cps;
+        bezier = params.bezier;
+        if (bezier) {
+          cps = me.bezierStringToCps(bezier);
+          vexTie = new VF.Curve(f_note.vexNote, l_note.vexNote, {
+            cps : cps,
+            y_shift_start : +params.startvo,
+            y_shift_end : +params.endvo
+          });
+        } else {
+          vexTie = new VF.StaveTie({
+            first_note : f_note.vexNote,
+            last_note : l_note.vexNote,
+            first_indices : f_note.index,
+            last_indices : l_note.index
+          });
+          vexTie.setDir(params.curvedir);
+        }
+        me.allVexObjects.push(vexTie);
       },
 
       bezierStringToCps : function(str) {

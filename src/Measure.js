@@ -56,6 +56,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * MEI2VF.Connectors handling all right connectors
          */
         me.inlineConnectors = new m2v.Connectors(config.inlineConnectorCfg);
+
+        me.tieElements = config.tieElements;
+        me.slurElements = config.slurElements;
+        me.hairpinElements = config.hairpinElements;
         /**
          * @cfg {XMLElement[]} tempoElements the MEI tempo elements in the
          * current

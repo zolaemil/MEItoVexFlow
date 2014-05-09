@@ -541,6 +541,10 @@ Vex.Flow.StaveTie = ( function() {
       setDir : function(dir) {
         this.curvedir = dir;
       },
+      
+      getDir : function() {
+        return this.curvedir;
+      },
 
       renderTie : function(params) {
         if (params.first_ys.length === 0 || params.last_ys.length === 0)
@@ -549,6 +553,8 @@ Vex.Flow.StaveTie = ( function() {
         // ADDITION:
         if (this.curvedir) {
           params.direction = (this.curvedir === 'above') ? -1 : 1;
+        } else {
+          this.curvedir = params.direction;
         }
 
         var ctx = this.context;
