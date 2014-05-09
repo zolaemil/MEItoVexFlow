@@ -36,14 +36,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         this.font = font;
       },
 
-      // TODO = copy/paste from Converter.js -> improve!
-      /**
-       *
-       */
-      createAnnot : function(text, annotFont) {
-        return (new VF.Annotation(text)).setFont(annotFont.family, annotFont.size, annotFont.weight);
-      },
-
       createVexFromInfos : function() {
         throw new m2v.RUNTIME_ERROR('MEI2VF.DEVELOPMENT_ERROR.createVexFromInfos', 'You have to prodide a createVexFromInfos method when inheriting MEI2VF.PointerCollection.');
       },
@@ -136,15 +128,20 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       createVexFromInfos : function(notes_by_id) {
-        var me = this, i, model, note, id, place;
+        var me = this, i, model, note, id, place, annot;
         i = me.allModels.length;
         while (i--) {
           model = me.allModels[i];
           note = notes_by_id[model.startid];
           if (note) {
-            note.vexNote.addAnnotation(0, model.atts.place === 'below' ? me.createAnnot($(model.element).text().trim(), me.font).setVerticalJustification(me.BOTTOM) : me.createAnnot($(model.element).text().trim(), me.font));
+            annot = (new VF.Annotation($(model.element).text().trim())).setFont(me.font.family, me.font.size, me.font.weight);
+            if (model.atts.place === 'below') {
+              note.vexNote.addAnnotation(0, annot.setVerticalJustification(me.BOTTOM));
+            } else {
+              note.vexNote.addAnnotation(0, annot);
+            }
           } else {
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromInfos', "The reference in the directive could not be resolved.");
           }
         }
       }
@@ -157,14 +154,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      *
      * @constructor
      */
-
     m2v.Dynamics = function(systemInfo, font) {
-      var dynamFont = {
-        family : font.family,
-        size : font.size + 3,
-        weight : 'bold italic'
-      };
-      this.init(systemInfo, dynamFont);
+      this.init(systemInfo, font);
     };
 
     Vex.Inherit(m2v.Dynamics, m2v.PointerCollection, {
@@ -181,9 +172,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           model = me.allModels[i];
           note = notes_by_id[model.startid];
           if (note) {
-            note.vexNote.addAnnotation(0, model.atts.place === 'above' ? me.createAnnot($(model.element).text().trim(), me.font) : me.createAnnot($(model.element).text().trim(), me.font).setVerticalJustification(me.BOTTOM));
+            annot = (new VF.Annotation($(model.element).text().trim())).setFont(me.font.family, me.font.size, me.font.weight);
+            if (model.atts.place === 'above') {
+              note.vexNote.addAnnotation(0, annot);
+            } else {
+              note.vexNote.addAnnotation(0, annot.setVerticalJustification(me.BOTTOM));
+            }
           } else {
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromInfos', "The reference in the directive could not be resolved.");
           }
         }
 

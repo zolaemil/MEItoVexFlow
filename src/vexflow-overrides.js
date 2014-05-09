@@ -1,16 +1,3 @@
-// 04/26/2014: setWidth is copied from the latest VexFlow version on GitHub; this
-// version of setWidth is necessary for the measure calculation to work; the
-// older version currently available via bower doesn't work.
-// ### delete when the new version of the function is available in bower ###
-Vex.Flow.Stave.prototype.setWidth = function(width) {
-  this.width = width;
-  this.glyph_end_x = this.x + width;
-  this.end_x = this.glyph_end_x;
-
-  // reset the x position of the end barline
-  this.modifiers[1].setX(this.end_x);
-  return this;
-};
 
 /**
  * Create hyphens between the specified annotations.

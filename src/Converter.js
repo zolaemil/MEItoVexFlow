@@ -146,6 +146,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           weight : 'Italic'
         },
         /**
+         * @cfg {Object} dynamFont the font used for annotations (for example,
+         * 'pizz.')
+         * @cfg {String} dynamFont.family the font family
+         * @cfg {Number} dynamFont.size the font size
+         * @cfg {String} dynamFont.weight the font weight
+         */
+        dynamFont : {
+          family : 'Times',
+          size : 18,
+          weight : 'bold italic'
+        },
+        /**
          * @cfg {Object} tempoFont The tempo font
          * @cfg {String} tempoFont.family the font family
          * @cfg {Number} tempoFont.size the font size
@@ -244,7 +256,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * @property {MEI2VF.Dynamics} ties an instance of MEI2VF.Dynamics dealing with
          * and storing all dynamics found in the MEI document
          */
-        me.dynamics = new m2v.Dynamics(me.systemInfo, me.cfg.annotFont);
+        me.dynamics = new m2v.Dynamics(me.systemInfo, me.cfg.dynamFont);
         /**
          * @property {MEI2VF.Directives} directives an instance of MEI2VF.Directives dealing with
          * and storing all directives found in the MEI document
@@ -1518,25 +1530,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         $.each(beams, function() {
           this.setContext(ctx).draw();
         });
-      // },
-// 
-      // createVexFromDynamModels : function(models) {
-        // var me = this, i, model, note, id, font, place;
-        // font = {
-          // family : me.cfg.annotFont.family,
-          // size : me.cfg.annotFont.size + 3,
-          // weight : 'bold italic'
-        // };
-        // i = models.length;
-        // while (i--) {
-          // model = models[i];
-          // note = me.notes_by_id[model.startid];
-          // if (note) {
-            // note.vexNote.addAnnotation(0, model.atts.place === 'above' ? me.createAnnot($(model.element).text().trim(), font) : me.createAnnot($(model.element).text().trim(), font).setVerticalJustification(me.BOTTOM));
-          // } else {
-            // throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
-          // }
-        // }
+
       }
     };
 
