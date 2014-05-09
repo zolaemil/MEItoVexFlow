@@ -115,7 +115,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       draw : function() {
-        var me = this, i, j, conn, shift, ctx = me.ctx;
+        var me = this, i, j, conn, shift;
         for ( i = 0, j = me.allVexConnectors.length; i < j; i += 1) {
           conn = me.allVexConnectors[i];
           if (conn.checkShift) {
