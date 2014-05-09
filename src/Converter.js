@@ -29,6 +29,8 @@
 
 // TODO support offsets with hairpins (already implemented in vexflow)
 
+// TODO fix text height in dynamics (take from font size)!?!?
+
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
@@ -217,8 +219,13 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this;
         me.systemInfo.init(me.cfg, me.printSpace);
         /**
+         *
+         */
+        me.unresolvedTStamp2 = [];
+        /**
          * Contains all {@link MEI2VF.System} objects
          */
+
         me.systems = [];
         /**
          * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all
@@ -228,41 +235,46 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.allVexMeasureStaffs = [];
         /**
          * Contains all Vex.Flow.Beam objects. Data is just pushed in
-         * and later processed as a whole, so the array index is currently
+         * and later processed as a whole, so the array index is
          * irrelevant.
          });
          */
         me.allBeams = [];
         /**
+         * @property {MEI2VF.Dynamics} ties an instance of MEI2VF.Dynamics dealing with
+         * and storing all dynamics found in the MEI document
+         */
+        me.dynamics = new m2v.Dynamics(me.systemInfo, me.cfg.annotFont);
+        /**
+         * @property {MEI2VF.Directives} directives an instance of MEI2VF.Directives dealing with
+         * and storing all directives found in the MEI document
+         */
+        me.directives = new m2v.Directives(me.systemInfo, me.cfg.annotFont);
+        /**
          * @property {MEI2VF.Ties} ties an instance of MEI2VF.Ties dealing with
          * and storing all ties found in the MEI document
          */
-        me.ties = new m2v.Ties();
+        me.ties = new m2v.Ties(me.systemInfo, me.unresolvedTStamp2);
         /**
          * @property {MEI2VF.Ties} slurs an instance of MEI2VF.Ties dealing with
          * and storing all slurs found in the MEI document
          */
-        me.slurs = new m2v.Ties();
+        me.slurs = new m2v.Ties(me.systemInfo, me.unresolvedTStamp2);
         /**
          * @property {MEI2VF.Hairpins} hairpins an instance of MEI2VF.Hairpins
          * dealing with
          * and storing all hairpins found in the MEI document
          */
-        me.hairpins = new m2v.Hairpins();
+        me.hairpins = new m2v.Hairpins(me.systemInfo, me.unresolvedTStamp2);
         /**
          * @property {MEI2VF.Hyphenation} hyphenation an instance of
          * MEI2VF.Hyphenation dealing with
          * and storing all lyrics hyphens found in the MEI document
          */
         me.hyphenation = new m2v.Hyphenation(me.cfg.lyricsFont, me.printSpace.right, me.cfg.maxHyphenDistance);
-        // ###########################################
-        // ########### TODO add documentation ########
-        // ###########################################
-        me.directives = [];
-        me.dynamics = [];
         /**
          * @property {Object} notes_by_id contains all note-like objects in the
-         * current MEI document
+         * current MEI document, accessible by their xml:id
          * @property {XMLElement} notes_by_id.meiNote the XML Element of the note
          * @property {Vex.Flow.StaveNote} notes_by_id.vexNote the VexFlow note
          * object
@@ -295,10 +307,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * If null, no volta is rendered
          */
         me.currentVoltaType = null;
-        /**
-         *
-         */
-        me.unresolvedTStamp2 = [];
         return me;
       },
 
@@ -315,11 +323,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         me.reset();
         me.systemInfo.processScoreDef($(xmlDoc).find('scoreDef')[0]);
         me.processSections(xmlDoc);
-        me.createVexFromDirModels(me.directives);
-        me.createVexFromDynamModels(me.dynamics);
-        me.ties.createVexFromLinks(me.notes_by_id);
-        me.slurs.createVexFromLinks(me.notes_by_id);
-        me.hairpins.createVexFromLinks(me.notes_by_id);
+        me.directives.createVexFromInfos(me.notes_by_id);
+        me.dynamics.createVexFromInfos(me.notes_by_id);
+        me.ties.createVexFromInfos(me.notes_by_id);
+        me.slurs.createVexFromInfos(me.notes_by_id);
+        me.hairpins.createVexFromInfos(me.notes_by_id);
         return me;
       },
 
@@ -621,12 +629,11 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           atSystemTop = false;
         });
 
-        me.extract_event_pointers(dirElements, element, me.directives);
-        me.extract_event_pointers(dynamElements, element, me.dynamics);
-
-        me.extract_linkingElements(tieElements, element, 'tie', me.ties);
-        me.extract_linkingElements(slurElements, element, 'slur', me.slurs);
-        me.extract_linkingElements(hairpinElements, element, 'hairpin', me.hairpins);
+        me.directives.createInfos(dirElements, element);
+        me.dynamics.createInfos(dynamElements, element);
+        me.ties.createInfos(tieElements, element);
+        me.slurs.createInfos(slurElements, element);
+        me.hairpins.createInfos(hairpinElements, element);
 
         system.addMeasure(new m2v.Measure({
           element : element,
@@ -837,113 +844,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           // at this point all references should be supplied with context.
           me.unresolvedTStamp2[refLocationIndex] = null;
         }
-      },
-
-      /**
-       * Extract <b>tie</b>, <b>slur</b> or <b>hairpin</b> elements and create
-       * EventLink objects
-       */
-      extract_linkingElements : function(link_elements, measure, element_name, eventlink_container) {
-        var me = this;
-
-        var link_staffInfo = function(lnkelem) {
-          return {
-            staff_n : $(lnkelem).attr('staff') || '1',
-            layer_n : $(lnkelem).attr('layer') || '1'
-          };
-        };
-
-        // convert tstamp into startid in current measure
-        var local_tstamp2id = function(tstamp, lnkelem, measure) {
-          var stffinf = link_staffInfo(lnkelem);
-          var staff = $(measure).find('staff[n="' + stffinf.staff_n + '"]');
-          var layer = $(staff).find('layer[n="' + stffinf.layer_n + '"]').get(0);
-          if (!layer) {
-            var layer_candid = $(staff).find('layer');
-            if (layer_candid && !layer_candid.attr('n'))
-              layer = layer_candid;
-            if (!layer)
-              throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E01', 'Cannot find layer');
-          }
-          var staffdef = me.systemInfo.getStaffInfo(stffinf.staff_n);
-          if (!staffdef)
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E02', 'Cannot determine staff definition.');
-          var meter = staffdef.meter;
-          if (!meter.count || !meter.unit)
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E03', "Cannot determine meter; missing or incorrect @meter.count or @meter.unit.");
-          return MeiLib.tstamp2id(tstamp, layer, meter);
-        };
-
-        var measure_partOf = function(tstamp2) {
-          return tstamp2.substring(0, tstamp2.indexOf('m'));
-        };
-
-        var beat_partOf = function(tstamp2) {
-          return tstamp2.substring(tstamp2.indexOf('+') + 1);
-        };
-
-        $.each(link_elements, function() {
-          var eventLink, atts, startid, tstamp, endid, tstamp2, measures_ahead;
-
-          eventLink = new m2v.EventLink(null, null);
-
-          atts = m2v.Util.attsToObj(this);
-
-          if (element_name === 'hairpin' && !atts.form) {
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments:extract_linkingElements', '@form is mandatory in <hairpin> - make sure the xml is valid.');
-          }
-
-          eventLink.setParams(atts);
-
-          // find startid for eventLink. if tstamp is provided in the
-          // element,
-          // tstamp will be calculated.
-          startid = atts.startid;
-          if (startid) {
-            eventLink.setFirstId(startid);
-          } else {
-            tstamp = atts.tstamp;
-            if (tstamp) {
-              startid = local_tstamp2id(tstamp, this, measure);
-              eventLink.setFirstId(startid);
-            }
-            // else {
-            // // no @startid, no @tstamp ==> eventLink.first_ref
-            // remains empty.
-            // }
-          }
-
-          // find end reference value (id/tstamp) of eventLink:
-          endid = atts.endid;
-          if (endid) {
-            eventLink.setLastId(endid);
-          } else {
-            tstamp2 = atts.tstamp2;
-            if (tstamp2) {
-              measures_ahead = +measure_partOf(tstamp2);
-              if (measures_ahead > 0) {
-                eventLink.setLastTStamp(beat_partOf(tstamp2));
-                // register that eventLink needs context;
-                // need to save: measure.n, link.staff_n,
-                // link.layer_n
-                var staffinfo = link_staffInfo(this);
-                var target_measure_n = +$(measure).attr('n') + measures_ahead;
-                var refLocationIndex = target_measure_n.toString() + ':' + staffinfo.staff_n + ':' + staffinfo.layer_n;
-                if (!me.unresolvedTStamp2[refLocationIndex])
-                  me.unresolvedTStamp2[refLocationIndex] = [];
-                me.unresolvedTStamp2[refLocationIndex].push(eventLink);
-              } else {
-                endid = local_tstamp2id(beat_partOf(tstamp2), this, measure);
-                eventLink.setLastId(endid);
-              }
-            }
-            // else {
-            // // TODO no @endid, no @tstamp2 ==> eventLink.last_ref
-            // remains empty.
-            // }
-          }
-          eventlink_container.add(eventLink);
-        });
       },
 
       /**
@@ -1539,7 +1439,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
-      // Support for annotations (lyrics, directives, etc.)
+      // Support for annotations
       /**
        *
        */
@@ -1618,91 +1518,25 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         $.each(beams, function() {
           this.setContext(ctx).draw();
         });
-      },
-
-      // TODO move to separate file
-      extract_event_pointers : function(elements, measure, target_container) {
-        var me = this;
-
-        var link_staffInfo = function(lnkelem) {
-          return {
-            staff_n : $(lnkelem).attr('staff') || '1',
-            layer_n : $(lnkelem).attr('layer') || '1'
-          };
-        };
-
-        // convert tstamp into startid in current measure
-        var local_tstamp2id = function(tstamp, lnkelem, measure) {
-          var stffinf = link_staffInfo(lnkelem);
-          var staff = $(measure).find('staff[n="' + stffinf.staff_n + '"]');
-          var layer = $(staff).find('layer[n="' + stffinf.layer_n + '"]').get(0);
-          if (!layer) {
-            var layer_candid = $(staff).find('layer');
-            if (layer_candid && !layer_candid.attr('n'))
-              layer = layer_candid;
-            if (!layer)
-              throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E01', 'Cannot find layer');
-          }
-          var staffdef = me.systemInfo.getStaffInfo(stffinf.staff_n);
-          if (!staffdef)
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E02', 'Cannot determine staff definition.');
-          var meter = staffdef.meter;
-          if (!meter.count || !meter.unit)
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_linkingElements:E03', "Cannot determine meter; missing or incorrect @meter.count or @meter.unit.");
-          return MeiLib.tstamp2id(tstamp, layer, meter);
-        };
-
-        $.each(elements, function() {
-          var atts, startid, tstamp;
-
-          atts = m2v.Util.attsToObj(this);
-
-          startid = atts.startid;
-          if (!startid) {
-            tstamp = atts.tstamp;
-            if (tstamp) {
-              startid = local_tstamp2id(tstamp, this, measure);
-            } else {
-              throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.extract_event_pointers', "Neither @startid nor @tstamp are specified");
-            }
-          }
-          target_container.push({
-            element : this,
-            atts : atts,
-            startid : startid
-          });
-        });
-      },
-
-      createVexFromDirModels : function(models) {
-        var me = this, i, model, note, id, font, place;
-        font = me.cfg.annotFont;
-        i = models.length;
-        while (i--) {
-          model = models[i];
-          note = me.notes_by_id[model.startid];
-          if (note) {
-            note.vexNote.addAnnotation(0, model.atts.place === 'below' ? me.createAnnot($(model.element).text().trim(), font).setVerticalJustification(me.BOTTOM) : me.createAnnot($(model.element).text().trim(), font));
-          } else {
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
-          }
-        }
-      },
-
-      // TODO use Vex.Flow.Textnote instead of VF.Annotation!?
-      createVexFromDynamModels : function(models) {
-        var me = this, i, model, note, id, font, place;
-        font = me.cfg.annotFont;
-        i = models.length;
-        while (i--) {
-          model = models[i];
-          note = me.notes_by_id[model.startid];
-          if (note) {
-            note.vexNote.addAnnotation(0, model.atts.place === 'above' ? me.createAnnot($(model.element).text().trim(), font) : me.createAnnot($(model.element).text().trim(), font).setVerticalJustification(me.BOTTOM));
-          } else {
-            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
-          }
-        }
+      // },
+// 
+      // createVexFromDynamModels : function(models) {
+        // var me = this, i, model, note, id, font, place;
+        // font = {
+          // family : me.cfg.annotFont.family,
+          // size : me.cfg.annotFont.size + 3,
+          // weight : 'bold italic'
+        // };
+        // i = models.length;
+        // while (i--) {
+          // model = models[i];
+          // note = me.notes_by_id[model.startid];
+          // if (note) {
+            // note.vexNote.addAnnotation(0, model.atts.place === 'above' ? me.createAnnot($(model.element).text().trim(), font) : me.createAnnot($(model.element).text().trim(), font).setVerticalJustification(me.BOTTOM));
+          // } else {
+            // throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromDirModels', "The reference in the directive could not be resolved.");
+          // }
+        // }
       }
     };
 
