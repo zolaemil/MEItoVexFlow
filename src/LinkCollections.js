@@ -217,24 +217,36 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           r_shift_px : 0
         };
         $.each(me.allModels, function() {
-          f_note = notes_by_id[this.getFirstId()];
-          l_note = notes_by_id[this.getLastId()];
+          f_note = notes_by_id[this.getFirstId()] || {};
+          l_note = notes_by_id[this.getLastId()] || {};
 
-          place = m2v.tables.positions[this.params.place];
-          type = m2v.tables.hairpins[this.params.form];
-
-          hairpin = new VF.StaveHairpin({
-            first_note : (f_note) ? f_note.vexNote : undefined,
-            last_note : (l_note) ? l_note.vexNote : undefined
-          }, type);
-
-          hairpin.setRenderOptions(vex_options);
-          hairpin.setPosition(place);
-
-          me.allVexObjects.push(hairpin);
+          if (f_note.system !== undefined && l_note.system !== undefined && f_note.system !== l_note.system) {
+            // TODO add support for cross-system hairpins
+            
+            // me.createSingleHairpin(f_note, {}, this.params, vex_options);
+            // me.createSingleHairpin({}, l_note, this.params, vex_options);
+          } else {
+            me.createSingleHairpin(f_note, l_note, this.params, vex_options);
+          }
 
         });
         return this;
+      },
+
+      createSingleHairpin : function(f_note, l_note, params, vex_options) {
+        var me = this;
+        place = m2v.tables.positions[params.place];
+        type = m2v.tables.hairpins[params.form];
+
+        hairpin = new VF.StaveHairpin({
+          first_note : f_note.vexNote,
+          last_note : l_note.vexNote
+        }, type);
+
+        hairpin.setRenderOptions(vex_options);
+        hairpin.setPosition(place);
+
+        me.allVexObjects.push(hairpin);
       }
     });
 
@@ -348,7 +360,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
             // temporary: set the same curve direction for the second note by
             // evaluating the stem direction of the first note; change this when
-            // the curve dir of the first note is calculated differently in VexFlow
+            // the curve dir of the first note is calculated differently in
+            // VexFlow
             this.params.curvedir = (f_note.vexNote.getStemDirection() === -1) ? 'above' : 'below';
             me.createSingleStaveTie({}, l_note, this.params);
           } else {
