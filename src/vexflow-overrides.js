@@ -376,7 +376,7 @@ Vex.Flow.Annotation = ( function() {
         //
         // This is a hack to work around the inability to measure text height
         // in HTML5 Canvas (and SVG).
-        var text_height = this.context.measureText("m").width;
+        var text_height = this.context.measureText("M").width;
         var x, y;
 
         if (this.justification == Annotation.Justify.LEFT) {

@@ -32,6 +32,7 @@ module.exports = function(grunt) {
               'src/EventReference.js',
               'src/Hyphenation.js',
               'src/LinkCollections.js',
+              'src/PointerCollections.js',
               'src/Measure.js',
               'src/MEI2VF.js',
               'src/tables.js',

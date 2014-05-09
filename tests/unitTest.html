@@ -285,7 +285,8 @@ version="HTML+RDFa 1.0" xml:lang="en">
         staveVoices.addVoice(voice11, 1);
         staveVoices.addVoice(voice21, 2);
         staveVoices.addVoice(voice31, 3);        
-        staveVoices.format();
+        staveVoices.preFormat();
+        staveVoices.format(stave11);
         
         staves[1] = stave11;
         staves[2] = stave21;
@@ -300,8 +301,9 @@ version="HTML+RDFa 1.0" xml:lang="en">
         staveVoices.reset();        
         staveVoices.addVoice(voice21, 1);
         staveVoices.addVoice(voice22, 2);
-        staveVoices.addVoice(voice32, 3);        
-        staveVoices.format();
+        staveVoices.addVoice(voice32, 3);
+        staveVoices.preFormat();        
+        staveVoices.format(stave21);
 
         staves[1] = stave12;
         staves[2] = stave22;
