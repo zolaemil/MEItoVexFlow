@@ -21,16 +21,6 @@
 * the License.
 */
 
-// TODO use Vex.Flow.Textnote for lyrics!?!?!?
-
-// TODO add tstamp support to tempo and fermata
-
-// TODO use vexflow crescendo class for hairpins??
-
-// TODO support offsets with hairpins (already implemented in vexflow)
-
-// TODO fix text height in dynamics (take from font size)!?!?
-
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
@@ -146,8 +136,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
           weight : 'Italic'
         },
         /**
-         * @cfg {Object} dynamFont the font used for annotations (for example,
-         * 'pizz.')
+         * @cfg {Object} dynamFont the font used for dynamics
          * @cfg {String} dynamFont.family the font family
          * @cfg {Number} dynamFont.size the font size
          * @cfg {String} dynamFont.weight the font weight
@@ -253,7 +242,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.allBeams = [];
         /**
-         * @property {MEI2VF.Dynamics} ties an instance of MEI2VF.Dynamics dealing with
+         * @property {MEI2VF.Dynamics} dynamics an instance of MEI2VF.Dynamics dealing with
          * and storing all dynamics found in the MEI document
          */
         me.dynamics = new m2v.Dynamics(me.systemInfo, me.cfg.dynamFont);
