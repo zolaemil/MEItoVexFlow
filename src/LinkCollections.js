@@ -209,7 +209,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       },
 
       createVexFromInfos : function(notes_by_id) {
-        var me = this, f_note, l_note, place, type, vex_options, hairpin;
+        var me = this, f_note, l_note, vex_options;
         vex_options = {
           height : 10,
           y_shift : 0,
@@ -234,7 +234,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       },
 
       createSingleHairpin : function(f_note, l_note, params, vex_options) {
-        var me = this;
+        var me = this, place, type, hairpin;
         place = m2v.tables.positions[params.place];
         type = m2v.tables.hairpins[params.form];
 
@@ -268,7 +268,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         m2v.Ties.superclass.init.call(this, systemInfo, unresolvedTStamp2);
       },
 
-      validateAtts : function(atts) {
+      validateAtts : function() {
         return;
       },
 

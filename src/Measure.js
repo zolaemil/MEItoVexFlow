@@ -234,7 +234,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @param {String[]} labels The labels of all staves
        */
       format : function(x, labels) {
-        var me = this, width = me.w, i = me.staffs.length;
+        var me = this, width = me.w, i = me.staffs.length, staff;
         while (i--) {
           if (me.staffs[i]) {
             staff = me.staffs[i];

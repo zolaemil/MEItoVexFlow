@@ -166,7 +166,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
       // TODO use Vex.Flow.Textnote instead of VF.Annotation!?
       createVexFromInfos : function(notes_by_id) {
-        var me = this, i, model, note;
+        var me = this, i, model, note, annot;
         i = me.allModels.length;
         while (i--) {
           model = me.allModels[i];

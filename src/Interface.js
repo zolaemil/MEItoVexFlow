@@ -46,7 +46,7 @@ MEI2VF.rendered_measures = null;
  * {@link MEI2VF.Converter MEI2VF.Converter}
  */
 MEI2VF.render_notation = function(xmlDoc, target, width, height, backend, options) {
-
+  var ctx;
   var cfg = options || {};
 
   ctx = new Vex.Flow.Renderer(target, backend || Vex.Flow.Renderer.Backends.CANVAS).getContext();

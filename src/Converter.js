@@ -398,7 +398,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * Properties: width, height
        */
       getStaffArea : function() {
-        var width, height, i;
+        var height, i;
         height = this.systemInfo.getCurrentLowestY();
         var allVexMeasureStaffs = this.getAllVexMeasureStaffs();
         var i, k, max_start_x, area_width, staff;
@@ -692,12 +692,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @param {String} right_barline the right barline
        */
       initializeMeasureStaffs : function(system, staffElements, left_barline, right_barline) {
-        var me = this, isFirst = true, thisClefOffsets = {}, thisKeySigOffsets = {}, maxClefOffset = 0, maxKeySigOffset = 0;
+        var me = this, staff, staff_n, staffs, isFirst = true, thisClefOffsets = {}, thisKeySigOffsets = {}, maxClefOffset = 0, maxKeySigOffset = 0;
 
-        var staffs = [];
+        staffs = [];
 
         $.each(staffElements, function() {
-          var staff_n = +$(this).attr('n');
+          staff_n = +$(this).attr('n');
           if (!staff_n) {
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
           }
@@ -965,7 +965,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           case 'mRest' :
             return me.processmRest(element, staff, staff_n);
           case 'space' :
-            return me.processSpace(element, staff, staff_n);
+            return me.processSpace(element);
           case 'note' :
             return me.processNote(element, staff, staff_n);
           case 'beam' :
@@ -1012,12 +1012,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         mei_slur = atts.slur;
         mei_staff_n = +atts.staff || staff_n;
 
-        xml_id = atts['xml:id'];
-        // If xml:id is missing, create it
-        if (!xml_id) {
-          xml_id = MeiLib.createPseudoUUID();
-          $(element).attr('xml:id', xml_id);
-        }
+        xml_id = MeiLib.XMLID(element);
 
         try {
 
@@ -1114,21 +1109,16 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @method processChord
        */
       processChord : function(element, staff, staff_n) {
-        var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], durAtt, xml_id, mei_slur, mei_ho, chord, chord_opts, atts, note_atts;
+        var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], durAtt, xml_id, chord, chord_opts, atts;
 
         $children = $(element).children();
 
         atts = m2v.Util.attsToObj(element);
         durAtt = atts.dur;
-        // mei_tie = atts.tie;
-        // mei_slur = atts.slur;
+        // var mei_tie = atts.tie;
+        // var mei_slur = atts.slur;
 
-        xml_id = atts['xml:id'];
-        // If xml:id is missing, create it
-        if (!xml_id) {
-          xml_id = MeiLib.createPseudoUUID();
-          $(element).attr('xml:id', xml_id);
-        }
+        xml_id = MeiLib.XMLID(element);
 
         hasDots = !!$(element).attr('dots');
 
@@ -1210,12 +1200,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
         atts = m2v.Util.attsToObj(element);
 
-        var xml_id = atts['xml:id'];
-        // If xml:id is missing, create it
-        if (!xml_id) {
-          xml_id = MeiLib.createPseudoUUID();
-          $(element).attr('xml:id', xml_id);
-        }
+        xml_id = MeiLib.XMLID(element);
 
         if (atts.tie)
           me.processAttrTie(atts.tie, xml_id, atts.pname, atts.oct);
@@ -1253,13 +1238,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             duration : dur + 'r'
           });
 
-          xml_id = atts['xml:id'];
-
-          // If xml:id is missing, create it
-          if (!xml_id) {
-            xml_id = MeiLib.createPseudoUUID();
-            $(element).attr('xml:id', xml_id);
-          }
+        xml_id = MeiLib.XMLID(element);
 
           if (atts.ho) {
             me.processAttrHo(atts.ho, rest);
@@ -1299,13 +1278,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             duration : 'wr'
           });
 
-          xml_id = atts['xml:id'];
-
-          // If xml:id is missing, create it
-          if (!xml_id) {
-            xml_id = MeiLib.createPseudoUUID();
-            $(element).attr('xml:id', xml_id);
-          }
+        xml_id = MeiLib.XMLID(element);
 
           // mRest.ignore_ticks = true;
           // mRest.addToModifierContext = function() {
@@ -1338,7 +1311,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       /**
        * @method processSpace
        */
-      processSpace : function(element, staff) {
+      processSpace : function(element) {
         var me = this, space;
         try {
           space = new VF.GhostNote({
