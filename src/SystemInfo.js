@@ -182,7 +182,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * <b>pgHead2</b> <b>staffGrp</b> MEI.usersymbols:
        * <b>symbolTable</b>
        *
-       * Supported elements: <b>staffGrp</b> <b>pgHead</b>
+       * Supported elements: <b>staffGrp</b>
        *
        * @param {XMLElement} element the scoreDef element to process
        */
@@ -193,19 +193,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             me.processStaffGrp(element);
             break;
           case 'pgHead' :
-            me.processPgHead(element);
             break;
           default :
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <scoreDef>');
         }
       },
 
-      /**
-       *
-       */
-      processPgHead : function(unused_element) {
-        return;
-      },
 
       /**
        *

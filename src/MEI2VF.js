@@ -26,7 +26,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
      */
     m2v.L = function() {
       if (m2v.DO_LOG)
-        Vex.L("MEItoVexFlow", arguments);
+        Vex.L("MEI2VF", arguments);
     };
 
     /**

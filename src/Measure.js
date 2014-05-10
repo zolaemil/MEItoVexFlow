@@ -13,12 +13,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     m2v.Measure.prototype = {
 
-      // currently fixed
-      /**
-       * @property
-       */
-      HALF_LINE_DISTANCE : 5, // VF.Staff.spacing_between_lines_px / 2;
-
       /**
        * initializes the current MEI2VF.Measure object
        * @param {Object} config The configuration object
@@ -148,23 +142,30 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * corresponding Vex.Flow.Stave object
        */
       addTempoToStaves : function() {
-        var me = this, offsetX, vexStaff, vexTempo, atts;
+        var me = this, offsetX, vexStaff, vexTempo, atts, halfLineDistance;
         $.each(me.tempoElements, function() {
           atts = m2v.Util.attsToObj(this);
           vexStaff = me.staffs[atts.staff];
+          halfLineDistance = vexStaff.getSpacingBetweenLines() / 2; 
           vexTempo = new Vex.Flow.StaveTempo({
             name : $(this).text(),
             duration : atts['mm.unit'],
             dots : +atts['mm.dots'],
             bpm : +atts.mm
           }, vexStaff.x, 5);
-          if (atts.vo)
-            vexTempo.setShiftY(+atts.vo * me.HALF_LINE_DISTANCE);
+          if (atts.vo) {
+            vexTempo.setShiftY(+atts.vo * halfLineDistance);
+          }
           offsetX = (vexStaff.getModifierXShift() > 0) ? -14 : 14;
-          if ( typeof vexStaff.timeSigIndex === 'number')
+
+          // if a staff has a time signature, set the tempo on top of the time
+          // signature instead of the first note
+          if (vexStaff.hasTimeSig) {
             offsetX -= 24;
-          if (atts.ho)
-            offsetX += +atts.ho * me.HALF_LINE_DISTANCE;
+          }
+          if (atts.ho) {
+            offsetX += +atts.ho * halfLineDistance;
+          }
           vexTempo.setShiftX(offsetX);
           vexTempo.font = me.tempoFont;
           vexStaff.modifiers.push(vexTempo);
@@ -179,11 +180,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.calculateMaxNoteStartX();
         me.calculateRepeatPadding();
         /**
-         * @property
+         * @property {Number} minVoicesW the minimum width of the voices in the
+         * measure
          */
         me.minVoicesW = me.voices.preFormat();
         /**
-         * @property
+         * @property {Number} minWidth the minimum width of the measure
          */
         me.minWidth = me.maxNoteStartX + me.minVoicesW + me.repeatPadding;
       },
@@ -219,12 +221,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         var me = this;
         var staff = me.getFirstDefinedStaff();
         /**
-         * @property
+         * @property {0|20} repeatPadding additional padding (20px) if the staff
+         * does have a left REPEAT_BEGIN barline located to the right of other
+         * staff modifiers; 0px in all other cases.
          */
         me.repeatPadding = (staff.modifiers[0].barline == Vex.Flow.Barline.type.REPEAT_BEGIN && staff.modifiers.length > 2) ? 20 : 0;
       },
-
-      // TODO align start modifiers (changes in vexflow necessary??)
 
       // TODO move label attachment somewhere else
       /**
