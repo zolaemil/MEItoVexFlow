@@ -642,7 +642,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         // references to the staffs will be stored in two places:
         // 1) in the measure objects
         // 2) in this.allVexMeasureStaffs
-        var staffs = [];
+        var staffs = me.initializeMeasureStaffs(system, staffElements, left_barline, right_barline);
         me.allVexMeasureStaffs[measure_n] = staffs;
 
         var currentStaveVoices = new m2v.StaveVoices();
@@ -652,10 +652,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         // note-like objects (this is necessary when the attribute staff=n is
         // used, for example)
         $.each(staffElements, function() {
-          me.processStaffInMeasure(system, staffs, this, measure_n, left_barline, right_barline, currentStaveVoices);
+          me.processStaffEvents(staffs, this, measure_n, currentStaveVoices);
         });
-
-        me.processStaffModifiers(staffs, left_barline, right_barline);
 
         me.directives.createInfos(dirElements, element);
         me.dynamics.createInfos(dynamElements, element);
@@ -686,80 +684,27 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       },
 
       /**
-       * Processes a single stave in a measure
-       *
-       * @method processStaffInMeasure
+       * @method initializeMeasureStaffs
        * @param {MEI2VF.System} system the current system
-       * @param {Vex.Flow.Stave[]} staffs the staff objects in the current
+       * @param {XMLElement[]} staffElements all staff elements in the current
        * measure
-       * @param {XMLElement} staff_element the MEI staff element
-       * @param {Number} measure_n the measure number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
-       * @param {MEI2VF.StaveVoices} currentStaveVoices The current StaveVoices
-       * object
        */
-      processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices) {
-        var me = this, staff, staff_n, readEvents, layer_events;
-
-        staff_n = +$(staff_element).attr('n');
-        if (!staff_n) {
-          throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
-        }
-
-        staff = me.createVexStaff(system.getStaffYs()[staff_n]);
-
-        staffs[staff_n] = staff;
-
-        // do this by traversing the DOM separately
-        $(staff_element).children('anchoredText').each(function() {
-          me.processAnchoredStaffText(this, staff);
-        });
-
-        readEvents = function() {
-          var event = me.processNoteLikeElement(this, staff, staff_n);
-          // return event.vexNote;
-          return event.vexNote || event;
-        };
-
-        $(staff_element).find('layer').each(function() {
-          me.resolveUnresolvedTimestamps(this, staff_n, measure_n);
-          layer_events = $(this).children().map(readEvents).get();
-          currentStaveVoices.addVoice(me.createVexVoice(layer_events, staff_n), staff_n);
-        });
-
-      },
-
-      /**
-       * Creates a new Vex.Flow.Stave object at the specified y coordinate. This
-       * method sets fixed x coordinates, which will later be substituted in
-       * {@link MEI2VF.System#format} - the Vex.Flow.Stave
-       * objects must be initialized with some x measurements, but the real
-       * values depend on values only available after modifiers, voices etc
-       * have been added.
-       *
-       * @method createVexStaff
-       * @param {Number} y the y coordinate of the staff
-       * @return {Vex.Flow.Stave} The initialized stave object
-       */
-      createVexStaff : function(y) {
-        var me = this, staff;
-        staff = new VF.Stave();
-        staff.init(0, y, 1000, me.cfg.staff);
-        // temporary; (due to a bug?) in VexFlow, bottom_text_position does
-        // not work when it's passed in the config object
-        staff.options.bottom_text_position = me.cfg.staff.bottom_text_position;
-        return staff;
-      },
-
-      /**
-       * @method processStaffModifiers
-       * @param {String} left_barline the left barline
-       * @param {String} right_barline the right barline
-
-       */
-      processStaffModifiers : function(staffs, left_barline, right_barline) {
+      initializeMeasureStaffs : function(system, staffElements, left_barline, right_barline) {
         var me = this, isFirst = true, thisClefOffsets = {}, thisKeySigOffsets = {}, maxClefOffset = 0, maxKeySigOffset = 0;
+
+        var staffs = [];
+
+        $.each(staffElements, function() {
+          var staff_n = +$(this).attr('n');
+          if (!staff_n) {
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArgument', 'Cannot render staff without attribute "n".');
+          }
+          staff = me.createVexStaff(system.getStaffYs()[staff_n]);
+          staffs[staff_n] = staff;
+        });
+
         $.each(staffs, function(i, staff) {
           if (staff) {
             staff.setBegBarType( left_barline ? m2v.tables.barlines[left_barline] : VF.Barline.type.NONE);
@@ -804,6 +749,29 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           }
         });
 
+        return staffs;
+      },
+
+      /**
+       * Creates a new Vex.Flow.Stave object at the specified y coordinate. This
+       * method sets fixed x coordinates, which will later be substituted in
+       * {@link MEI2VF.System#format} - the Vex.Flow.Stave
+       * objects must be initialized with some x measurements, but the real
+       * values depend on values only available after modifiers, voices etc
+       * have been added.
+       *
+       * @method createVexStaff
+       * @param {Number} y the y coordinate of the staff
+       * @return {Vex.Flow.Stave} The initialized stave object
+       */
+      createVexStaff : function(y) {
+        var me = this, staff;
+        staff = new VF.Stave();
+        staff.init(0, y, 1000, me.cfg.staff);
+        // temporary; (due to a bug?) in VexFlow, bottom_text_position does
+        // not work when it's passed in the config object
+        staff.options.bottom_text_position = me.cfg.staff.bottom_text_position;
+        return staff;
       },
 
       /**
@@ -828,7 +796,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @method addStaffKeySig
        * @param {Vex.Flow.Stave} staff The stave object
        * @param {Number} staff_n the staff number
-       * @param {Number} padding the additional padding left to the modifier
+       * @param {Number} padding the additional padding to the left of the
+       * modifier
        */
       addStaffKeySig : function(staff, staff_n, padding) {
         var me = this, currentStaffInfo;
@@ -846,7 +815,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @method addStaffTimeSig
        * @param {Vex.Flow.Stave} staff The stave object
        * @param {Number} staff_n the staff number
-       * @param {Number} padding the additional padding left to the modifier
+       * @param {Number} padding the additional padding to the left of the
+       * modifier
        */
       addStaffTimeSig : function(staff, staff_n, padding) {
         var me = this, currentStaffInfo;
@@ -891,6 +861,42 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           }
         }
         return labels;
+      },
+
+      /**
+       * Processes a single stave in a measure
+       *
+       * @method processStaffEvents
+       * @param {Vex.Flow.Stave[]} staffs the staff objects in the current
+       * measure
+       * @param {XMLElement} staff_element the MEI staff element
+       * @param {Number} measure_n the measure number
+       * @param {MEI2VF.StaveVoices} currentStaveVoices The current StaveVoices
+       * object
+       */
+      processStaffEvents : function(staffs, staff_element, measure_n, currentStaveVoices) {
+        var me = this, staff, staff_n, readEvents, layer_events;
+
+        staff_n = +$(staff_element).attr('n');
+        staff = staffs[staff_n];
+
+        readEvents = function() {
+          var event = me.processNoteLikeElement(this, staff, staff_n);
+          // return event.vexNote;
+          return event.vexNote || event;
+        };
+
+        $(staff_element).find('layer').each(function() {
+          me.resolveUnresolvedTimestamps(this, staff_n, measure_n);
+          layer_events = $(this).children().map(readEvents).get();
+          currentStaveVoices.addVoice(me.createVexVoice(layer_events, staff_n), staff_n);
+        });
+
+        // do this by traversing the DOM separately
+        $(staff_element).children('anchoredText').each(function() {
+          me.processAnchoredStaffText(this, staff);
+        });
+
       },
 
       /**
