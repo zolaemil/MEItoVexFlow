@@ -24,7 +24,6 @@
 var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     /**
-     * @class MEI2VF.Converter
      * Converts an MEI XML document / document fragment to VexFlow objects and
      * optionally renders it using Raphael or HTML5 Canvas.
      *
@@ -34,6 +33,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      * object has been passed) call {@link #initConfig} after construction.
      * - Call {@link #process} to process an MEI XML document
      * - Call {@link #draw} to draw the processed VexFlow objects to a canvas
+     *
+     * @class MEI2VF.Converter
      *
      * @constructor
      * @param {Object} [config]
@@ -171,6 +172,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // TODO add setters (and getters?) for single config items / groups
       /**
        * initializes the Converter
+       * @method initConfig
        * @param {Object} config A config object (optional)
        * @chainable
        * @return {MEI2VF.Converter} this
@@ -179,17 +181,18 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this;
         me.cfg = $.extend(true, {}, me.defaults, config);
         /**
-         *  @property {MEI2VF.SystemInfo} systemInfo an instance of
-         * MEI2VF.SystemInfo dealing with the system and staff info derived from
+         * an instance of MEI2VF.SystemInfo dealing with the system and staff
+         * info derived from
          * the MEI data
+         * @property {MEI2VF.SystemInfo} systemInfo
          */
         me.systemInfo = new m2v.SystemInfo();
 
         // TODO see if the values of this property should better be calculated
         // in the viewer object
         /**
-         * @property {Object} printSpace The print space coordinates calculated
-         * from the page config.
+         * The print space coordinates calculated from the page config.
+         * @property {Object} printSpace
          * @property {Number} printSpace.top
          * @property {Number} printSpace.left
          * @property {Number} printSpace.right
@@ -211,8 +214,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       // TODO instead of creating new objects each time on reset, call reset functions in the generated objects
       /**
-       * Resets all data.
-       * Called by {@link #process}.
+       * Resets all data. Called by {@link #process}.
+       * @method reset
        * @chainable
        * @return {MEI2VF.Converter} this
        */
@@ -220,85 +223,91 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this;
         me.systemInfo.init(me.cfg, me.printSpace);
         /**
-         *
+         * @property {} unresolvedTStamp2
          */
         me.unresolvedTStamp2 = [];
         /**
          * Contains all {@link MEI2VF.System} objects
+         * @property {MEI2VF.System[]} systems
          */
 
         me.systems = [];
         /**
-         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs Contains all
+         * Contains all
          * Vex.Flow.Stave objects. Addressing scheme:
          * [measure_n][staff_n]
+         * @property {Vex.Flow.Stave[][]} allVexMeasureStaffs
          */
         me.allVexMeasureStaffs = [];
         /**
          * Contains all Vex.Flow.Beam objects. Data is just pushed in
          * and later processed as a whole, so the array index is
          * irrelevant.
-         });
+         * @property {Vex.Flow.Beam[]} allBeams
          */
         me.allBeams = [];
         /**
-         * @property {MEI2VF.Dynamics} dynamics an instance of MEI2VF.Dynamics
-         * dealing with
-         * and storing all dynamics found in the MEI document
+         * an instance of MEI2VF.Dynamics dealing with and storing all dynamics
+         * found in the MEI document
+         * @property {MEI2VF.Dynamics} dynamics
          */
         me.dynamics = new m2v.Dynamics(me.systemInfo, me.cfg.dynamFont);
         /**
-         * @property {MEI2VF.Directives} directives an instance of
-         * MEI2VF.Directives dealing with
-         * and storing all directives found in the MEI document
+         * an instance of MEI2VF.Directives dealing with and storing all
+         * directives found in the MEI document
+         * @property {MEI2VF.Directives} directives
          */
         me.directives = new m2v.Directives(me.systemInfo, me.cfg.annotFont);
         /**
-         * @property {MEI2VF.Ties} ties an instance of MEI2VF.Ties dealing with
-         * and storing all ties found in the MEI document
+         * an instance of MEI2VF.Ties dealing with and storing all ties found in
+         * the MEI document
+         * @property {MEI2VF.Ties} ties
          */
         me.ties = new m2v.Ties(me.systemInfo, me.unresolvedTStamp2);
         /**
-         * @property {MEI2VF.Ties} slurs an instance of MEI2VF.Ties dealing with
-         * and storing all slurs found in the MEI document
+         * an instance of MEI2VF.Ties dealing with and storing all slurs found in
+         * the MEI document
+         * @property {MEI2VF.Ties} slurs
          */
         me.slurs = new m2v.Ties(me.systemInfo, me.unresolvedTStamp2);
         /**
-         * @property {MEI2VF.Hairpins} hairpins an instance of MEI2VF.Hairpins
-         * dealing with
-         * and storing all hairpins found in the MEI document
+         * an instance of MEI2VF.Hairpins dealing with and storing all hairpins
+         * found in the MEI document
+         * @property {MEI2VF.Hairpins} hairpins
          */
         me.hairpins = new m2v.Hairpins(me.systemInfo, me.unresolvedTStamp2);
         /**
-         * @property {MEI2VF.Hyphenation} hyphenation an instance of
-         * MEI2VF.Hyphenation dealing with
-         * and storing all lyrics hyphens found in the MEI document
+         * an instance of MEI2VF.Hyphenation dealing with and storing all lyrics
+         * hyphens found in the MEI document
+         * @property {MEI2VF.Hyphenation} hyphenation
          */
         me.hyphenation = new m2v.Hyphenation(me.cfg.lyricsFont, me.printSpace.right, me.cfg.maxHyphenDistance);
         /**
-         * @property {Object} notes_by_id contains all note-like objects in the
-         * current MEI document, accessible by their xml:id
+         * contains all note-like objects in the current MEI document, accessible
+         * by their xml:id
+         * @property {Object} notes_by_id
          * @property {XMLElement} notes_by_id.meiNote the XML Element of the note
          * @property {Vex.Flow.StaveNote} notes_by_id.vexNote the VexFlow note
          * object
          */
         me.notes_by_id = {};
         /**
-         * @property {Number} currentSystem_n the number of the current system
+         * the number of the current system
+         * @property {Number} currentSystem_n
          */
         me.currentSystem_n = 0;
         /**
-         * @property {Boolean} pendingSystemBreak indicates if a system break is
-         * currently to be processed
+         * indicates if a system break is currently to be processed
+         * @property {Boolean} pendingSystemBreak
          */
         me.pendingSystemBreak = false;
         /**
-         * @property {Boolean} pendingSectionBreak indicates if a system break is
-         * currently to be processed
+         * indicates if a system break is currently to be processed
+         * @property {Boolean} pendingSectionBreak
          */
         me.pendingSectionBreak = true;
         /**
-         * @property {Object} currentVoltaType Contains information about the
+         * Contains information about the
          * volta type of the current staff. Properties:
          *
          * -  `start` {String} indicates the number to render to the volta. When
@@ -308,6 +317,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          * measure
          *
          * If null, no volta is rendered
+         * @property {Object} currentVoltaType
          */
         me.currentVoltaType = null;
         return me;
@@ -317,6 +327,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * Calls {@link #reset} and then processes the specified MEI document or
        * document fragment. The generated objects can
        * be processed further or drawn immediately to a canvas via {@link #draw}.
+       * @method process
        * @chainable
        * @param {XMLDocument} xmlDoc the XML document
        * @return {MEI2VF.Converter} this
@@ -336,6 +347,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * Draws the internal data objects to a canvas
+       * @method draw
        * @chainable
        * @param ctx The canvas context
        * @return {MEI2VF.Converter} this
@@ -354,6 +366,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * assigns an external function for processing pgHead elements. By default,
        * pgHead elements are ignored in MEI2VF.
+       * @method setPgHeadProcessor
        * @param {Function} fn the callback function. Parameter: element
        */
       setPgHeadProcessor : function(fn) {
@@ -363,6 +376,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * assigns an external function for processing anchoredText elements. By
        * default, anchoredText elements are ignored in MEI2VF.
+       * @method setAnchoredTextProcessor
        * @param {Function} fn the callback function. Parameter: element
        */
       setAnchoredTextProcessor : function(staffFn, layerFn) {
@@ -378,6 +392,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * Returns the width and the height of the area that contains all drawn
        * staves as per the last processing.
        *
+       * @method getStaffArea
        * @return {Object} the width and height of the area that contains all
        * staves.
        * Properties: width, height
@@ -418,6 +433,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * returns a 2d array of all Vex.Flow.Stave objects, arranged by
        * [measure_n][staff_n]
+       * @method getAllVexMeasureStaffs
        * @return {Vex.Flow.Stave[][]} see {@link #allVexMeasureStaffs}
        */
       getAllVexMeasureStaffs : function() {
@@ -426,6 +442,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * returns all systems created when processing the MEI document
+       * @method getSystems
        * @return {MEI2VF.System[]}
        */
       getSystems : function() {
@@ -434,6 +451,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * returns all note-like objects created when processing the MEI document
+       * @method getNotes
        * @return {Object} for the object properties, see {@link #notes_by_id}
        */
       getNotes : function() {
@@ -443,6 +461,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * creates in initializes a new {@link MEI2VF.System} and updates the staff
        * modifier infos
+       * @method createNewSystem
        */
       createNewSystem : function() {
         var me = this, system, coords;
@@ -484,7 +503,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // space on the right (or choose a VexFlow parameter accordingly),
       // otherwise don't add space
       /**
-       *
+       * @method processSections
        */
       processSections : function(xmlDoc) {
         var me = this;
@@ -498,7 +517,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       *@method processSection
        */
       processSection : function(element) {
         var me = this, i, j, sectionChildren = $(element).children();
@@ -508,7 +527,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processEnding
        */
       processEnding : function(element) {
         var me = this, i, j, sectionChildren = $(element).children();
@@ -532,6 +551,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        * Supported elements: <b>measure</b> <b>scoreDef</b> <b>staffDef</b>
        * <b>sb</b>
+       * @method processSectionChild
        */
       processSectionChild : function(element) {
         var me = this;
@@ -557,6 +577,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * sets the property {@link #pendingSystemBreak} to `true`. When true, a
        * new system will be initialized when {@link #processMeasure} is called
        * the next time.
+       * @method setPendingSystemBreak
        */
       setPendingSystemBreak : function() {
         this.pendingSystemBreak = true;
@@ -566,6 +587,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * Processes a MEI measure element and calls functions to process a
        * selection of ancestors: .//staff, ./slur, ./tie, ./hairpin, .//tempo
+       * @method processMeasure
        * @param {XMLElement} element the MEI measure element
        */
       processMeasure : function(element) {
@@ -665,7 +687,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * Processes a single stave in a measure
        *
-       * @param {MEI2VF.System} the current system
+       * @method processStaffInMeasure
+       * @param {MEI2VF.System} system the current system
        * @param {Array} staffs
        * @param {XMLElement} staff_element the MEI staff element
        * @param {Number} measure_n the measure number
@@ -716,6 +739,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * values depend on values only available after modifiers, voices etc
        * have been added.
        *
+       * @method createVexStaff
        * @param {Number} y the y coordinate of the staff
        * @return {Vex.Flow.Stave} The initialized stave object
        */
@@ -733,7 +757,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * Adds staff modifiers (bar lines, clef, time signature, key signature,
        * volta) to a Vex.Flow.Staff.
        *
-       * @param {Vex.Flow.Stave} The stave object
+       * @method addStaffModifiers
+       * @param {Vex.Flow.Stave} staff The stave object
        * @param {Number} staff_n the staff number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
@@ -771,6 +796,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * Adds a volta to a staff. Currently not working due to the reworking of
        * the measure width calulation (27/4/2014)
+       * @method addStaffVolta
        * @experimental
        */
       addStaffVolta : function(staff) {
@@ -784,7 +810,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method getStaffLabels
        */
       getStaffLabels : function() {
         var me = this, labels, i, infos, labelType;
@@ -805,6 +831,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * Creates a new Vex.Flow.Voice
+       * @method createVexVoice
        * @param {Array} voice_contents The contents of the voice, an array of
        * tickables
        * @param {Number} staff_n The number of the enclosing staff element
@@ -827,7 +854,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method resolveUnresolvedTimestamps
        */
       resolveUnresolvedTimestamps : function(layer, staff_n, measure_n) {
         var me = this, refLocationIndex;
@@ -854,6 +881,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * processes a note like element by calling the adequate processing
        * function
+       * @method processNoteLikeElement
        * @param {XMLElement} element the element to process
        * @param {} staff
        * @param {Number} staff_n the number of the staff as given in the MEI
@@ -882,7 +910,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processAnchoredStaffText
        */
       processAnchoredStaffText : function() {
         // override
@@ -890,7 +918,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processAnchoredLayerText
        */
       processAnchoredLayerText : function() {
         // TODO
@@ -898,7 +926,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processNote
        */
       processNote : function(element, staff, staff_n) {
         var me = this, dots, mei_accid, mei_ho, pname, oct, xml_id, mei_tie, mei_slur, mei_staff_n, i, atts, note_opts, note;
@@ -1013,7 +1041,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // TODO add support for features found in me.processNote (annot etc.)
       // extract functions!?
       /**
-       *
+       * @method processChord
        */
       processChord : function(element, staff, staff_n) {
         var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], durAtt, xml_id, mei_slur, mei_ho, chord, chord_opts, atts, note_atts;
@@ -1104,6 +1132,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
+      /**
+       * @method processNoteInChord
+       */
       processNoteInChord : function(i, element, chordElement, chord) {
         var me = this, atts, xml_id;
 
@@ -1137,7 +1168,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processRest
        */
       processRest : function(element, staff, unused_staff_n) {
         var me = this, dur, rest, xml_id, atts;
@@ -1185,7 +1216,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processmRest
        */
       processmRest : function(element, staff) {
         var me = this, mRest, atts, xml_id;
@@ -1235,7 +1266,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processSpace
        */
       processSpace : function(element, staff) {
         var me = this, space;
@@ -1259,7 +1290,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processBeam
        */
       processBeam : function(element, staff, staff_n) {
         var me = this, elements;
@@ -1274,7 +1305,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processAttrAccid
        */
       processAttrAccid : function(mei_accid, vexObject, i) {
         var val = m2v.tables.accidentals[mei_accid];
@@ -1285,7 +1316,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processAttrHo
        */
       processAttrHo : function(mei_ho, vexObject) {
         var me = this;
@@ -1293,7 +1324,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processAttrTie
        */
       processAttrTie : function(mei_tie, xml_id, pname, oct) {
         var me = this, i, j;
@@ -1318,7 +1349,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processAttrSlur
        */
       processAttrSlur : function(mei_slur, xml_id) {
         var me = this, tokens;
@@ -1342,7 +1373,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method parse_slure_attribute
        */
       parse_slur_attribute : function(slur_str) {
         var result = [], numbered_tokens, numbered_token, i, j, num;
@@ -1373,6 +1404,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       /**
        * converts the pitch of an MEI <b>note</b> element to a VexFlow pitch
        *
+       * @method processAttsPitch
        * @param {XMLElement} mei_note
        * @return {String} the VexFlow pitch
        */
@@ -1388,6 +1420,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * adds an articulation to a note-like object
+       * @method addArticulation
        * @param {Vex.Flow.StaveNote} note the note-like VexFlow object
        * @param {XMLElement} ar the articulation element
        */
@@ -1402,6 +1435,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       /**
        * adds a fermata to a note-like object
+       * @method addFermata
        * @param {Vex.Flow.StaveNote} note the note-like VexFlow object
        * @param {'above'/'below'} place The place of the fermata
        * @param {Number} index The index of the note in a chord (optional)
@@ -1413,7 +1447,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method processSyllables
        */
       processSyllables : function(note, element, staff_n) {
         var me = this, annot, syl;
@@ -1444,7 +1478,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       // temporarily only handle one syllable per note
       /**
-       *
+       * @method processSyllable
        */
       processSyllable : function(mei_note) {
         var syl = $(mei_note).find('syl')[0];
@@ -1458,14 +1492,14 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
       // Support for annotations
       /**
-       *
+       * @method createAnnot
        */
       createAnnot : function(text, annotFont) {
         return (new VF.Annotation(text)).setFont(annotFont.family, annotFont.size, annotFont.weight);
       },
 
       /**
-       *
+       * @method getMandatoryAttr
        */
       getMandatoryAttr : function(element, attribute) {
         var result = $(element).attr(attribute);
@@ -1476,7 +1510,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method translateDuration
        */
       translateDuration : function(mei_dur) {
         var result = m2v.tables.durations[mei_dur + ''];
@@ -1489,7 +1523,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // parameter there. Can the noDots condition be removed entirely or will there
       // be dots rendered with space elements?
       /**
-       *
+       * @method processAttsDuration
        */
       processAttsDuration : function(mei_note, noDots) {
         var me = this, dur, dur_attr;
@@ -1505,7 +1539,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method setStemDir
        */
       setStemDir : function(element, optionsObj) {
         var specified_dir = {
@@ -1519,6 +1553,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       },
 
+      /**
+       * @method drawSystems
+       */
       drawSystems : function(ctx) {
         var me = this, i = me.systems.length;
         while (i--) {
@@ -1529,7 +1566,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method drawVexBeams
        */
       drawVexBeams : function(beams, ctx) {
         $.each(beams, function() {
