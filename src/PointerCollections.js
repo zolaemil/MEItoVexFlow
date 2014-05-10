@@ -1,4 +1,4 @@
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
      * @class MEI2VF.PointerCollection
@@ -188,4 +188,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));

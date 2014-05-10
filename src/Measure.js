@@ -1,4 +1,4 @@
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
      * @class MEI2VF.Measure
@@ -142,6 +142,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // TODO handle timestamps! (is it necessary to handle tempo element
       // as annotations?)
       // TODO make magic numbers constants
+      // TODO move from here
       /**
        * Writes the data of the tempo elements in the current measure to the
        * corresponding Vex.Flow.Stave object
@@ -278,4 +279,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));

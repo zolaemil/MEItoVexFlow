@@ -21,7 +21,7 @@
  * the License.
  */
 
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
      * Converts an MEI XML document / document fragment to VexFlow objects and
@@ -591,7 +591,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        * @param {XMLElement} element the MEI measure element
        */
       processMeasure : function(element) {
-        var me = this, measure_n, atSystemStart, left_barline, right_barline, atSystemTop = true, system, system_n;
+        var me = this, measure_n, atSystemStart, left_barline, right_barline, system, system_n;
 
         if (me.pendingSectionBreak || me.pendingSystemBreak) {
           system_n = me.systems.length;
@@ -652,9 +652,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         // note-like objects (this is necessary when the attribute staff=n is
         // used, for example)
         $.each(staffElements, function() {
-          me.processStaffInMeasure(system, staffs, this, measure_n, left_barline, right_barline, currentStaveVoices, atSystemTop);
-          atSystemTop = false;
+          me.processStaffInMeasure(system, staffs, this, measure_n, left_barline, right_barline, currentStaveVoices);
         });
+
+        me.processStaffModifiers(staffs, left_barline, right_barline);
 
         me.directives.createInfos(dirElements, element);
         me.dynamics.createInfos(dynamElements, element);
@@ -689,17 +690,16 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
        *
        * @method processStaffInMeasure
        * @param {MEI2VF.System} system the current system
-       * @param {Array} staffs
+       * @param {Vex.Flow.Stave[]} staffs the staff objects in the current
+       * measure
        * @param {XMLElement} staff_element the MEI staff element
        * @param {Number} measure_n the measure number
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
-       * @param {MEI2VF.StaveVoices} currentStaveVoices The current MEI2VF
-       * StaveVoices object
-       * @param {Boolean} atSystemTop indicates if the current stave is the first
-       * stave in its system
+       * @param {MEI2VF.StaveVoices} currentStaveVoices The current StaveVoices
+       * object
        */
-      processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices, atSystemTop) {
+      processStaffInMeasure : function(system, staffs, staff_element, measure_n, left_barline, right_barline, currentStaveVoices) {
         var me = this, staff, staff_n, readEvents, layer_events;
 
         staff_n = +$(staff_element).attr('n');
@@ -709,10 +709,9 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
         staff = me.createVexStaff(system.getStaffYs()[staff_n]);
 
-        me.addStaffModifiers(staff, staff_n, left_barline, right_barline, atSystemTop);
-
         staffs[staff_n] = staff;
 
+        // do this by traversing the DOM separately
         $(staff_element).children('anchoredText').each(function() {
           me.processAnchoredStaffText(this, staff);
         });
@@ -754,42 +753,107 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       /**
-       * Adds staff modifiers (bar lines, clef, time signature, key signature,
-       * volta) to a Vex.Flow.Staff.
-       *
-       * @method addStaffModifiers
-       * @param {Vex.Flow.Stave} staff The stave object
-       * @param {Number} staff_n the staff number
+       * @method processStaffModifiers
        * @param {String} left_barline the left barline
        * @param {String} right_barline the right barline
-       * @param {Boolean} atSystemTop indicates if the current stave is the first
-       * stave in its system
+
        */
-      addStaffModifiers : function(staff, staff_n, left_barline, right_barline, atSystemTop) {
+      processStaffModifiers : function(staffs, left_barline, right_barline) {
+        var me = this, isFirst = true, thisClefOffsets = {}, thisKeySigOffsets = {}, maxClefOffset = 0, maxKeySigOffset = 0;
+        $.each(staffs, function(i, staff) {
+          if (staff) {
+            staff.setBegBarType( left_barline ? m2v.tables.barlines[left_barline] : VF.Barline.type.NONE);
+            if (right_barline) {
+              staff.setEndBarType(m2v.tables.barlines[right_barline]);
+            }
+            if (isFirst && me.currentVoltaType) {
+              me.addStaffVolta(staff);
+            }
+            me.addStaffClef(staff, i);
+            thisClefOffsets[i] = staff.getModifierXShift();
+            maxClefOffset = Math.max(maxClefOffset, thisClefOffsets[i]);
+            // console.log('clef offsets: ' +thisClefOffsets[i] + ' ' +
+            // maxClefOffset);
+            isFirst = false;
+          }
+        });
+
+        $.each(staffs, function(i, staff) {
+          if (staff) {
+            if (thisClefOffsets[i] !== maxClefOffset) {
+              // console.log('do keysig padding ' + (maxClefOffset -
+              // thisClefOffsets[i]));
+              me.addStaffKeySig(staff, i, maxClefOffset - thisClefOffsets[i] + 10);
+            } else {
+              me.addStaffKeySig(staff, i);
+            }
+            thisKeySigOffsets[i] = staff.getModifierXShift();
+            maxKeySigOffset = Math.max(maxKeySigOffset, thisKeySigOffsets[i]);
+            // console.log('keysig '+thisKeySigOffsets[i] + ' ' +
+            // maxKeySigOffset);
+          }
+        });
+
+        $.each(staffs, function(i, staff) {
+          if (staff) {
+            if (thisKeySigOffsets[i] !== maxKeySigOffset) {
+              me.addStaffTimeSig(staff, i, maxKeySigOffset - thisKeySigOffsets[i] + 15);
+            } else {
+              me.addStaffTimeSig(staff, i);
+            }
+          }
+        });
+
+      },
+
+      /**
+       * Adds clef to a Vex.Flow.Staff.
+       *
+       * @method addStaffClef
+       * @param {Vex.Flow.Stave} staff The stave object
+       * @param {Number} staff_n the staff number
+       */
+      addStaffClef : function(staff, staff_n) {
         var me = this, currentStaffInfo;
-
         currentStaffInfo = me.systemInfo.getStaffInfo(staff_n);
-
         if (currentStaffInfo.showClefCheck()) {
           staff.clefIndex = 2;
           staff.addClef(currentStaffInfo.getClef());
         }
+      },
+
+      /**
+       * Adds a key signature to a Vex.Flow.Staff.
+       *
+       * @method addStaffKeySig
+       * @param {Vex.Flow.Stave} staff The stave object
+       * @param {Number} staff_n the staff number
+       * @param {Number} padding the additional padding left to the modifier
+       */
+      addStaffKeySig : function(staff, staff_n, padding) {
+        var me = this, currentStaffInfo;
+        currentStaffInfo = me.systemInfo.getStaffInfo(staff_n);
         if (currentStaffInfo.showKeysigCheck()) {
           staff.keySigIndex = staff.clefIndex + 1 || 2;
-          staff.addKeySignature(currentStaffInfo.getKeySpec());
-
+          // console.log('keysg pd:'+padding);
+          staff.addModifier(new Vex.Flow.KeySignature(currentStaffInfo.getKeySpec(), padding));
         }
+      },
+
+      /**
+       * Adds a time signature to a Vex.Flow.Staff.
+       *
+       * @method addStaffTimeSig
+       * @param {Vex.Flow.Stave} staff The stave object
+       * @param {Number} staff_n the staff number
+       * @param {Number} padding the additional padding left to the modifier
+       */
+      addStaffTimeSig : function(staff, staff_n, padding) {
+        var me = this, currentStaffInfo;
+        currentStaffInfo = me.systemInfo.getStaffInfo(staff_n);
         if (currentStaffInfo.showTimesigCheck()) {
           staff.timeSigIndex = staff.keySigIndex + 1 || staff.clefIndex + 1 || 2;
-          staff.addTimeSignature(currentStaffInfo.getTimeSig());
-        }
-
-        staff.setBegBarType( left_barline ? m2v.tables.barlines[left_barline] : VF.Barline.type.NONE);
-        if (right_barline)
-          staff.setEndBarType(m2v.tables.barlines[right_barline]);
-
-        if (atSystemTop && me.currentVoltaType) {
-          me.addStaffVolta(staff);
+          staff.addTimeSignature(currentStaffInfo.getTimeSig(), padding);
         }
       },
 
@@ -1578,4 +1642,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));
