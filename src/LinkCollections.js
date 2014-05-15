@@ -222,7 +222,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
           if (f_note.system !== undefined && l_note.system !== undefined && f_note.system !== l_note.system) {
             // TODO add support for cross-system hairpins
-            
+
             // me.createSingleHairpin(f_note, {}, this.params, vex_options);
             // me.createSingleHairpin({}, l_note, this.params, vex_options);
           } else {
@@ -238,15 +238,22 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         place = m2v.tables.positions[params.place];
         type = m2v.tables.hairpins[params.form];
 
-        hairpin = new VF.StaveHairpin({
-          first_note : f_note.vexNote,
-          last_note : l_note.vexNote
-        }, type);
+        // TODO handle hairpins without first or last vexNote
+        if (f_note.vexNote && l_note.vexNote) {
+          hairpin = new VF.StaveHairpin({
+            first_note : f_note.vexNote,
+            last_note : l_note.vexNote
+          }, type);
 
-        hairpin.setRenderOptions(vex_options);
-        hairpin.setPosition(place);
+          hairpin.setRenderOptions(vex_options);
+          hairpin.setPosition(place);
 
-        me.allVexObjects.push(hairpin);
+          me.allVexObjects.push(hairpin);
+        } else {
+          m2v.L('Hairpins', 'Hairpin cannot be rendered:');
+          console.log(arguments);
+        }
+
       }
     });
 

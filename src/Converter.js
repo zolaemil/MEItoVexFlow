@@ -1,25 +1,25 @@
 /*
- * MEItoVexFlow
- *
- * Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
- *
- * See README for details of this library
- *
- * Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
- * University of Maryland
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+* MEItoVexFlow
+*
+* Author: Richard Lewis Contributors: Zoltan Komives, Raffaele Viglianti
+*
+* See README for details of this library
+*
+* Copyright © 2012, 2013 Richard Lewis, Raffaele Viglianti, Zoltan Komives,
+* University of Maryland
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not
+* use this file except in compliance with the License. You may obtain a copy of
+* the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations under
+* the License.
+*/
 
 // TODO how to distinguish between different type of <section>s
 
@@ -253,6 +253,14 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          */
         me.directives = new m2v.Directives(me.systemInfo, me.cfg.annotFont);
         /**
+         * an instance of MEI2VF.Fermatas dealing with and storing all
+         * fermata elements found in the MEI document (fermata attributes are
+         * attached directly to the containing note-like object)
+         * @property {MEI2VF.Fermatas} fermatas
+         */
+        me.fermatas = new m2v.Fermatas(me.systemInfo);
+
+        /**
          * an instance of MEI2VF.Ties dealing with and storing all ties found in
          * the MEI document
          * @property {MEI2VF.Ties} ties
@@ -333,6 +341,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.processSections(xmlDoc);
         me.directives.createVexFromInfos(me.notes_by_id);
         me.dynamics.createVexFromInfos(me.notes_by_id);
+        me.fermatas.createVexFromInfos(me.notes_by_id);
         me.ties.createVexFromInfos(me.notes_by_id);
         me.slurs.createVexFromInfos(me.notes_by_id);
         me.hairpins.createVexFromInfos(me.notes_by_id);
@@ -578,7 +587,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         left_barline = element.getAttribute('left');
         right_barline = element.getAttribute('right');
 
-        var staffElements = [], dirElements = [], slurElements = [], tieElements = [], hairpinElements = [], tempoElements = [], dynamElements = [];
+        var staffElements = [], dirElements = [], slurElements = [], tieElements = [], hairpinElements = [], tempoElements = [], dynamElements = [], fermataElements = [];
 
         $(element).find('*').each(function() {
           switch (this.localName) {
@@ -603,6 +612,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             case 'dynam':
               dynamElements.push(this);
               break;
+            case 'fermata':
+              fermataElements.push(this);
+              break;
             default:
               break;
           }
@@ -626,6 +638,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
         me.directives.createInfos(dirElements, element);
         me.dynamics.createInfos(dynamElements, element);
+        me.fermatas.createInfos(fermataElements, element);
         me.ties.createInfos(tieElements, element, me.systemInfo);
         me.slurs.createInfos(slurElements, element, me.systemInfo);
         me.hairpins.createInfos(hairpinElements, element, me.systemInfo);
@@ -710,7 +723,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           }
         });
 
-        // third run: add time signatures; if the keySigOffset of a staff is lesser
+        // third run: add time signatures; if the keySigOffset of a staff is
+        // lesser
         // maxKeySigOffset, add padding to the left of the time signature.
         $.each(staffs, function(i, staff) {
           if (staff) {
@@ -1016,7 +1030,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             me.addArticulation(note, this);
           });
           if (atts.fermata) {
-            me.addFermata(note, atts.fermata);
+            me.fermatas.addFermataToNote(note, atts.fermata);
           }
 
           // FIXME For now, we'll remove any child nodes of <note>
@@ -1116,7 +1130,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             me.processAttrHo(atts.ho, chord, staff);
           }
           if (atts.fermata) {
-            me.addFermata(chord, atts.fermata);
+            me.fermatas.addFermataToNote(chord, atts.fermata);
           }
 
           // TODO add support for chord/@tie and chord/@slur
@@ -1168,7 +1182,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           me.processAttrAccid(atts.accid, chord, i);
         }
         if (atts.fermata) {
-          me.addFermata(chord, atts.fermata, i);
+          me.fermatas.addFermataToNote(chord, atts.fermata, i);
         }
       },
 
@@ -1198,7 +1212,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             rest.addDotToAll();
           }
           if (atts.fermata) {
-            me.addFermata(rest, atts.fermata);
+            me.fermatas.addFermataToNote(rest, atts.fermata);
           }
           me.notes_by_id[xml_id] = {
             meiNote : element,
@@ -1240,7 +1254,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             me.processAttrHo(atts.ho, mRest, staff);
           }
           if (atts.fermata) {
-            me.addFermata(mRest, atts.fermata);
+            me.fermatas.addFermataToNote(mRest, atts.fermata);
           }
           mRest.setStave(staff);
           me.notes_by_id[xml_id] = {
@@ -1424,19 +1438,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           vexArtic.setPosition(m2v.tables.positions[place]);
         }
         note.addArticulation(0, vexArtic);
-      },
-
-      /**
-       * adds a fermata to a note-like object
-       * @method addFermata
-       * @param {Vex.Flow.StaveNote} note the note-like VexFlow object
-       * @param {'above'/'below'} place The place of the fermata
-       * @param {Number} index The index of the note in a chord (optional)
-       */
-      addFermata : function(note, place, index) {
-        var vexArtic = new VF.Articulation(m2v.tables.fermata[place]);
-        vexArtic.setPosition(m2v.tables.positions[place]);
-        note.addArticulation(index || 0, vexArtic);
       },
 
       /**

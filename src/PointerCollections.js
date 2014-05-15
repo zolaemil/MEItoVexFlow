@@ -124,7 +124,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
     Vex.Inherit(m2v.Directives, m2v.PointerCollection, {
 
       init : function(systemInfo, font) {
-        m2v.Dynamics.superclass.init.call(this, systemInfo, font);
+        m2v.Directives.superclass.init.call(this, systemInfo, font);
       },
 
       createVexFromInfos : function(notes_by_id) {
@@ -135,6 +135,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           note = notes_by_id[model.startid];
           if (note) {
             annot = (new VF.Annotation($(model.element).text().trim())).setFont(me.font.family, me.font.size, me.font.weight);
+
+            // TEMPORARY: set width of modifier to zero so voices with modifiers
+            // don't get too much width; remove when the width calculation in
+            // VexFlow does distinguish between different y values when
+            // calculating the width of tickables
+            annot.setWidth(0);
             if (model.atts.place === 'below') {
               note.vexNote.addAnnotation(0, annot.setVerticalJustification(me.BOTTOM));
             } else {
@@ -183,6 +189,52 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           }
         }
 
+      }
+    });
+
+    /**
+     * @class MEI2VF.Fermatas
+     * @extend MEI2VF.PointerCollection
+     * @private
+     *
+     * @constructor
+     */
+    m2v.Fermatas = function(systemInfo, font) {
+      this.init(systemInfo, font);
+    };
+
+    Vex.Inherit(m2v.Fermatas, m2v.PointerCollection, {
+
+      init : function(systemInfo, font) {
+        m2v.Fermatas.superclass.init.call(this, systemInfo, font);
+      },
+
+      createVexFromInfos : function(notes_by_id) {
+        var me = this, i, model, note, annot;
+        i = me.allModels.length;
+        while (i--) {
+          model = me.allModels[i];
+          note = notes_by_id[model.startid];
+          if (note) {
+            me.addFermataToNote(note.vexNote, model.atts.place);
+          } else {
+            throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.createVexFromInfos', "The reference in the directive could not be resolved.");
+          }
+        }
+
+      },
+
+      /**
+       * adds a fermata to a note-like object
+       * @method addFermataToNote
+       * @param {Vex.Flow.StaveNote} note the note-like VexFlow object
+       * @param {'above'/'below'} place The place of the fermata
+       * @param {Number} index The index of the note in a chord (optional)
+       */
+      addFermataToNote : function(note, place, index) {
+        var vexArtic = new VF.Articulation(m2v.tables.fermata[place]);
+        vexArtic.setPosition(m2v.tables.positions[place]);
+        note.addArticulation(index || 0, vexArtic);
       }
     });
 
