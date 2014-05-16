@@ -57,7 +57,7 @@
 							</staff>
 							<staff n="3">
 								<layer>
-									<tuplet>
+									<tuplet bracket.visible="false">
 										<chord>
 											<note pname="d" oct="4" dur="8"/>
 											<note pname="f" oct="4" dur="8"/>
@@ -95,7 +95,8 @@
 							</staff>
 							<staff n="2">
 								<layer>
-									<tuplet>
+									<tuplet bracket.place="below">
+										<beam>
 										<chord>
 											<note pname="a" oct="4" dur="8"/>
 											<note pname="d" oct="5" dur="8"/>
@@ -108,20 +109,23 @@
 											<note pname="a" oct="4" dur="8"/>
 											<note pname="d" oct="5" dur="8"/>
 										</chord>
+										</beam>
 									</tuplet>
-									<tuplet>
+									<tuplet bracket.place="above">
+										<beam>
 										<chord>
-											<note pname="b" oct="4" dur="8"/>
+											<note pname="a" oct="4" dur="8"/>
 											<note pname="d" oct="5" dur="8"/>
 										</chord>
 										<chord>
-											<note pname="b" oct="4" dur="8"/>
+											<note pname="a" oct="4" dur="8"/>
 											<note pname="d" oct="5" dur="8"/>
 										</chord>
 										<chord>
-											<note pname="b" oct="4" dur="8"/>
+											<note pname="a" oct="4" dur="8"/>
 											<note pname="d" oct="5" dur="8"/>
 										</chord>
+										</beam>
 									</tuplet>
 								</layer>
 							</staff>
@@ -161,14 +165,18 @@
 							<staff n="2">
 								<layer>
 									<tuplet>
+										<beam>
 										<note pname="d" oct="4" dur="8"/>
 										<note pname="d" oct="4" dur="8"/>
 										<note pname="d" oct="4" dur="8"/>
+										</beam>
 									</tuplet>
 									<tuplet>
+										<beam>
 										<note pname="d" oct="4" dur="8"/>
 										<note pname="e" oct="4" dur="8"/>
 										<note pname="e" oct="4" dur="8"/>
+										</beam>
 									</tuplet>
 								</layer>
 							</staff>
@@ -188,7 +196,7 @@
 											</beam>
 										</beam>
 									</tuplet>
-									<tuplet num="7" numbase="4">
+									<tuplet num="7" numbase="4" num.format="ratio" bracket.visible="true">
 										<beam>
 											<note pname="d" oct="4" dur="16"/>
 											<note pname="d" oct="4" dur="16"/>

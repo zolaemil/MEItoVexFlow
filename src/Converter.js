@@ -1324,20 +1324,24 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         return elements;
       },
 
-      // default values: num=2, numbase=3 - OK? - another option would be 
+      // num.visible -- currently not supported in VexFlow; would be easy to add there
       /**
-       * Processes an MEI <b>tuplet</b>. Supported attributes:
-       * 
+       * Processes an MEI <b>tuplet</b>.
+       * Supported attributes:
+       *
        * - num (3 if not specified)
        * - numbase (2 if not specified)
-       * 
+       * - num.format ('count' if not specified)
+       * - bracket.visible (auto if not specified)
+       * - bracket.place (auto if not specified)
+       *
        * @method processTuplet
        * @param {XMLElement} element the MEI tuplet element
        * @param {Vex.Flow.Staff} staff the containing staff
        * @param {Number} the number of the containing staff
        */
       processTuplet : function(element, staff, staff_n) {
-        var me = this, elements;
+        var me = this, elements, tuplet, bracketVisible, bracketPlace;
         var process = function() {
           // make sure to get vexNote out of wrapped note objects
           var proc_element = me.processNoteLikeElement(this, staff, staff_n);
@@ -1345,10 +1349,26 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         };
         elements = $(element).children().map(process).get();
 
-        me.allTuplets.push(new VF.Tuplet(elements, {
+        tuplet = new VF.Tuplet(elements, {
           num_notes : +element.getAttribute('num') || 3,
           beats_occupied : +element.getAttribute('numbase') || 2
-        }));
+        });
+
+        if (element.getAttribute('num.format') === 'ratio') {
+          tuplet.setRatioed(true);
+        }
+
+        bracketVisible = element.getAttribute('bracket.visible');
+        if (bracketVisible) {
+          tuplet.setBracketed((bracketVisible === 'true') ? true : false);
+        }
+
+        bracketPlace = element.getAttribute('bracket.place');
+        if (bracketPlace) {
+          tuplet.setTupletLocation((bracketPlace === 'above') ? 1 : -1);
+        }
+
+        me.allTuplets.push(tuplet);
         return elements;
       },
 
