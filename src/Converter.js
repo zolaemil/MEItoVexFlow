@@ -241,6 +241,13 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          */
         me.allBeams = [];
         /**
+         * Contains all Vex.Flow.Tuplet objects. Data is just pushed in
+         * and later processed as a whole, so the array index is
+         * irrelevant.
+         * @property {Vex.Flow.Tuplet[]} allTuplets
+         */
+        me.allTuplets = [];
+        /**
          * an instance of MEI2VF.Dynamics dealing with and storing all dynamics
          * found in the MEI document
          * @property {MEI2VF.Dynamics} dynamics
@@ -359,6 +366,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         var me = this;
         me.drawSystems(ctx);
         me.drawVexBeams(me.allBeams, ctx);
+        me.drawVexTuplets(me.allTuplets, ctx);
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
         me.hairpins.setContext(ctx).draw();
@@ -950,6 +958,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             return me.processNote(element, staff, staff_n);
           case 'beam' :
             return me.processBeam(element, staff, staff_n);
+          case 'tuplet' :
+            return me.processTuplet(element, staff, staff_n);
           case 'chord' :
             return me.processChord(element, staff, staff_n);
           case 'anchoredText' :
@@ -1298,6 +1308,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
       /**
        * @method processBeam
+       * @param {XMLElement} element the MEI beam element
+       * @param {Vex.Flow.Staff} staff the containing staff
+       * @param {Number} the number of the containing staff
        */
       processBeam : function(element, staff, staff_n) {
         var me = this, elements;
@@ -1308,6 +1321,34 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         };
         elements = $(element).children().map(process).get();
         me.allBeams.push(new VF.Beam(elements));
+        return elements;
+      },
+
+      // default values: num=2, numbase=3 - OK? - another option would be 
+      /**
+       * Processes an MEI <b>tuplet</b>. Supported attributes:
+       * 
+       * - num (3 if not specified)
+       * - numbase (2 if not specified)
+       * 
+       * @method processTuplet
+       * @param {XMLElement} element the MEI tuplet element
+       * @param {Vex.Flow.Staff} staff the containing staff
+       * @param {Number} the number of the containing staff
+       */
+      processTuplet : function(element, staff, staff_n) {
+        var me = this, elements;
+        var process = function() {
+          // make sure to get vexNote out of wrapped note objects
+          var proc_element = me.processNoteLikeElement(this, staff, staff_n);
+          return proc_element.vexNote || proc_element;
+        };
+        elements = $(element).children().map(process).get();
+
+        me.allTuplets.push(new VF.Tuplet(elements, {
+          num_notes : +element.getAttribute('num') || 3,
+          beats_occupied : +element.getAttribute('numbase') || 2
+        }));
         return elements;
       },
 
@@ -1566,7 +1607,14 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         $.each(beams, function() {
           this.setContext(ctx).draw();
         });
-
+      },
+      /**
+       * @method drawVexBeams
+       */
+      drawVexTuplets : function(tuplets, ctx) {
+        $.each(tuplets, function() {
+          this.setContext(ctx).draw();
+        });
       }
     };
 
