@@ -61,14 +61,14 @@ MeiLib.createPseudoUUID = function() {
  * @constructor
  * @param {Object} node an XML DOM object
  */
-MeiLib.EventEnumerator = function(node) {
-  this.init(node);
+MeiLib.EventEnumerator = function(node, proportion) {
+  this.init(node, proportion);
 }
 /**
  * @method init
  * @param {} node
  */
-MeiLib.EventEnumerator.prototype.init = function(node) {
+MeiLib.EventEnumerator.prototype.init = function(node, proportion) {
   if (!node)
     throw new MeiLib.RuntimeError('MeiLib.EventEnumerator.init():E01', 'node is null or undefined');
   this.node = node;
@@ -77,6 +77,14 @@ MeiLib.EventEnumerator.prototype.init = function(node) {
   // false if and only if next_evnt is valid.
   this.children = $(this.node).children();
   this.i_next = -1;
+  this.proportion = proportion || {
+    num: 1,
+    numbase: 1
+  };
+  this.outputProportion = proportion || {
+    num: 1,
+    numbase: 1
+  };
   this.read_ahead();
 }
 /**
@@ -118,12 +126,28 @@ MeiLib.EventEnumerator.prototype.step_ahead = function() {++this.i_next;
     var node_name = $(this.next_evnt).prop('localName');
     if (node_name === 'note' || node_name === 'rest' || node_name === 'mRest' || node_name === 'chord') {
       this.EoI = false
-    } else if (node_name === 'beam' || node_name === 'tuplet') {
+    } else if (node_name === 'beam') {
       this.beam_enumerator = new MeiLib.EventEnumerator(this.next_evnt);
       if (!this.beam_enumerator.EoI) {
         this.next_evnt = this.beam_enumerator.nextEvent();
         this.EoI = false;
       } else {
+        this.EoI = true;
+      }
+    } else if (node_name === 'tuplet') {
+      
+      var proportion = {
+        num: this.proportion.num * +this.next_evnt.getAttribute('num') || 3,
+        numbase: this.proportion.numbase * +this.next_evnt.getAttribute('numbase') || 2        
+      };
+
+      this.beam_enumerator = new MeiLib.EventEnumerator(this.next_evnt, proportion);
+      if (!this.beam_enumerator.EoI) {
+        this.outputProportion = this.beam_enumerator.outputProportion;
+        this.next_evnt = this.beam_enumerator.nextEvent();
+        this.EoI = false;
+      } else {
+        this.outputProportion = this.proportion;
         this.EoI = true;
       }
     }
@@ -267,11 +291,11 @@ MeiLib.tstamp2id = function(tstamp, layer, meter) {
     prev_dist = dist;
     evnt = eventList.nextEvent();
     dist = distF();
-    ts_acc += MeiLib.durationOf(evnt, meter);
-    console.log(evnt);
+    ts_acc += MeiLib.durationOf(evnt, meter) 
+      * eventList.outputProportion.numbase 
+      / eventList.outputProportion.num;
     m = meter;
     e = evnt;
-    console.log(ts_acc);
   }
 
   if (dist === undefined)
