@@ -23,6 +23,46 @@
 					<section>
 						<measure n="1">
 							<staff n="1">
+								<layer n="1">
+									<tuplet>
+										
+										<note xml:id="n02a" pname="g" oct="4" dur="8"/>
+										<note pname="a" oct="4" dur="8"/>
+										<note pname="b" oct="4" dur="8" stem.dir="up"/>
+										
+									</tuplet>
+									
+									<tuplet>
+										
+											<note xml:id="n02" pname="g" oct="4" dur="8"/>
+											<note pname="a" oct="4" dur="8"/>
+											<note pname="b" oct="4" dur="8" stem.dir="up"/>
+										
+									</tuplet>
+								</layer>
+							</staff>
+							<staff n="2">
+								<layer n="1">
+									<note xml:id="n01" pname="a" oct="4" dur="4"/>
+										<beam>
+											<note xml:id="n03" pname="g" oct="4" dur="8"/>
+											<note pname="b" oct="4" dur="8" stem.dir="up"/>
+										</beam>
+								</layer>
+							</staff>
+							<staff n="3">
+								<layer n="1">
+									<mRest/>		
+								</layer>
+							</staff>
+							<dynam startid="n01">f</dynam>
+							
+							<dynam tstamp="2.7" staff="1">p</dynam>
+<!--							<dynam tstamp="2.5" staff="2">p</dynam>-->
+						</measure>
+						
+						<measure n="1">
+							<staff n="1">
 								<layer>
 									<beam>
 										<chord>

@@ -951,7 +951,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           case 'rest' :
             return me.processRest(element, staff);
           case 'mRest' :
-            return me.processmRest(element, staff);
+            return me.processmRest(element, staff, staff_n);
           case 'space' :
             return me.processSpace(element, staff);
           case 'note' :
@@ -1241,24 +1241,22 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       /**
        * @method processmRest
        */
-      processmRest : function(element, staff) {
-        var me = this, mRest, atts, xml_id;
+      processmRest : function(element, staff, staff_n) {
+        var me = this, mRest, atts, xml_id, meter, duration;
+
+        meter = me.systemInfo.getStaffInfo(staff_n).meter;
+        duration = new Vex.Flow.Fraction(meter.count, meter.unit);
 
         try {
           atts = m2v.Util.attsToObj(element);
-
           mRest = new VF.StaveNote({
             keys : ['d/5'],
-            duration : 'wr'
+            duration : 'wr',
+            duration_override : duration,
+            align_center : true
           });
 
           xml_id = MeiLib.XMLID(element);
-
-          // mRest.ignore_ticks = true;
-          // mRest.addToModifierContext = function() {
-          // return this;
-          // };
-          // console.log(mRest);
 
           if (atts.ho) {
             me.processAttrHo(atts.ho, mRest, staff);

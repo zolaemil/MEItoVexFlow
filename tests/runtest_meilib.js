@@ -197,6 +197,25 @@ MeiLibTest = function(){
     }
   });
   end_test();
+
+  console.log('********* additional durationOf TEST: tuplets **************************************');
+  start_test('durationOfTuplet');
+  var meter = { count:4, unit:4};
+  var fragment = $.parseXML(
+    '<x><tuplet>'+
+      '<note xml:id="n02a" pname="g" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
+      '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
+    '</tuplet></x>');
+  fragment = $(fragment).find('tuplet')[0];
+  var len = MeiLib.durationOf(fragment, meter);
+  var passed = (len > 1.99999 && len < 2.000001) ? 2: passed;
+  assert (passed, 2);
+  end_test();
+
   
   console.log('********* TEST: tstamp2id() **************************************');
   start_test('tstamp2id');
