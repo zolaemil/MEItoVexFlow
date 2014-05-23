@@ -200,7 +200,7 @@ MeiLibTest = function(){
 
   console.log('********* additional durationOf TEST: tuplets **************************************');
   start_test('durationOfTuplet');
-  var meter = { count:4, unit:4};
+
   var fragment = $.parseXML(
     '<x><tuplet>'+
       '<note xml:id="n02a" pname="g" oct="4" dur="8"/>'+
@@ -209,11 +209,36 @@ MeiLibTest = function(){
       '<note pname="a" oct="4" dur="8"/>'+
       '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
       '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
-    '</tuplet></x>');
-  fragment = $(fragment).find('tuplet')[0];
-  var len = MeiLib.durationOf(fragment, meter);
-  var passed = (len > 1.99999 && len < 2.000001) ? 2: passed;
-  assert (passed, 2);
+    '</tuplet>' + 
+    '<tuplet num="15" numbase="6" dur="2"><beam>'+
+      '<note pname="g" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+    '</beam></tuplet></x>');
+
+  var within_range = function(x, target, epsilon) {
+      return (x > target-epsilon && x < target+epsilon) ? target: x;
+  }
+
+  tuplet0 = $(fragment).find('tuplet')[0];
+  var len = MeiLib.durationOf(tuplet0, { count:4, unit:4});
+  assert (within_range(len, 2, 0.000001), 2);
+
+  var tuplet1 = $(fragment).find('tuplet')[1];
+  len = MeiLib.durationOf(tuplet1, {count: 3, unit: 4});
+  assert (within_range(len, 3, 0.000001), 3);
   end_test();
 
   
