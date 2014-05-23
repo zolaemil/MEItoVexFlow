@@ -102,14 +102,14 @@ version="HTML+RDFa 1.0" xml:lang="en">
 		
 		<script type="text/JavaScript" src="../src/meilib.js"></script>
 		<script type="text/JavaScript" src="../src/MEI2VF.js"></script>
-		<script type="text/JavaScript" src="../src/Hairpins.js"></script>
-		<script type="text/JavaScript" src="../src/Ties.js"></script>
 		<script type="text/JavaScript" src="../src/EventLink.js"></script>
 		<script type="text/JavaScript" src="../src/EventReference.js"></script>
 		<script type="text/JavaScript" src="../src/Hyphenation.js"></script>
 		<script type="text/JavaScript" src="../src/StaffInfo.js"></script>
 		<script type="text/JavaScript" src="../src/System.js"></script>
 		<script type="text/JavaScript" src="../src/SystemInfo.js"></script>
+		<script type="text/JavaScript" src="../src/LinkCollections.js"></script>
+		<script type="text/JavaScript" src="../src/PointerCollections.js"></script>
 		<script type="text/JavaScript" src="../src/Measure.js"></script>
 		<script type="text/JavaScript" src="../src/StaveConnector.js"></script>
 		<script type="text/JavaScript" src="../src/StaveVoices.js"></script>
@@ -174,14 +174,11 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				test_cases.push({ title: "Space element", mei_xml: 'TC.Space.xml', canvas_height:400});
 				// //the following xml file is missing:
 				//test_cases.push({ title: "Single Variant-Path with Processing Instructions", mei_xml: 'TC.SingleVariantPath.xml', canvas_height:400});
-				
 				test_cases.push({ title: "Clef - Tenor clef (with stem directions)", mei_xml: 'TC.VexClef.05.xml'});
 				test_cases.push({ title: "Clef - Alto clef (with stem directions)", mei_xml: 'TC.VexClef.07.xml'});
 				test_cases.push({ title: "Clef - Transposed treble clef (with stem directions)", mei_xml: 'TC.VexClef.06.xml'});
 				test_cases.push({ title: "Plain Staff", mei_xml: 'TC.PlainStaff.xml'});
-				test_cases.push({ title: "Fermatas", mei_xml: 'TC.Fermatas.xml'});
-				
-				test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
+				// test_cases.push({ title: "Bar lines", mei_xml: 'TC.BarLines.xml'});
 				// test_cases.push({ 
 					// title: "Page Layout, measure widths in the MEI code", 
 					// mei_xml: 'TC.PageLayout.xml',
@@ -210,8 +207,10 @@ version="HTML+RDFa 1.0" xml:lang="en">
 					}
 				});
 				test_cases.push({title: "Hyphenation", mei_xml: 'TC.Hyphens.xml', canvas_width: 1200, canvas_height:300 });
-				
-				//Test cases that are supposed to generate error messages on the console:
+				test_cases.push({ title: "Dynamics", mei_xml: 'TC.Dynamics.xml'});
+				test_cases.push({ title: "Fermatas", mei_xml: 'TC.Fermatas.xml'});
+				test_cases.push({ title: "Tuplets", mei_xml: 'TC.Tuplets.xml', canvas_width: 1200, canvas_height:400});
+				// Test cases that are supposed to generate error messages on the console:
 				 test_cases.push({ title: 'Missing_Attribute_Test_Case', mei_xml: 'TC.MissingAttribute.xml'});
 
 				var canvas_elements = new Array();
@@ -229,11 +228,11 @@ version="HTML+RDFa 1.0" xml:lang="en">
 				var i;
 				for (i=0;i<test_cases.length;i++) {
 					window.console.log('Starting Test Case #' + i);
-					try {
+					// try {
 						MEI2VF.RunTest(test_cases[i], canvas_elements[i], title_elements[i]);
-					} catch(e) {
-						window.console.log('Error during rendering test case #' + i.toString() + " title: " + test_cases[i].title + ". Error Message: " +  e.toString());
-					}
+					// } catch(e) {
+						// window.console.log('Error during rendering test case #' + i.toString() + " title: " + test_cases[i].title + ". Error Message: " +  e.toString());
+					// }
 				}
 			});
 		</script>

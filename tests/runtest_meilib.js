@@ -197,6 +197,50 @@ MeiLibTest = function(){
     }
   });
   end_test();
+
+  console.log('********* additional durationOf TEST: tuplets **************************************');
+  start_test('durationOfTuplet');
+
+  var fragment = $.parseXML(
+    '<x><tuplet>'+
+      '<note xml:id="n02a" pname="g" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
+      '<note pname="b" oct="4" dur="8" stem.dir="up"/>'+
+    '</tuplet>' + 
+    '<tuplet num="15" numbase="6" dur="2"><beam>'+
+      '<note pname="g" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+      '<note pname="a" oct="4" dur="8"/>'+
+    '</beam></tuplet></x>');
+
+  var within_range = function(x, target, epsilon) {
+      return (x > target-epsilon && x < target+epsilon) ? target: x;
+  }
+
+  tuplet0 = $(fragment).find('tuplet')[0];
+  var len = MeiLib.durationOf(tuplet0, { count:4, unit:4});
+  assert (within_range(len, 2, 0.000001), 2);
+
+  var tuplet1 = $(fragment).find('tuplet')[1];
+  len = MeiLib.durationOf(tuplet1, {count: 3, unit: 4});
+  assert (within_range(len, 3, 0.000001), 3);
+  end_test();
+
   
   console.log('********* TEST: tstamp2id() **************************************');
   start_test('tstamp2id');

@@ -1,16 +1,96 @@
-// 04/26/2014: setWidth is copied from the latest VexFlow version on GitHub; this
-// version of setWidth is necessary for the measure calculation to work; the
-// older version currently available via bower doesn't work.
-// ### delete when the new version of the function is available in bower ###
-Vex.Flow.Stave.prototype.setWidth = function(width) {
-  this.width = width;
-  this.glyph_end_x = this.x + width;
-  this.end_x = this.glyph_end_x;
 
-  // reset the x position of the end barline
-  this.modifiers[1].setX(this.end_x);
-  return this;
-};
+// Vex Flow Notation
+// Implements key signatures
+//
+// Requires vex.js.
+
+/**
+ * @constructor
+ */
+Vex.Flow.KeySignature = ( function() {
+  // ########### MODIFIED ############
+    function KeySignature(keySpec, customPadding) {
+      if (arguments.length > 0)
+        this.init(keySpec, customPadding);
+    }
+
+
+    Vex.Inherit(KeySignature, Vex.Flow.StaveModifier, {
+      // ########### MODIFIED ############
+      init : function(key_spec, customPadding) {
+        KeySignature.superclass.init();
+        var padding = customPadding || 10;
+        this.setPadding(padding);
+
+        this.glyphFontScale = 38;
+        // TODO(0xFE): Should this match StaveNote?
+        this.accList = Vex.Flow.keySignature(key_spec);
+      },
+
+      addAccToStave : function(stave, acc) {
+        var glyph = new Vex.Flow.Glyph(acc.glyphCode, this.glyphFontScale);
+        this.placeGlyphOnLine(glyph, stave, acc.line);
+        stave.addGlyph(glyph);
+      },
+
+      addModifier : function(stave) {
+        this.convertAccLines(stave.clef, this.accList[0].glyphCode);
+        for (var i = 0; i < this.accList.length; ++i) {
+          this.addAccToStave(stave, this.accList[i]);
+        }
+      },
+
+      addToStave : function(stave, firstGlyph) {
+        if (this.accList.length === 0)
+          return this;
+
+        if (!firstGlyph) {
+          stave.addGlyph(this.makeSpacer(this.padding));
+        }
+
+        this.addModifier(stave);
+        return this;
+      },
+
+      convertAccLines : function(clef, code) {
+        var offset = 0.0;
+        // if clef === "treble"
+        var tenorSharps;
+        var isTenorSharps = ((clef === "tenor") && (code === "v18")) ? true : false;
+
+        switch (clef) {
+          case "bass":
+            offset = 1;
+            break;
+          case "alto":
+            offset = 0.5;
+            break;
+          case "tenor":
+            if (!isTenorSharps) {
+              offset = -0.5;
+            }
+            break;
+        }
+
+        // Special-case for TenorSharps
+        var i;
+        if (isTenorSharps) {
+          tenorSharps = [3, 1, 2.5, 0.5, 2, 0, 1.5];
+          for ( i = 0; i < this.accList.length; ++i) {
+            this.accList[i].line = tenorSharps[i];
+          }
+        } else {
+          if (clef != "treble") {
+            for ( i = 0; i < this.accList.length; ++i) {
+              this.accList[i].line += offset;
+            }
+          }
+        }
+      }
+    });
+
+    return KeySignature;
+  }());
 
 /**
  * Create hyphens between the specified annotations.
@@ -71,7 +151,7 @@ Vex.Flow.Hyphen = ( function() {
         var first = cfg.first_annot;
         var last = cfg.last_annot;
 
-        var start_x = (first.text) ? first.x + ctx.measureText(first.text).width : first.x;
+        var start_x = (first.text) ? first.x + first.text_width : first.x;
         var end_x = last.x;
 
         var distance = end_x - start_x;
@@ -389,7 +469,7 @@ Vex.Flow.Annotation = ( function() {
         //
         // This is a hack to work around the inability to measure text height
         // in HTML5 Canvas (and SVG).
-        var text_height = this.context.measureText("m").width;
+        var text_height = this.context.measureText("M").width;
         var x, y;
 
         if (this.justification == Annotation.Justify.LEFT) {
@@ -438,6 +518,8 @@ Vex.Flow.Annotation = ( function() {
         // ############# ADDITON #############
         this.x = x;
         this.y = y;
+        this.text_height = text_height;
+        this.text_width = text_width;
 
         L("Rendering annotation: ", this.text, x, y);
         this.context.fillText(this.text, x, y);
@@ -552,6 +634,10 @@ Vex.Flow.StaveTie = ( function() {
         this.curvedir = dir;
       },
 
+      getDir : function() {
+        return this.curvedir;
+      },
+
       renderTie : function(params) {
         if (params.first_ys.length === 0 || params.last_ys.length === 0)
           throw new Vex.RERR("BadArguments", "No Y-values to render");
@@ -559,6 +645,8 @@ Vex.Flow.StaveTie = ( function() {
         // ADDITION:
         if (this.curvedir) {
           params.direction = (this.curvedir === 'above') ? -1 : 1;
+        } else {
+          this.curvedir = params.direction;
         }
 
         var ctx = this.context;

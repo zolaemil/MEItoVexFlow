@@ -1,4 +1,4 @@
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     // TODO width calculation: take end modifiers into account (do this later: end
     // modifiers are currently not part of mei2vf)
@@ -10,6 +10,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
      * @private
      *
      * @constructor
+     * @param {Object} config The configuration object
      */
     m2v.System = function(config) {
       this.init(config);
@@ -17,32 +18,76 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.System.prototype = {
 
+      /**
+       * @property {Number} LABEL_PADDING the padding (in pixels) between the voice
+       * labels and the staves
+       */
       LABEL_PADDING : 20,
 
+      /**
+       * @param {Object} config The configuration object
+       */
       init : function(config) {
         var me = this;
+
+        /**
+         * @cfg {Number|null} leftMar the left system margin as specified in the
+         * MEI file or null if there is no margin specified. In the latter case,
+         * the margin will be calculated on basis of the text width of the labels
+         */
         me.leftMar = config.leftMar;
+        /**
+         * @cfg {Object} coords the coords of the current system
+         * @cfg {Number} coords.x the x coordinate of the system
+         * @cfg {Number} coords.y the y coordinate of the system
+         * @cfg {Number} coords.w the system width
+         */
         me.coords = config.coords;
+        /**
+         * @cfg {Number[]} staffYs the y coordinates of all staffs in the current
+         * system
+         */
         me.staffYs = config.staffYs;
+        /**
+         * @cfg {String[]} labels the labels of all staffs in the current system
+         */
         me.labels = config.labels;
         /**
-         * @property {Array} the measures in the current system
+         * @property {MEI2VF.Measure[]} measures the measures in the current
+         * system
          */
         me.measures = [];
       },
 
+      /**
+       * @return {Number[]} the value of {@link #staffYs}
+       */
       getStaffYs : function() {
         return this.staffYs;
       },
 
+      /**
+       * adds a measure to the end of the measure array
+       * @param {MEI2VF.Measure} measure the measure to add
+       */
       addMeasure : function(measure) {
         this.measures.push(measure);
       },
 
+      /**
+       * gets a measure in the current system at the specified index
+       * @param {Number} i the measure index (the first measure in the current
+       * system has the index 0)
+       * @return {MEI2VF.Measure}
+       */
       getMeasure : function(i) {
         return this.measures[i];
       },
 
+      /**
+       * gets all measures in the current system
+       * @return {MEI2VF.Measure[]}
+       */
       getMeasures : function() {
         return this.measures;
       },
@@ -154,4 +199,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));

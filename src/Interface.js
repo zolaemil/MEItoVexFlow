@@ -4,7 +4,7 @@
  * @class MEI2VF
  * @singleton
  */
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
     return {
       setLogging : m2v.setLogging,
       Converter : {
@@ -25,7 +25,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
       }
     };
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));
 
 /**
  * @property
@@ -46,7 +46,7 @@ MEI2VF.rendered_measures = null;
  * {@link MEI2VF.Converter MEI2VF.Converter}
  */
 MEI2VF.render_notation = function(xmlDoc, target, width, height, backend, options) {
-
+  var ctx;
   var cfg = options || {};
 
   ctx = new Vex.Flow.Renderer(target, backend || Vex.Flow.Renderer.Backends.CANVAS).getContext();

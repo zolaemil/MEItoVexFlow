@@ -1,4 +1,4 @@
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
      * @class MEI2VF.Util
@@ -73,8 +73,8 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         }
         if (options.voices && options.voices.data) {
           $.each(options.voices.data, function() {
-            if (this && this.staveVoices && this.staveVoices.all_voices) {
-              $.each(this.staveVoices.all_voices, function() {
+            if (this && this.all_voices) {
+              $.each(this.all_voices, function() {
                 if (this && this.voice) {
                   if (this.voice.boundingBox && options.voices.drawFrame) {
                     this.voice.getBoundingBox().draw(ctx);
@@ -108,4 +108,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));

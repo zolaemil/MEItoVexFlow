@@ -36,6 +36,7 @@
 									<note xml:id="n04" pname="a" oct="4" dur="4"></note>
 								</layer>
 							</staff>
+							<dir tstamp="1" place="above">marcato</dir>
 						</measure>
 					</section>
 				</score>

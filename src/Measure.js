@@ -1,10 +1,11 @@
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
      * @class MEI2VF.Measure
      * @private
      *
      * @constructor
+     * @param {Object} config The configuration object
      */
     m2v.Measure = function(config) {
       this.init(config);
@@ -12,9 +13,10 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     m2v.Measure.prototype = {
 
-      // currently fixed
-      HALF_LINE_DISTANCE : 5, // VF.Staff.spacing_between_lines_px / 2;
-
+      /**
+       * initializes the current MEI2VF.Measure object
+       * @param {Object} config The configuration object
+       */
       init : function(config) {
         var me = this;
         /**
@@ -44,21 +46,27 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
          */
         me.startConnectors = new m2v.Connectors(config.startConnectorCfg);
         /**
-         * @cfg {MEI2VF.Connectors} startConnectors an instance of
+         * @cfg {MEI2VF.Connectors} inlineConnectors an instance of
          * MEI2VF.Connectors handling all right connectors
          */
         me.inlineConnectors = new m2v.Connectors(config.inlineConnectorCfg);
+
+        me.tieElements = config.tieElements;
+        me.slurElements = config.slurElements;
+        me.hairpinElements = config.hairpinElements;
         /**
-         * @cfg {Array} tempoElements the MEI tempo elements in the current
+         * @cfg {XMLElement[]} tempoElements the MEI tempo elements in the
+         * current
          * measure
          */
         me.tempoElements = config.tempoElements;
         /**
-         * @cfg {Object} the font used for rendering tempo specifications
+         * @cfg {Object} tempoFont the font used for rendering tempo
+         * specifications
          */
         me.tempoFont = config.tempoFont;
         /**
-         * @property {Number} the maximum note_start_x value of all
+         * @property {Number} maxNoteStartX the maximum note_start_x value of all
          * Vex.Flow.Stave objects in the current measure
          */
         me.maxNoteStartX = 0;
@@ -128,28 +136,36 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       // TODO handle timestamps! (is it necessary to handle tempo element
       // as annotations?)
       // TODO make magic numbers constants
+      // TODO move from here
       /**
        * Writes the data of the tempo elements in the current measure to the
        * corresponding Vex.Flow.Stave object
        */
       addTempoToStaves : function() {
-        var me = this, offsetX, vexStaff, vexTempo, atts;
+        var me = this, offsetX, vexStaff, vexTempo, atts, halfLineDistance;
         $.each(me.tempoElements, function() {
           atts = m2v.Util.attsToObj(this);
           vexStaff = me.staffs[atts.staff];
+          halfLineDistance = vexStaff.getSpacingBetweenLines() / 2; 
           vexTempo = new Vex.Flow.StaveTempo({
             name : $(this).text(),
             duration : atts['mm.unit'],
             dots : +atts['mm.dots'],
             bpm : +atts.mm
           }, vexStaff.x, 5);
-          if (atts.vo)
-            vexTempo.setShiftY(+atts.vo * me.HALF_LINE_DISTANCE);
+          if (atts.vo) {
+            vexTempo.setShiftY(+atts.vo * halfLineDistance);
+          }
           offsetX = (vexStaff.getModifierXShift() > 0) ? -14 : 14;
-          if ( typeof vexStaff.timeSigIndex === 'number')
+
+          // if a staff has a time signature, set the tempo on top of the time
+          // signature instead of the first note
+          if (vexStaff.hasTimeSig) {
             offsetX -= 24;
-          if (atts.ho)
-            offsetX += +atts.ho * me.HALF_LINE_DISTANCE;
+          }
+          if (atts.ho) {
+            offsetX += +atts.ho * halfLineDistance;
+          }
           vexTempo.setShiftX(offsetX);
           vexTempo.font = me.tempoFont;
           vexStaff.modifiers.push(vexTempo);
@@ -163,14 +179,21 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
         var me = this;
         me.calculateMaxNoteStartX();
         me.calculateRepeatPadding();
+        /**
+         * @property {Number} minVoicesW the minimum width of the voices in the
+         * measure
+         */
         me.minVoicesW = me.voices.preFormat();
-        me.minWidth = me.maxNoteStartX + me.minVoicesW + me.repeatPadding; 
+        /**
+         * @property {Number} minWidth the minimum width of the measure
+         */
+        me.minWidth = me.maxNoteStartX + me.minVoicesW + me.repeatPadding;
       },
-      
+
       /**
-       * gets the minimum width of the current measure; 
+       * gets the minimum width of the current measure;
        */
-      getMinWidth: function() {
+      getMinWidth : function() {
         return this.minWidth;
       },
 
@@ -197,20 +220,23 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       calculateRepeatPadding : function() {
         var me = this;
         var staff = me.getFirstDefinedStaff();
+        /**
+         * @property {0|20} repeatPadding additional padding (20px) if the staff
+         * does have a left REPEAT_BEGIN barline located to the right of other
+         * staff modifiers; 0px in all other cases.
+         */
         me.repeatPadding = (staff.modifiers[0].barline == Vex.Flow.Barline.type.REPEAT_BEGIN && staff.modifiers.length > 2) ? 20 : 0;
       },
 
-      // TODO align start modifiers (changes in vexflow necessary??)
-      
       // TODO move label attachment somewhere else
       /**
        * Formats the staffs in the current measure: sets x coordinates and adds
        * staff labels
        * @param {Number} x The x coordinate of the the measure
-       * @param {Object} labels
+       * @param {String[]} labels The labels of all staves
        */
       format : function(x, labels) {
-        var me = this, width = me.w, i = me.staffs.length;
+        var me = this, width = me.w, i = me.staffs.length, staff;
         while (i--) {
           if (me.staffs[i]) {
             staff = me.staffs[i];
@@ -229,6 +255,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             // staff.glyph_end_x += x + offsetW;
           }
         }
+        me.voices.format(me.getFirstDefinedStaff());
       },
 
       /**
@@ -246,7 +273,6 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
             staff.setContext(ctx).draw();
           }
         }
-        me.voices.format(me.getFirstDefinedStaff());
         me.voices.draw(ctx, staffs);
         me.startConnectors.setContext(ctx).draw();
         me.inlineConnectors.setContext(ctx).draw();
@@ -255,4 +281,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));

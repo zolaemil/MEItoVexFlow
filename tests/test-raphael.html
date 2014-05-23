@@ -28,6 +28,12 @@ version="HTML+RDFa 1.0" xml:lang="en">
 					document.getElementById('svg'), $('#test-title'), 
 					Vex.Flow.Renderer.Backends.RAPHAEL
 				);
+				
+				MEI2VF.RunTest(
+					{ title: 'Prokofiev Op. 36', mei_xml: 'TC.Dynamics.xml'}, 
+					document.getElementById('svg1'), $('#test-title'), 
+					Vex.Flow.Renderer.Backends.RAPHAEL
+				);
 
 			});
 		</script>
@@ -36,6 +42,8 @@ version="HTML+RDFa 1.0" xml:lang="en">
 		<div class="test-page">
 			<h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2>
 			<div class='a'><svg id='svg'/></div>
+			<h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2>
+			<div class='a'><svg id='svg1'/></div>
 		</div>
 	</body>
 </html>

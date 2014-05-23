@@ -18,7 +18,7 @@
  * the License.
  */
 
-var MEI2VF = ( function(m2v, VF, $, undefined) {
+var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
      * @class MEI2VF.Connectors
@@ -115,7 +115,7 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
       },
 
       draw : function() {
-        var me = this, i, j, conn, shift, ctx = me.ctx;
+        var me = this, i, j, conn, shift;
         for ( i = 0, j = me.allVexConnectors.length; i < j; i += 1) {
           conn = me.allVexConnectors[i];
           if (conn.checkShift) {
@@ -131,4 +131,4 @@ var MEI2VF = ( function(m2v, VF, $, undefined) {
 
     return m2v;
 
-  }(MEI2VF || {}, Vex.Flow, jQuery));
+  }(MEI2VF || {}, MeiLib, Vex.Flow, jQuery));
