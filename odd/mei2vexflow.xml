@@ -1,5 +1,9 @@
-<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://raw.githubusercontent.com/music-encoding/music-encoding/master/source/tei_odds.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="https://raw.githubusercontent.com/music-encoding/music-encoding/master/source/tei_odds.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<!--<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>-->
+
 <TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:rng="http://relaxng.org/ns/structure/1.0"
   xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
   <teiHeader>
@@ -109,6 +113,11 @@
         
         <classSpec ident="model.meilibjs.eventLike" mode="add" module="MEI.cmn" type="model">
           <desc>groups event elements what MeiLib.js can accept when converting between timestamps and xml:id values</desc>
+        	
+        	<!-- ############################################################################################ -->
+        	<!-- TODO adjust description or mei2vf: meilib currently can't handle the eventLike mRest element -->
+        	<!-- ############################################################################################ -->
+        	
         </classSpec>
         
         <classSpec ident="model.meilibjs.simpleEventLike" mode="add" module="MEI.cmn" type="model">
@@ -138,6 +147,11 @@
             <memberOf key="model.meilibjs.simpleEventLike"/>
           </classes>
         </elementSpec>
+      	<elementSpec ident="space" module="MEI.shared" mode="change">
+      		<classes mode="change">
+      			<memberOf key="model.meilibjs.simpleEventLike"/>
+      		</classes>
+      	</elementSpec>
         <elementSpec ident="mRest" module="MEI.cmn" mode="change">
           <classes mode="change">
             <memberOf key="model.meilibjs.eventLike"/>
@@ -211,7 +225,7 @@
         </elementSpec>
           
           
-        <!-- children of beam can only be note, rest, space or chord -->
+        <!-- children of beam can only be note, rest, space, chord, tuplet or beam -->
         <elementSpec ident="beam" module="MEI.cmn" mode="change">
           <classes mode="change">
             <memberOf key="model.meilibjs.eventLike"/>
@@ -219,7 +233,13 @@
           <content>
             <rng:zeroOrMore>
               <rng:choice>
-                <rng:ref name="model.meilibjs.simpleEventLike"/>
+                <!--<rng:ref name="model.meilibjs.simpleEventLike"/>-->
+              	<rng:ref name="model.meilibjs.eventLike"/>
+              	
+              	<!-- #################################################################################### -->
+              	<!-- replaced simpleEventLike with eventLike, so beams can contain tuplets or other beams -->
+              	<!-- #################################################################################### -->
+              	
                 <rng:ref name="model.appLike"/>
                 <rng:ref name="model.editLike"/>
                 <rng:ref name="model.transcriptionLike"/>
@@ -227,8 +247,26 @@
             </rng:zeroOrMore>
           </content>
         </elementSpec>
+      	
+      	<!-- same content model as beam -->
+      	<elementSpec ident="tuplet" module="MEI.cmn" mode="change">
+      		<classes mode="change">
+      			<memberOf key="model.meilibjs.eventLike"/>
+      		</classes>
+      		<content>
+      			<rng:zeroOrMore>
+      				<rng:choice>
+      					<rng:ref name="model.meilibjs.eventLike"/>
+      					<rng:ref name="model.appLike"/>
+      					<rng:ref name="model.editLike"/>
+      					<rng:ref name="model.transcriptionLike"/>
+      				</rng:choice>
+      			</rng:zeroOrMore>
+      		</content>
+      	</elementSpec>
+      	
 
-        <!-- children of layer can only be note, rest, space, mRest, chord or beam -->
+        <!-- children of layer can only be note, rest, space, mRest, chord, tuplet or beam -->
         <elementSpec ident="layer" module="MEI.shared" mode="change">
           <desc>An independent stream of events on a staff. In order to convert 
             xml:id and timestamp values there and back, MeiLib.js can only accept certain elements under layer.

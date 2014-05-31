@@ -3,259 +3,145 @@
          xmlns:xlink="http://www.w3.org/1999/xlink"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://www.music-encoding.org/ns/mei"><!--
-Schema generated from ODD source 2014-05-05T19:07:47Z. 
-Edition: 2013 Release
+Schema generated from ODD source 2014-06-01T00:31:18Z. 
+Edition: 
 Edition Location: http://www.tei-c.org/Vault/P5//
-
---><!----><sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron" prefix="tei"
+  
+--><!---->
+   <sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron"
+           prefix="tei"
            uri="http://www.tei-c.org/ns/1.0"/>
    <define name="data.ACCIDENTAL.EXPLICIT">
       <choice>
          <value>s</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp</a:documentation>
          <value>f</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat</a:documentation>
          <value>ss</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double sharp (written as 2 sharps)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double sharp (written as 2 sharps)</a:documentation>
          <value>x</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double sharp (written using croix)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double sharp (written using croix)</a:documentation>
          <value>ff</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double flat</a:documentation>
          <value>xs</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple sharp (written as croix and 2 sharps)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple sharp (written as croix and 2 sharps)</a:documentation>
          <value>ts</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple sharp (written as 3 sharps)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple sharp (written as 3 sharps)</a:documentation>
          <value>tf</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple flat</a:documentation>
          <value>n</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural</a:documentation>
          <value>nf</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural + flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural + flat; used to cancel preceding double flat</a:documentation>
          <value>ns</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural + sharp</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural + sharp; used to cancel preceding double sharp</a:documentation>
          <value>su</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp note raised by quarter tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp note raised by quarter tone</a:documentation>
          <value>sd</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp note lowered by quarter tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp note lowered by quarter tone</a:documentation>
          <value>fu</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat note raised by quarter tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat note raised by quarter tone</a:documentation>
          <value>fd</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat note lowered by quarter tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat note lowered by quarter tone</a:documentation>
          <value>nu</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural note raised by quarter tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural note raised by quarter tone</a:documentation>
          <value>nd</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural note lowered by quarter tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural note lowered by quarter tone</a:documentation>
       </choice>
    </define>
    <define name="data.ACCIDENTAL.IMPLICIT">
       <choice>
          <value>s</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">sharp</a:documentation>
          <value>f</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">flat</a:documentation>
          <value>ss</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double sharp</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double sharp</a:documentation>
          <value>ff</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double flat</a:documentation>
          <value>n</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">natural</a:documentation>
          <value>su</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">three quarter-tones sharp</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">three quarter-tones sharp</a:documentation>
          <value>sd</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quarter-tone sharp</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quarter-tone sharp</a:documentation>
          <value>fu</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quarter-tone flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quarter-tone flat</a:documentation>
          <value>fd</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">three quarter-tones flat</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">three quarter-tones flat</a:documentation>
       </choice>
    </define>
    <define name="data.ARTICULATION">
       <choice>
          <value>acc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">accent (Unicode 1D17B)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">accent (Unicode 1D17B)</a:documentation>
          <value>stacc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">staccato (Unicode 1D17C)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">staccato (Unicode 1D17C)</a:documentation>
          <value>ten</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tenuto (Unicode 1D17D)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tenuto (Unicode 1D17D)</a:documentation>
          <value>stacciss</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">staccatissimo (Unicode 1D17E)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">staccatissimo (Unicode 1D17E)</a:documentation>
          <value>marc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">marcato (Unicode 1D17F)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">marcato (Unicode 1D17F)</a:documentation>
          <value>marc-stacc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">marcato + staccato (Unicode 1D180)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">marcato + staccato (Unicode 1D180)</a:documentation>
          <value>spicc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">spiccato</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">spiccato</a:documentation>
          <value>doit</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note followed by short slide to higher, indeterminate pitch (Unicode
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note followed by short slide to higher, indeterminate pitch (Unicode
             1D185)</a:documentation>
          <value>rip</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note preceded by short slide from lower, indeterminate pitch
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note preceded by short slide from lower, indeterminate pitch
             (Unicode 1D186)</a:documentation>
          <value>plop</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note preceded by "slide" from higher, indeterminate
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note preceded by "slide" from higher, indeterminate
             pitch</a:documentation>
          <value>fall</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note followed by long "slide" to lower, indeterminate
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note followed by long "slide" to lower, indeterminate
             pitch</a:documentation>
          <value>bend</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">"lip slur" to lower pitch, then return to written pitch</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">"lip slur" to lower pitch, then return to written pitch</a:documentation>
          <value>flip</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note followed by quick upward rise, then descent in pitch (Unicode
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">main note followed by quick upward rise, then descent in pitch (Unicode
             1D187)</a:documentation>
          <value>smear</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D188)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D188)</a:documentation>
          <value>dnbow</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">down bow (Unicode 1D1AA)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">down bow (Unicode 1D1AA)</a:documentation>
          <value>upbow</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">up bow (Unicode 1D1AB)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">up bow (Unicode 1D1AB)</a:documentation>
          <value>harm</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">harmonic (Unicode 1D1AC)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">harmonic (Unicode 1D1AC)</a:documentation>
          <value>snap</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">snap pizzicato (Unicode 1D1AD)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">snap pizzicato (Unicode 1D1AD)</a:documentation>
          <value>fingernail</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">fingernail (Unicode 1D1B3)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">fingernail (Unicode 1D1B3)</a:documentation>
          <value>ten-stacc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tenuto + staccato (Unicode 1D182)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tenuto + staccato (Unicode 1D182)</a:documentation>
          <value>damp</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dampen harp string (Unicode 1D1B4)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dampen harp string (Unicode 1D1B4)</a:documentation>
          <value>dampall</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dampen all harp strings (Unicode 1D1B5)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dampen all harp strings (Unicode 1D1B5)</a:documentation>
          <value>open</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">full (as opposed to stopped) tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">full (as opposed to stopped) tone</a:documentation>
          <value>stop</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">"muffled" tone</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">"muffled" tone</a:documentation>
          <value>dbltongue</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double tongue (Unicode 1D18A)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double tongue (Unicode 1D18A)</a:documentation>
          <value>trpltongue</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple tongue (Unicode 1D18B)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">triple tongue (Unicode 1D18B)</a:documentation>
          <value>heel</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">use heel (organ pedal)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">use heel (organ pedal)</a:documentation>
          <value>toe</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">use toe (organ pedal)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">use toe (organ pedal)</a:documentation>
          <value>tap</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">percussive effect on guitar string(s)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">percussive effect on guitar string(s)</a:documentation>
          <value>lhpizz</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">left-hand pizzicato</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">left-hand pizzicato</a:documentation>
          <value>dot</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">uninterpreted dot</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">uninterpreted dot</a:documentation>
          <value>stroke</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">uninterpreted stroke</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">uninterpreted stroke</a:documentation>
       </choice>
    </define>
    <define name="data.ARTICULATIONS">
@@ -273,65 +159,37 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.BARPLACE">
       <choice>
          <value>mensur</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">between staves only</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">between staves only</a:documentation>
          <value>staff</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">between and across staves as necessary</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">between and across staves as necessary</a:documentation>
          <value>takt</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">short line above staff or through top line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">short line above staff or through top line</a:documentation>
       </choice>
    </define>
    <define name="data.BARRENDITION">
       <choice>
          <value>dashed</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dashed line (Unicode 1D104)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dashed line (Unicode 1D104)</a:documentation>
          <value>dotted</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dotted line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dotted line</a:documentation>
          <value>dbl</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D101)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D101)</a:documentation>
          <value>dbldashed</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double dashed line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double dashed line</a:documentation>
          <value>dbldotted</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double dotted line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double dotted line</a:documentation>
          <value>end</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D102)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D102)</a:documentation>
          <value>invis</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">bar line not rendered</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">bar line not rendered</a:documentation>
          <value>rptstart</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">repeat start (Unicode 1D106)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">repeat start (Unicode 1D106)</a:documentation>
          <value>rptboth</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">repeat start and end</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">repeat start and end</a:documentation>
          <value>rptend</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">repeat end (Unicode 1D107)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">repeat end (Unicode 1D107)</a:documentation>
          <value>single</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D100)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(Unicode 1D100)</a:documentation>
       </choice>
    </define>
    <define name="data.BEAM">
@@ -391,29 +249,19 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.CLEFSHAPE">
       <choice>
          <value>G</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">G clef (Unicode 1D11E)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">G clef (Unicode 1D11E)</a:documentation>
          <value>F</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">F clef (Unicode 1D122)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">F clef (Unicode 1D122)</a:documentation>
          <value>C</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">C clef (Unicode 1D121)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">C clef (Unicode 1D121)</a:documentation>
       </choice>
    </define>
    <define name="data.CLUSTER">
       <choice>
          <value>whbox</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">unfilled box</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">unfilled box</a:documentation>
          <value>blbox</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled box</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled box</a:documentation>
       </choice>
    </define>
    <define name="data.COLOR">
@@ -464,25 +312,15 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.CURVERENDITION">
       <choice>
          <value>narrow</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">default line width</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">default line width</a:documentation>
          <value>medium</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as normal</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as normal</a:documentation>
          <value>wide</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as medium</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as medium</a:documentation>
          <value>dashed</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dashed</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dashed</a:documentation>
          <value>dotted</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dotted</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dotted</a:documentation>
       </choice>
    </define>
    <define name="data.DEGREES">
@@ -522,13 +360,9 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.ENCLOSURE">
       <choice>
          <value>paren</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">parentheses</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">parentheses</a:documentation>
          <value>brack</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">square brackets</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">square brackets</a:documentation>
       </choice>
    </define>
    <define name="data.FONTFAMILY">
@@ -545,17 +379,11 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.FONTSTYLE">
       <choice>
          <value>italic</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">text slants to right</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">text slants to right</a:documentation>
          <value>normal</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">unadorned</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">unadorned</a:documentation>
          <value>oblique</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">text slants to the left</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">text slants to the left</a:documentation>
       </choice>
    </define>
    <define name="data.FONTWEIGHT">
@@ -567,174 +395,94 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.GLISSANDO">
       <choice>
          <value>i</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">first note/chord in glissando</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">first note/chord in glissando</a:documentation>
          <value>m</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">note/chord that's neither first nor last in glissando</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">note/chord that's neither first nor last in glissando</a:documentation>
          <value>t</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">last note in glissando</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">last note in glissando</a:documentation>
       </choice>
    </define>
    <define name="data.GRACE">
       <choice>
          <value>acc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">time "stolen" from following note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">time "stolen" from following note</a:documentation>
          <value>unacc</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">time "stolen" from previous note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">time "stolen" from previous note</a:documentation>
          <value>unknown</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">no interpretation regarding performed value of grace
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">no interpretation regarding performed value of grace
             note</a:documentation>
       </choice>
    </define>
    <define name="data.HEADSHAPE">
       <choice>
          <value>quarter</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled oval (Unicode 1D158)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled oval (Unicode 1D158)</a:documentation>
          <value>half</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open oval (Unicode 1D157)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open oval (Unicode 1D157)</a:documentation>
          <value>whole</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open oval (Unicode 1D15D)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open oval (Unicode 1D15D)</a:documentation>
          <value>dblwhole</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">modern breve (Unicode 1D15C)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">modern breve (Unicode 1D15C)</a:documentation>
          <value>filldiamond</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled diamond (Unicode 1D1BA)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled diamond (Unicode 1D1BA)</a:documentation>
          <value>diamond</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open diamond (Unicode 1D1B9)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open diamond (Unicode 1D1B9)</a:documentation>
          <value>dwdiamond</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole diamond (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole diamond (Mup)</a:documentation>
          <value>fillisotriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled isosceles triangle (Unicode 1D149)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled isosceles triangle (Unicode 1D149)</a:documentation>
          <value>isotriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open isosceles triangle (Unicode 1D148)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open isosceles triangle (Unicode 1D148)</a:documentation>
          <value>dwhisotriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open isosceles triangle (Unicode 1D14E)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open isosceles triangle (Unicode 1D14E)</a:documentation>
          <value>fillpiewedge</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled downward-pointing wedge (Unicode 1D155)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled downward-pointing wedge (Unicode 1D155)</a:documentation>
          <value>piewedge</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">downward-pointing wedge (Unicode 1D154)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">downward-pointing wedge (Unicode 1D154)</a:documentation>
          <value>dwhpiewedge</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole downward-pointing wedge (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole downward-pointing wedge (Mup)</a:documentation>
          <value>fillrectangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled rectangle (Unicode 1D147)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled rectangle (Unicode 1D147)</a:documentation>
          <value>rectangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open rectangle (Unicode 1D146)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open rectangle (Unicode 1D146)</a:documentation>
          <value>dwhrectangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open rectangle (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open rectangle (Mup)</a:documentation>
          <value>fillrtriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled right triangle (Unicode 1D14B)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled right triangle (Unicode 1D14B)</a:documentation>
          <value>rtriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open right triangle (Unicode 1D14A)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open right triangle (Unicode 1D14A)</a:documentation>
          <value>dwrtriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole right triangle (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole right triangle (Mup)</a:documentation>
          <value>fillurtriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled upper right triangle (Unicode 1D151)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled upper right triangle (Unicode 1D151)</a:documentation>
          <value>urtriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open upper right triangle (Unicode 1D150)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open upper right triangle (Unicode 1D150)</a:documentation>
          <value>dwurtriangle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole upper right triangle</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole upper right triangle</a:documentation>
          <value>fillsemicircle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled semi-circle (Unicode 1D153)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled semi-circle (Unicode 1D153)</a:documentation>
          <value>semicircle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open semi-circle (Unicode 1D152)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open semi-circle (Unicode 1D152)</a:documentation>
          <value>dwsemicircle</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open semi-circle (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open semi-circle (Mup)</a:documentation>
          <value>fillslash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled slash (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">filled slash (Mup)</a:documentation>
          <value>slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open slash (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">open slash (Mup)</a:documentation>
          <value>dwslash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open slash (Mup)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole open slash (Mup)</a:documentation>
          <value>x</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">X (Unicode 1D143)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">X (Unicode 1D143)</a:documentation>
          <value>blank</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">note head not rendered (Unicode 1D159)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">note head not rendered (Unicode 1D159)</a:documentation>
          <value>circlex</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">X within circle (Unicode 1D145)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">X within circle (Unicode 1D145)</a:documentation>
          <value>cross</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">plus sign (Unicode 1D144)</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">plus sign (Unicode 1D144)</a:documentation>
          <value>addslash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">added diagonal slash (/) through default note head</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">added diagonal slash (/) through default note head</a:documentation>
          <value>addbackslash (MusicXML)</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">added diagonal backslash (\) through default note head
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">added diagonal backslash (\) through default note head
             (MusicXML)</a:documentation>
       </choice>
    </define>
@@ -764,53 +512,31 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.LAYERSCHEME">
       <choice>
          <value>1</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">single layer</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">single layer</a:documentation>
          <value>2o</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">two layers with opposing stems</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">two layers with opposing stems</a:documentation>
          <value>2f</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">two layers with 'floating' stems</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">two layers with 'floating' stems</a:documentation>
          <value>3o</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <value>3f</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
       </choice>
    </define>
    <define name="data.LINERENDITION">
       <choice>
          <value>narrow</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">default line width</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">default line width</a:documentation>
          <value>medium</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as narrow</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as narrow</a:documentation>
          <value>wide</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as medium</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">twice as wide as medium</a:documentation>
          <value>dashed</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dashed line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dashed line</a:documentation>
          <value>dotted</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dotted line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">dotted line</a:documentation>
          <value>wavy</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">undulating line</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">undulating line</a:documentation>
       </choice>
    </define>
    <define name="data.MEASUREBEAT">
@@ -826,25 +552,17 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.MENSURATIONSIGN">
       <choice>
          <value>C</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tempus imperfectum</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tempus imperfectum</a:documentation>
          <value>O</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tempus perfectum</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">tempus perfectum</a:documentation>
       </choice>
    </define>
    <define name="data.METERSIGN">
       <choice>
          <value>common</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">common time; i.e. 4/4</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">common time; i.e. 4/4</a:documentation>
          <value>cut</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">cut time; i.e. 2/2</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">cut time; i.e. 2/2</a:documentation>
       </choice>
    </define>
    <define name="data.MODE">
@@ -914,13 +632,9 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.SIZE">
       <choice>
          <value>normal</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">default size</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">default size</a:documentation>
          <value>cue</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">reduced size</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">reduced size</a:documentation>
       </choice>
    </define>
    <define name="data.SLASH">
@@ -947,101 +661,61 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.STAFFREL">
       <choice>
          <value>above</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">written above staff</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">written above staff</a:documentation>
          <value>below</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">written below staff</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">written below staff</a:documentation>
          <value>within</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">written on staff</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">written on staff</a:documentation>
       </choice>
    </define>
    <define name="data.STEMDIRECTION">
       <choice>
          <value>up</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem points upward</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem points upward</a:documentation>
          <value>down</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem points downward</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem points downward</a:documentation>
       </choice>
    </define>
    <define name="data.STEMMODIFIER">
       <choice>
          <value>1slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">1 slash through stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">1 slash through stem</a:documentation>
          <value>2slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">2 slashes through stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">2 slashes through stem</a:documentation>
          <value>3slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">3 slashes through stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">3 slashes through stem</a:documentation>
          <value>4slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">4 slashes through stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">4 slashes through stem</a:documentation>
          <value>5slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">5 slashes through stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">5 slashes through stem</a:documentation>
          <value>6slash</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">6 slashes through stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">6 slashes through stem</a:documentation>
          <value>sprech</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">X placed on stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">X placed on stem</a:documentation>
          <value>z</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Z placed on stem</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Z placed on stem</a:documentation>
       </choice>
    </define>
    <define name="data.STEMPOSITION">
       <choice>
          <value>left</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem attached to left side of note head</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem attached to left side of note head</a:documentation>
          <value>right</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem attached to right side of note head</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem attached to right side of note head</a:documentation>
          <value>center</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem is originates from center of note head</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">stem is originates from center of note head</a:documentation>
       </choice>
    </define>
    <define name="data.TEMPERAMENT">
       <choice>
          <value>equal</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">equal or 12-tone temperament</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">equal or 12-tone temperament</a:documentation>
          <value>just</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">just intonation</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">just intonation</a:documentation>
          <value>mean</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">meantone intonation</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">meantone intonation</a:documentation>
          <value>pythagorean</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">pythagorean tuning</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">pythagorean tuning</a:documentation>
       </choice>
    </define>
    <define name="data.TEMPOVALUE">
@@ -1052,137 +726,73 @@ Edition Location: http://www.tei-c.org/Vault/P5//
          <oneOrMore>
             <choice>
                <value>xx-small</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>x-small</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>small</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>medium</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>large</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>x-large</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>xx-large</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>smaller</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>larger</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font size</a:documentation>
                <value>italic</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">italicized (slanted to right)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">italicized (slanted to right)</a:documentation>
                <value>oblique</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">oblique (slanted to left)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">oblique (slanted to left)</a:documentation>
                <value>smcaps</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">small capitals</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">small capitals</a:documentation>
                <value>bold</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font weight</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font weight</a:documentation>
                <value>bolder</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font weight</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font weight</a:documentation>
                <value>lighter</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font weight</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">relative font weight</a:documentation>
                <value>box</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in box</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in box</a:documentation>
                <value>circle</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in ellipse/circle</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in ellipse/circle</a:documentation>
                <value>dbox</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in diamond</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in diamond</a:documentation>
                <value>tbox</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in triangle</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">enclosed in triangle</a:documentation>
                <value>bslash</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '\' (back slash)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '\' (back slash)</a:documentation>
                <value>fslash</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '/' (forward slash)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '/' (forward slash)</a:documentation>
                <value>line-through</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '-'; may be qualified to indicate multiple lines,
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '-'; may be qualified to indicate multiple lines,
                 e.g. line-through(2)</a:documentation>
                <value>none</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">not rendered, invisible</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">not rendered, invisible</a:documentation>
                <value>overline</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">line above the text; may be qualified to indicate multiple lines,
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">line above the text; may be qualified to indicate multiple lines,
                 e.g. overline(3)</a:documentation>
                <value>strike</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '-'; equivalent to line-through; may be qualified
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">struck through by '-'; equivalent to line-through; may be qualified
                 to indicate multiple lines, e.g. strike(3)</a:documentation>
                <value>sub</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">subscript</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">subscript</a:documentation>
                <value>sup</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">superscript</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">superscript</a:documentation>
                <value>underline</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">underlined; may be qualified to indicate multiple lines, e.g.
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">underlined; may be qualified to indicate multiple lines, e.g.
                 underline(2)</a:documentation>
                <value>ltr</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">left-to-right (BIDI embed)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">left-to-right (BIDI embed)</a:documentation>
                <value>rtl</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">right-to-left (BIDI embed)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">right-to-left (BIDI embed)</a:documentation>
                <value>lro</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">eft-to-right (BIDI override)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">eft-to-right (BIDI override)</a:documentation>
                <value>rlo</value>
-               <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                                xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                                xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">right-to-left (BIDI override)</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">right-to-left (BIDI override)</a:documentation>
                <data type="string">
                   <param name="pattern">(underline|overline|line-through|strike|letter-spacing|line-height)\(\d+\)</param>
                </data>
@@ -1283,61 +893,33 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="data.DURATION.cmn">
       <choice>
          <value>long</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quadruple whole note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quadruple whole note</a:documentation>
          <value>breve</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">double whole note</a:documentation>
          <value>1</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">whole note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">whole note</a:documentation>
          <value>2</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">half note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">half note</a:documentation>
          <value>4</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quarter note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">quarter note</a:documentation>
          <value>8</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">8th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">8th note</a:documentation>
          <value>16</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">16th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">16th note</a:documentation>
          <value>32</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">32nd note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">32nd note</a:documentation>
          <value>64</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">64th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">64th note</a:documentation>
          <value>128</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">128th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">128th note</a:documentation>
          <value>256</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">256th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">256th note</a:documentation>
          <value>512</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">512th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">512th note</a:documentation>
          <value>1024</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">1024th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">1024th note</a:documentation>
          <value>2048</value>
-         <a:documentation xmlns:rng="http://relaxng.org/ns/structure/1.0"
-                          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">2048th note</a:documentation>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">2048th note</a:documentation>
       </choice>
    </define>
    <define name="att.accid.anl.attributes">
@@ -2635,7 +2217,8 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
    </define>
    <define name="att.meiversion.attribute.meiversion">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="meiversion"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="meiversion"
                     a:defaultValue="2013">
             <a:documentation>specifies a generic MEI version label.</a:documentation>
             <choice>
@@ -5508,7 +5091,8 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
                       xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
                       context="mei:chord[not(@dur)][ancestor::layer[not(@n)]]">
                 <sch:let name="this_layer" value="1"/>
-                <sch:let name="this_dur" value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>
+                <sch:let name="this_dur"
+                        value="*[@dur and (not(@layer) or @layer=$this_layer)][1]/@dur"/>
                 <sch:assert test="*[not(@layer)]/@dur = *[@dur and (not(@layer) or @layer=1)][1]/@dur">
                   duration of chord must be well-defined
                 </sch:assert>
@@ -5530,7 +5114,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indication of the exact location of a particular note on the staff and, therefore, the other notes as well. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="clef-constraint-Check_clef_position_clef">
+                  id="clef-constraint-Clef_position_lines">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5542,7 +5126,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="clef-constraint-Check_clef_position_clef">
+                  id="clef-constraint-Clef_position_nolines">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5651,7 +5235,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="dir-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="dir-constraint-dir_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5709,7 +5293,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="dynam-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="dynam-constraint-dynam_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6007,7 +5591,8 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
                <ref name="model.editLike"/>
             </choice>
          </zeroOrMore>
-         <pattern xmlns="http://purl.oclc.org/dsdl/schematron" id="layer-constraint-Check_layern">
+         <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
+                  id="layer-constraint-Check_layern">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6133,9 +5718,11 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Contains a single MEI-conformant document, consisting of an MEI header and a musical text, either in isolation or as part of an meiCorpus element. </a:documentation>
          <ref name="meiHead"/>
          <ref name="music"/>
-         <ns xmlns="http://purl.oclc.org/dsdl/schematron" prefix="mei"
+         <ns xmlns="http://purl.oclc.org/dsdl/schematron"
+             prefix="mei"
              uri="http://www.music-encoding.org/ns/mei"/>
-         <pattern xmlns="http://purl.oclc.org/dsdl/schematron" id="mei-constraint-Check_staff">
+         <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
+                  id="mei-constraint-Check_staff">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6394,7 +5981,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indication of 1) a "unified melodic idea" or 2) performance technique. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="phrase-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="phrase-constraint-phrase_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6606,7 +6193,8 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
       <element name="rest">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A non-sounding event found in the source being transcribed. </a:documentation>
          <empty/>
-         <pattern xmlns="http://purl.oclc.org/dsdl/schematron" id="rest-constraint-Check_restline">
+         <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
+                  id="rest-constraint-Check_restline">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6861,7 +6449,8 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
                <ref name="model.staffPart"/>
             </choice>
          </zeroOrMore>
-         <pattern xmlns="http://purl.oclc.org/dsdl/schematron" id="staff-constraint-Check_staffn">
+         <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
+                  id="staff-constraint-Check_staffn">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -7016,7 +6605,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_tab_strings">
+                  id="staffDef-constraint-Check_tab_strings_lines">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -7029,7 +6618,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_tab_strings">
+                  id="staffDef-constraint-Check_tab_strings_nolines">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -7181,7 +6770,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tempo-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="tempo-constraint-tempo_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -8773,7 +8362,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
                <value>mixed</value>
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(mixed acc and rit) for beams that are "feathered" in both directions.</a:documentation>
                <value>rit</value>
-               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(ritardando) means that the secondary beams become progressively more distance toward the end of the beam.</a:documentation>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(ritardando) means that the secondary beams become progressively more distant toward the end of the beam.</a:documentation>
                <value>norm</value>
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(normal) indicates that the secondary beams are equidistant along the course of the beam.</a:documentation>
             </choice>
@@ -9151,7 +8740,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.c">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="c"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="c"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's C strings.</a:documentation>
             <choice>
@@ -9167,7 +8757,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.d">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="d"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="d"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's D strings.</a:documentation>
             <choice>
@@ -9183,7 +8774,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.e">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="e"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="e"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's E strings.</a:documentation>
             <choice>
@@ -9199,7 +8791,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.f">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="f"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="f"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's F strings.</a:documentation>
             <choice>
@@ -9215,7 +8808,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.g">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="g"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="g"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's G strings.</a:documentation>
             <choice>
@@ -9231,7 +8825,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.a">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="a"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="a"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's A strings.</a:documentation>
             <choice>
@@ -9247,7 +8842,8 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    </define>
    <define name="att.harpPedal.log.attribute.b">
       <optional>
-         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="b"
+         <attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+                    name="b"
                     a:defaultValue="n">
             <a:documentation>indicates the pedal setting for the harp's B strings.</a:documentation>
             <choice>
@@ -10217,7 +9813,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A container for a series of explicitly beamed events that begins and ends entirely within a measure. </a:documentation>
          <zeroOrMore>
             <choice>
-               <ref name="model.meilibjs.simpleEventLike"/>
+               <ref name="model.meilibjs.eventLike"/>
                <ref name="model.appLike"/>
                <ref name="model.editLike"/>
                <ref name="model.transcriptionLike"/>
@@ -10247,7 +9843,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(beam span) – Alternative element for explicitly encoding beams, particularly those which extend across bar lines. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="beamSpan-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="beamSpan-constraint-beamspan_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10284,7 +9880,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A variation in pitch (often micro-tonal) upwards or downwards during the course of a note.</a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="bend-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="bend-constraint-bend_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10309,7 +9905,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(breath mark) – A indication of a point at which the performer on an instrument requiring breath (including the voice) may breathe. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="breath-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="breath-constraint-breath_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10347,7 +9943,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">An indication placed over a note or rest to indicate that it should be held longer than its written value. May also occur over a bar line to indicate the end of a phrase or section. Sometimes called a 'hold' or 'pause'. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="fermata-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="fermata-constraint-fermata_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10397,7 +9993,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(glissando) – A continuous or sliding movement from one pitch to another, usually indicated by a straight or wavy line. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="gliss-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="gliss-constraint-gliss_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10422,7 +10018,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indicates continuous dynamics expressed on the score as wedge-shaped graphics, e.g. &lt; and &gt;. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="hairpin-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="hairpin-constraint-hairpin_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10459,7 +10055,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(harp pedal) – Harp pedal diagram. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="harpPedal-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="harpPedal-constraint-harpPedal_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10617,7 +10213,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">An indication that a passage should be performed one or more octaves above or below its written pitch. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="octave-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="octave-constraint-octave_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10680,7 +10276,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Piano pedal mark. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="pedal-constraint-Start-type_attributes_required_on_some_control_events">
+                  id="pedal-constraint-pedal_start-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10721,7 +10317,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indication of 1) a "unified melodic idea" or 2) performance technique. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="slur-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="slur-constraint-slur_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10747,7 +10343,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">An indication that two notes of the same pitch form a single note with their combined rhythmic values. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tie-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="tie-constraint-tie_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10773,7 +10369,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A group of notes with "irregular" (sometimes called "irrational") rhythmic values, for example, three notes in the time normally occupied by two or nine in the time of five. </a:documentation>
          <zeroOrMore>
             <choice>
-               <ref name="model.eventLike"/>
+               <ref name="model.meilibjs.eventLike"/>
                <ref name="model.appLike"/>
                <ref name="model.editLike"/>
                <ref name="model.transcriptionLike"/>
@@ -10803,7 +10399,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(tuplet span) – Alternative element for encoding tuplets, especially useful for tuplets that extend across bar lines. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tupletSpan-constraint-Start-_and_end-type_attributes_required_on_some_control_events">
+                  id="tupletSpan-constraint-tupletSpan_start-_and_end-type_attributes_required">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -11888,6 +11484,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
       <choice>
          <ref name="beam"/>
          <ref name="mRest"/>
+         <ref name="tuplet"/>
          <ref name="model.meilibjs.simpleEventLike"/>
       </choice>
    </define>
@@ -11896,6 +11493,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="chord"/>
          <ref name="note"/>
          <ref name="rest"/>
+         <ref name="space"/>
       </choice>
    </define>
    <define name="att.mei2vf.common.req.attributes">

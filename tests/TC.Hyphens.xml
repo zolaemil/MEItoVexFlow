@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="../odd/mei2vexflow.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <?xml-model href="../odd/mei2vexflow.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<mei meiversion="2013" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.music-encoding.org/ns/mei" xmlns:mei="http://www.music-encoding.org/ns/mei">
+<mei meiversion="2013" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns="http://www.music-encoding.org/ns/mei" xmlns:mei="http://www.music-encoding.org/ns/mei">
 	<meiHead>
 		<fileDesc>
 			<titleStmt>
-				<title/>
+				<title>MeiToVexFlow Dynamics Test Case</title>
 			</titleStmt>
-			<pubStmt/>
+			<pubStmt>
+				<respStmt>
+					<resp>Prepared by</resp>
+					<persName>Alexander Erhard</persName>
+				</respStmt>
+			</pubStmt>
 		</fileDesc>
 	</meiHead>
 	<music>
@@ -117,7 +123,6 @@
 							</staff>
 						</measure>
 						<sb/>
-						
 						<measure n="4" width="340">
 							<staff n="1">
 								<layer>
@@ -168,7 +173,6 @@
 								</layer>
 							</staff>
 						</measure>
-						
 						<scoreDef>
 							<staffGrp>
 								<staffDef n="1" clef.line="2" clef.shape="G" meter.count="4" meter.unit="4" meter.sym="cut"/>
@@ -192,7 +196,6 @@
 								</layer>
 							</staff>
 						</measure>
-						
 						<measure n="7" width="120">
 							<staff n="1">
 								<layer>
@@ -210,17 +213,13 @@
 								</layer>
 							</staff>
 						</measure>
-						
 						<measure n="9" right="invis" width="70">
 							<staff n="1">
-								<anchoredText ho="2">etc.</anchoredText>
 								<layer>
 									<space dur="1"></space>
 								</layer>
 							</staff>
 						</measure>
-						
-						
 					</section>
 				</score>
 			</mdiv>

@@ -1694,7 +1694,7 @@ xmlns="http://www.music-encoding.org/ns/mei" xmlns:mei="http://www.music-encodin
 									<note xml:id="d1e8078" pname="c" oct="3" dur="2" dots="1" stem.dir="up"/>
 								</layer>
 							</staff>
-							<trill tstamp="2" place="above" staff="1" startid="#d1e7907"/>
+<!--							<trill tstamp="2" place="above" staff="1" startid="#d1e7907"/>-->
 						</measure>
 						<measure n="24" xml:id="d1e8096">
 							<staff n="1">
