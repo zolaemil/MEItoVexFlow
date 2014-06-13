@@ -1246,12 +1246,22 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
         meter = me.systemInfo.getStaffInfo(staff_n).meter;
         duration = new Vex.Flow.Fraction(meter.count, meter.unit);
-
+        var dur, keys;
+        if (duration.value() == 2) {
+          dur = m2v.tables.durations['breve'];
+          keys = ['b/4'];
+        } else if (duration.value() == 4) {
+          dur = m2v.tables.durations['long'];
+          keys = ['b/4']
+        } else {
+          dur = 'w';
+          keys = ['d/5'];
+        }
         try {
           atts = m2v.Util.attsToObj(element);
           mRest = new VF.StaveNote({
-            keys : ['d/5'],
-            duration : 'wr',
+            keys : keys,
+            duration : dur + 'r',
             duration_override : duration,
             align_center : true
           });
