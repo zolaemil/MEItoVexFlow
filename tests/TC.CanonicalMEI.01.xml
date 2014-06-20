@@ -37,7 +37,7 @@
         </titleStmt>
         <incip xml:id="m-e942e387-8ed0-4ae3-8452-2a70cbbba9ed">
           <score xml:id="m-458856f7-c81d-45b1-8b7e-bf5b6b46144b">
-            <scoreDef meter.count="4" meter.unit="2" ppq="256">
+            <scoreDef meter.count="4" meter.unit="2">
               <staffGrp>
                 <staffGrp n="1" symbol="bracket">
                   <staffDef clef.line="2" clef.shape="G" key.mode="major" key.sig="0" label="Superius" lines="5" n="1"/>
@@ -55,7 +55,7 @@
     <body xml:id="m-3d79a570-7ad8-4d3b-b411-5400315c1225">
       <mdiv xml:id="m-5dfb0e14-9afc-44ce-9d34-e2c5f4ac242c">
         <score xml:id="m-2875a860-d59a-4237-bb0e-f5d901e090f4">
-          <scoreDef xml:id="m-7d1617c8-843e-4e7b-9113-a38e062c1580" meter.count="4" meter.unit="2" ppq="256">
+          <scoreDef xml:id="m-7d1617c8-843e-4e7b-9113-a38e062c1580" meter.count="4" meter.unit="2">
             <staffGrp xml:id="m-9294faba-39d9-4958-859c-2800c9182959">
               <staffGrp xml:id="m-f3fef126-8b82-47ad-aef2-086d71ac534b" n="1" symbol="bracket">
                 <staffDef xml:id="sd1" clef.line="2" clef.shape="G" key.mode="major" key.sig="0" label="Superius" lines="5" n="1"/>
