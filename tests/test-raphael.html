@@ -9,41 +9,41 @@ xmlns:mo="http://purl.org/ontology/mo/"
 xmlns:mo-i="http://purl.org/ontology/mo-imaginary/"
 xmlns:event="http://purl.org/NET/c4dm/event.owl"
 version="HTML+RDFa 1.0" xml:lang="en">
-	<head>
-		<title>MEI-to-VexFlow Test Page</title>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<script type="text/JavaScript" src="../bower_components/jquery/dist/jquery.min.js"></script>
-		<script type="text/JavaScript" src="../bower_components/raphael/raphael-min.js"></script>
-		<script type="text/JavaScript" src="../bower_components/vexflow/build/vexflow/vexflow-min.js"></script>
-		<script type="text/JavaScript" src="../dist/meitovexflow.js"></script>
-		<script type="text/JavaScript" src="loadXMLDoc.js"></script>
-		<script type="text/JavaScript" src="runtest.js"></script>  
-		<script type="text/JavaScript">
-			MEI2VF.setLogging(true);
-			$(document).ready(function(){
-				var test_cases = new Array();
+<head>
+  <title>MEI-to-VexFlow Test Page</title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <script type="text/JavaScript" src="../bower_components/jquery/dist/jquery.min.js"></script>
+  <script type="text/JavaScript" src="../bower_components/raphael/raphael-min.js"></script>
+  <script type="text/JavaScript" src="../bower_components/vexflow/build/vexflow/vexflow-min.js"></script>
+  <script type="text/JavaScript" src="../dist/meitovexflow.js"></script>
+  <script type="text/JavaScript" src="loadXMLDoc.js"></script>
+  <script type="text/JavaScript" src="runtest.js"></script>  
+  <script type="text/JavaScript">
+  MEI2VF.setLogging(true);
+  $(document).ready(function(){
+    var test_cases = new Array();
 
-				MEI2VF.RunTest(
-					{ title: 'Prokofiev Op. 36', mei_xml: 'TC.Prokofiev.xml', canvas_height:400}, 
-					document.getElementById('svg'), $('#test-title'), 
-					Vex.Flow.Renderer.Backends.RAPHAEL
-				);
-				
-				MEI2VF.RunTest(
-					{ title: 'Prokofiev Op. 36', mei_xml: 'TC.Dynamics.xml'}, 
-					document.getElementById('svg1'), $('#test-title'), 
-					Vex.Flow.Renderer.Backends.RAPHAEL
-				);
+    MEI2VF.RunTest(
+      { title: 'Prokofiev Op. 36', mei_xml: 'TC.Prokofiev.xml', canvas_height:400}, 
+      document.getElementById('svg'), $('#test-title'), 
+      Vex.Flow.Renderer.Backends.RAPHAEL
+    );
 
-			});
-		</script>
-	</head>
-	<body>
-		<div class="test-page">
-			<h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2>
-			<div class='a'><svg id='svg'/></div>
-			<h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2>
-			<div class='a'><svg id='svg1'/></div>
-		</div>
-	</body>
+    MEI2VF.RunTest(
+      { title: 'Prokofiev Op. 36', mei_xml: 'TC.Dynamics.xml'}, 
+      document.getElementById('svg1'), $('#test-title'), 
+      Vex.Flow.Renderer.Backends.RAPHAEL
+    );
+
+  });
+  </script>
+</head>
+<body>
+  <div class="test-page">
+    <h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2>
+    <div class='a'><svg id='svg'/></div>
+    <h2><span class='test-title' property='dc:title'>Title of Test Comes Here</span></h2>
+    <div class='a'><svg id='svg1'/></div>
+  </div>
+</body>
 </html>
