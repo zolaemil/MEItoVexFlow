@@ -22,9 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~2.1.0"
-  },
-  "devDependencies": {
+    "jquery": "~2.1.0",
     "vexflow": "*",
     "raphael": "~2.1.2"
   }
