@@ -3,8 +3,8 @@
          xmlns:xlink="http://www.w3.org/1999/xlink"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://www.music-encoding.org/ns/mei"><!--
-Schema generated from ODD source 2014-06-01T00:31:18Z. 
-Edition: 
+Schema generated from ODD source 2014-06-27T17:53:07Z. 
+Edition: 2013 Release
 Edition Location: http://www.tei-c.org/Vault/P5//
   
 --><!---->
@@ -719,7 +719,7 @@ Edition Location: http://www.tei-c.org/Vault/P5//
       </choice>
    </define>
    <define name="data.TEMPOVALUE">
-      <data type="positiveInteger"/>
+      <data type="decimal"/>
    </define>
    <define name="data.TEXTRENDITION">
       <list>
@@ -886,9 +886,9 @@ Edition Location: http://www.tei-c.org/Vault/P5//
       <zeroOrMore>
          <ref name="physLoc"/>
       </zeroOrMore>
-      <optional>
+      <zeroOrMore>
          <ref name="seriesStmt"/>
-      </optional>
+      </zeroOrMore>
    </define>
    <define name="data.DURATION.cmn">
       <choice>
@@ -1059,7 +1059,7 @@ Edition Location: http://www.tei-c.org/Vault/P5//
       </optional>
    </define>
    <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-            id="dots-constraint-dots_attribute_requires_dur">
+            id="MEI2VF-att.augmentdots-dots-dots_attribute_requires_dur-constraint-1">
       <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                 xmlns:rng="http://relaxng.org/ns/structure/1.0"
                 xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -1641,13 +1641,13 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    <define name="att.duration.additive.attribute.dur">
       <optional>
          <attribute name="dur">
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">records duration using ident dotted, relative durational values provided by the data.DURATION datatype. When the duration is "irrational", as is sometimes the case with tuplets, multiple space-separated values that add up to the total duration may be used. When dotted values are present, the dots attribute must be ignored.</a:documentation>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">records duration using optionally dotted, relative durational values provided by the data.DURATION datatype. When the duration is "irrational", as is sometimes the case with tuplets, multiple space-separated values that add up to the total duration may be used. When dotted values are present, the dots attribute must be ignored.</a:documentation>
             <ref name="data.DURATION.additive"/>
          </attribute>
       </optional>
    </define>
    <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-            id="dur-constraint-ignore_dots_attribute">
+            id="MEI2VF-att.duration.additive-dur-ignore_dots_attribute-constraint-2">
       <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                 xmlns:rng="http://relaxng.org/ns/structure/1.0"
                 xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -1999,12 +1999,21 @@ Edition Location: http://www.tei-c.org/Vault/P5//
    </define>
    <define name="att.lang.attributes">
       <ref name="att.lang.attribute.xmllang"/>
+      <ref name="att.lang.attribute.translit"/>
    </define>
    <define name="att.lang.attribute.xmllang">
       <optional>
          <attribute name="xml:lang">
             <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">identifies the language of the element's content. The values for this attribute are language 'tags' as defined in BCP 47. All language tags that make use of private use sub-tags must be documented in a corresponding language element in the MEI header whose id attribute is the same as the language tag's value.</a:documentation>
             <data type="language"/>
+         </attribute>
+      </optional>
+   </define>
+   <define name="att.lang.attribute.translit">
+      <optional>
+         <attribute name="translit">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">specifies the transliteration technique used. </a:documentation>
+            <data type="NMTOKEN"/>
          </attribute>
       </optional>
    </define>
@@ -3747,7 +3756,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
       </optional>
    </define>
    <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-            id="subtype-constraint-When_subtype">
+            id="MEI2VF-att.typed-subtype-When_subtype-constraint-3">
       <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                 xmlns:rng="http://relaxng.org/ns/structure/1.0"
                 xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -4630,6 +4639,29 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="scoreDef"/>
       </choice>
    </define>
+   <define name="model.scoreDefLike_alternation">
+      <choice>
+         <ref name="scoreDef"/>
+      </choice>
+   </define>
+   <define name="model.scoreDefLike_sequence">
+      <ref name="scoreDef"/>
+   </define>
+   <define name="model.scoreDefLike_sequenceOptional">
+      <optional>
+         <ref name="scoreDef"/>
+      </optional>
+   </define>
+   <define name="model.scoreDefLike_sequenceOptionalRepeatable">
+      <zeroOrMore>
+         <ref name="scoreDef"/>
+      </zeroOrMore>
+   </define>
+   <define name="model.scoreDefLike_sequenceRepeatable">
+      <oneOrMore>
+         <ref name="scoreDef"/>
+      </oneOrMore>
+   </define>
    <define name="model.scoreLike">
       <choice>
          <ref name="score"/>
@@ -4639,9 +4671,13 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
       <choice>
          <ref name="model.endingLike"/>
          <ref name="model.scoreDefLike"/>
+         <ref name="model.scorePart.mensuralAndNeumes"/>
          <ref name="model.sectionLike"/>
          <ref name="model.staffDefLike"/>
       </choice>
+   </define>
+   <define name="model.scorePart.mensuralAndNeumes">
+      <notAllowed/>
    </define>
    <define name="model.sectionLike">
       <choice>
@@ -4653,14 +4689,43 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="model.endingLike"/>
          <ref name="model.scoreDefLike"/>
          <ref name="model.sectionLike"/>
+         <ref name="model.sectionPart.mensuralAndNeumes"/>
          <ref name="model.staffDefLike"/>
          <ref name="model.sectionPart.cmn"/>
+      </choice>
+   </define>
+   <define name="model.sectionPart.mensuralAndNeumes">
+      <choice>
+         <ref name="model.staffLike"/>
       </choice>
    </define>
    <define name="model.staffDefLike">
       <choice>
          <ref name="staffDef"/>
       </choice>
+   </define>
+   <define name="model.staffDefLike_alternation">
+      <choice>
+         <ref name="staffDef"/>
+      </choice>
+   </define>
+   <define name="model.staffDefLike_sequence">
+      <ref name="staffDef"/>
+   </define>
+   <define name="model.staffDefLike_sequenceOptional">
+      <optional>
+         <ref name="staffDef"/>
+      </optional>
+   </define>
+   <define name="model.staffDefLike_sequenceOptionalRepeatable">
+      <zeroOrMore>
+         <ref name="staffDef"/>
+      </zeroOrMore>
+   </define>
+   <define name="model.staffDefLike_sequenceRepeatable">
+      <oneOrMore>
+         <ref name="staffDef"/>
+      </oneOrMore>
    </define>
    <define name="model.staffDefPart">
       <choice>
@@ -4680,10 +4745,40 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="staff"/>
       </choice>
    </define>
+   <define name="model.staffLike_alternation">
+      <choice>
+         <ref name="staff"/>
+      </choice>
+   </define>
+   <define name="model.staffLike_sequence">
+      <ref name="staff"/>
+   </define>
+   <define name="model.staffLike_sequenceOptional">
+      <optional>
+         <ref name="staff"/>
+      </optional>
+   </define>
+   <define name="model.staffLike_sequenceOptionalRepeatable">
+      <zeroOrMore>
+         <ref name="staff"/>
+      </zeroOrMore>
+   </define>
+   <define name="model.staffLike_sequenceRepeatable">
+      <oneOrMore>
+         <ref name="staff"/>
+      </oneOrMore>
+   </define>
    <define name="model.staffPart">
       <choice>
          <ref name="model.layerLike"/>
+         <ref name="model.staffPart.mensuralAndNeumes"/>
          <ref name="model.ossiaLike"/>
+      </choice>
+   </define>
+   <define name="model.staffPart.mensuralAndNeumes">
+      <choice>
+         <ref name="model.scoreDefLike"/>
+         <ref name="model.staffDefLike"/>
       </choice>
    </define>
    <define name="model.textcomponentLike">
@@ -4847,6 +4942,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -4875,6 +4971,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -4884,7 +4981,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Vertical line drawn through one or more staves that divides musical notation into metrical units. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="barLine-constraint-Check_barLinetaktplace">
+                  id="MEI2VF-barLine-Check_barLinetaktplace-constraint-4">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -4945,6 +5042,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.measurement.attributes"/>
          <empty/>
       </element>
@@ -4957,22 +5055,6 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </oneOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.declaring.attributes"/>
-         <empty/>
-      </element>
-   </define>
-   <define name="caption">
-      <element name="caption">
-         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A label which accompanies an illustration or a table.</a:documentation>
-         <zeroOrMore>
-            <choice>
-               <text/>
-               <ref name="model.textphraseLike"/>
-               <ref name="model.editLike"/>
-               <ref name="model.transcriptionLike"/>
-            </choice>
-         </zeroOrMore>
-         <ref name="att.common.attributes"/>
-         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -5004,6 +5086,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </oneOrMore>
          <ref name="att.common.attributes"/>
+         <ref name="att.bibl.attributes"/>
          <ref name="att.lang.attributes"/>
          <empty/>
       </element>
@@ -5034,7 +5117,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="chord-constraint-meilibjs_chordDur">
+                  id="MEI2VF-chord-meilibjs_chordDur-constraint-5">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5050,7 +5133,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="chord-constraint-meilibjs_chordDur1">
+                  id="MEI2VF-chord-meilibjs_chordDur1-constraint-6">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5066,7 +5149,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="chord-constraint-meilibjs_chordDur2">
+                  id="MEI2VF-chord-meilibjs_chordDur2-constraint-7">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5084,7 +5167,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="chord-constraint-meilibjs_chordDur3">
+                  id="MEI2VF-chord-meilibjs_chordDur3-constraint-8">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5114,7 +5197,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indication of the exact location of a particular note on the staff and, therefore, the other notes as well. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="clef-constraint-Clef_position_lines">
+                  id="MEI2VF-clef-Clef_position_lines-constraint-9">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5126,7 +5209,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="clef-constraint-Clef_position_nolines">
+                  id="MEI2VF-clef-Clef_position_nolines-constraint-10">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5172,6 +5255,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -5235,7 +5319,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="dir-constraint-dir_start-type_attributes_required">
+                  id="MEI2VF-dir-dir_start-type_attributes_required-constraint-11">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5266,6 +5350,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -5293,7 +5378,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="dynam-constraint-dynam_start-type_attributes_required">
+                  id="MEI2VF-dynam-dynam_start-type_attributes_required-constraint-12">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5323,6 +5408,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -5337,6 +5423,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -5389,6 +5476,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.measurement.attributes"/>
          <empty/>
       </element>
@@ -5404,6 +5492,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -5438,6 +5527,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -5514,11 +5604,39 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
    <define name="incip">
       <element name="incip">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(incipit) – The opening music and/or words of a composition. </a:documentation>
+         <optional>
+            <ref name="tempo"/>
+         </optional>
+         <optional>
+            <ref name="role"/>
+         </optional>
+         <optional>
+            <choice>
+               <ref name="clef"/>
+               <ref name="clefGrp"/>
+            </choice>
+         </optional>
+         <optional>
+            <choice>
+               <ref name="instrVoice"/>
+               <ref name="instrVoiceGrp"/>
+            </choice>
+         </optional>
+         <optional>
+            <ref name="key"/>
+         </optional>
+         <optional>
+            <ref name="meter"/>
+         </optional>
+         <optional>
+            <ref name="mensuration"/>
+         </optional>
          <zeroOrMore>
             <choice>
                <ref name="incipCode"/>
                <ref name="incipText"/>
                <ref name="model.scoreLike"/>
+               <ref name="annot"/>
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
@@ -5576,6 +5694,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.source.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
@@ -5592,7 +5711,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="layer-constraint-Check_layern">
+                  id="MEI2VF-layer-Check_layern-constraint-13">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5621,7 +5740,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             <ref name="model.instrDefLike"/>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="layerDef-constraint-Check_layerDefn">
+                  id="MEI2VF-layerDef-Check_layerDefn-constraint-14">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5672,6 +5791,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -5687,6 +5807,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -5722,7 +5843,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
              prefix="mei"
              uri="http://www.music-encoding.org/ns/mei"/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="mei-constraint-Check_staff">
+                  id="MEI2VF-mei-Check_staff-constraint-15">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -5981,7 +6102,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indication of 1) a "unified melodic idea" or 2) performance technique. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="phrase-constraint-phrase_start-_and_end-type_attributes_required">
+                  id="MEI2VF-phrase-phrase_start-_and_end-type_attributes_required-constraint-16">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6026,6 +6147,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -6040,6 +6162,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -6054,6 +6177,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -6171,6 +6295,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
          <ref name="att.coded.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -6194,7 +6319,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A non-sounding event found in the source being transcribed. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="rest-constraint-Check_restline">
+                  id="MEI2VF-rest-Check_restline-constraint-17">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6324,7 +6449,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="section-constraint-meilibjs_meterChange">
+                  id="MEI2VF-section-meilibjs_meterChange-constraint-18">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6334,7 +6459,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="section-constraint-Check_sectionexpansion">
+                  id="MEI2VF-section-Check_sectionexpansion-constraint-19">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6398,6 +6523,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -6450,7 +6576,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staff-constraint-Check_staffn">
+                  id="MEI2VF-staff-Check_staffn-constraint-20">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6489,7 +6615,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Limit_ClefG">
+                  id="MEI2VF-staffDef-Limit_ClefG-constraint-21">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6501,7 +6627,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Limit_ClefF">
+                  id="MEI2VF-staffDef-Limit_ClefF-constraint-22">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6513,7 +6639,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Limit_ClefC">
+                  id="MEI2VF-staffDef-Limit_ClefC-constraint-23">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6525,7 +6651,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-meilibjs_meterChange">
+                  id="MEI2VF-staffDef-meilibjs_meterChange-constraint-24">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6539,7 +6665,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-meilibjs_meterChange2">
+                  id="MEI2VF-staffDef-meilibjs_meterChange2-constraint-25">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6553,7 +6679,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
               </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_staffDefn">
+                  id="MEI2VF-staffDef-Check_staffDefn-constraint-26">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6568,7 +6694,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_ancestor_staff">
+                  id="MEI2VF-staffDef-Check_ancestor_staff-constraint-27">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6580,7 +6706,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_clef_position_staffDef">
+                  id="MEI2VF-staffDef-Check_clef_position_staffDef-constraint-28">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6591,7 +6717,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_clef_position_staffDef_nolines">
+                  id="MEI2VF-staffDef-Check_clef_position_staffDef_nolines-constraint-29">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6605,7 +6731,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_tab_strings_lines">
+                  id="MEI2VF-staffDef-Check_tab_strings_lines-constraint-30">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6618,7 +6744,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffDef-constraint-Check_tab_strings_nolines">
+                  id="MEI2VF-staffDef-Check_tab_strings_nolines-constraint-31">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6705,7 +6831,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             <ref name="grpSym"/>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="staffGrp-constraint-Check_staffGrp_unique_staff_n_values">
+                  id="MEI2VF-staffGrp-Check_staffGrp_unique_staff_n_values-constraint-36">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6739,6 +6865,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.syl.log.attributes"/>
          <ref name="att.syl.vis.attributes"/>
          <ref name="att.syl.ges.attributes"/>
@@ -6758,7 +6885,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tempo-constraint-tempo_in_header_disallow_most_attrs">
+                  id="MEI2VF-tempo-tempo_in_header_disallow_most_attrs-constraint-37">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6770,7 +6897,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             </sch:rule>
          </pattern>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tempo-constraint-tempo_start-type_attributes_required">
+                  id="MEI2VF-tempo-tempo_start-type_attributes_required-constraint-38">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -6800,6 +6927,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <optional>
             <attribute name="mainLang">
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(main language) supplies a code which identifies the chief language used in the bibliographic work.</a:documentation>
@@ -7071,6 +7199,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7096,6 +7225,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7111,6 +7241,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7125,7 +7256,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
             <ref name="model.dateLike"/>
          </optional>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="change-constraint-change_requirements">
+                  id="MEI2VF-change-change_requirements-constraint-39">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -7169,6 +7300,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7210,6 +7342,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.bibl.attributes"/>
          <ref name="att.common.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7245,6 +7378,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7288,6 +7422,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.measurement.attributes"/>
          <empty/>
       </element>
@@ -7347,6 +7482,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
          <ref name="att.coded.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7408,6 +7544,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <text/>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7502,7 +7639,7 @@ Suggested values include: 1] cm; 2] mm; 3] in; 4] issue; 5] page; 6] px; 7] pt; 
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Incipit coded in a non-XML, plain text format, such as Plaine &amp; Easie Code.</a:documentation>
          <text/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="incipCode-constraint-Check_incipCode_form_mimetype">
+                  id="MEI2VF-incipCode-Check_incipCode_form_mimetype-constraint-40">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -7597,6 +7734,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
          <ref name="att.coded.attributes"/>
+         <ref name="att.lang.attributes"/>
          <optional>
             <attribute name="count">
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the number of performers.</a:documentation>
@@ -7626,6 +7764,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
          <ref name="att.coded.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7662,8 +7801,9 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
-         <ref name="att.bibl.attributes"/>
          <ref name="att.authorized.attributes"/>
+         <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7714,6 +7854,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <text/>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.mensur.log.attributes"/>
          <empty/>
       </element>
@@ -7724,6 +7865,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <text/>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.meterSig.log.attributes"/>
          <empty/>
       </element>
@@ -7764,6 +7906,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7823,6 +7966,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7837,6 +7981,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -7851,6 +7996,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.measurement.attributes"/>
          <empty/>
       </element>
@@ -7978,6 +8124,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8032,6 +8179,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8075,6 +8223,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8090,6 +8239,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <optional>
             <attribute name="classcode">
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">contains a reference to the controlled vocabulary from which the term is drawn. The value must match the value of an ID attribute on a classCode element given elsewhere in the document.</a:documentation>
@@ -8141,6 +8291,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8155,6 +8306,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8164,6 +8316,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <text/>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8178,6 +8331,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8192,6 +8346,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.bibl.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -8575,12 +8730,14 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
    <define name="att.fermata.vis.attribute.shape">
       <optional>
          <attribute name="shape">
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">describes the visual appearance of the fermata; that is, whether it has a curved or square shape.</a:documentation>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">describes the visual appearance of the fermata; that is, whether it has a curved, square, or angular shape.</a:documentation>
             <choice>
                <value>curved</value>
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">a curve above or below the dot.</a:documentation>
                <value>square</value>
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">a bracket above or below the dot.</a:documentation>
+               <value>angular</value>
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">a triangle above or below the dot.</a:documentation>
             </choice>
          </attribute>
       </optional>
@@ -9672,84 +9829,6 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="multiRpt"/>
       </choice>
    </define>
-   <define name="model.eventLike.measureFilling_alternation">
-      <choice>
-         <ref name="mRest"/>
-         <ref name="mRpt"/>
-         <ref name="mRpt2"/>
-         <ref name="mSpace"/>
-         <ref name="multiRest"/>
-         <ref name="multiRpt"/>
-      </choice>
-   </define>
-   <define name="model.eventLike.measureFilling_sequence">
-      <ref name="mRest"/>
-      <ref name="mRpt"/>
-      <ref name="mRpt2"/>
-      <ref name="mSpace"/>
-      <ref name="multiRest"/>
-      <ref name="multiRpt"/>
-   </define>
-   <define name="model.eventLike.measureFilling_sequenceOptional">
-      <optional>
-         <ref name="mRest"/>
-      </optional>
-      <optional>
-         <ref name="mRpt"/>
-      </optional>
-      <optional>
-         <ref name="mRpt2"/>
-      </optional>
-      <optional>
-         <ref name="mSpace"/>
-      </optional>
-      <optional>
-         <ref name="multiRest"/>
-      </optional>
-      <optional>
-         <ref name="multiRpt"/>
-      </optional>
-   </define>
-   <define name="model.eventLike.measureFilling_sequenceOptionalRepeatable">
-      <zeroOrMore>
-         <ref name="mRest"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="mRpt"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="mRpt2"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="mSpace"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="multiRest"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="multiRpt"/>
-      </zeroOrMore>
-   </define>
-   <define name="model.eventLike.measureFilling_sequenceRepeatable">
-      <oneOrMore>
-         <ref name="mRest"/>
-      </oneOrMore>
-      <oneOrMore>
-         <ref name="mRpt"/>
-      </oneOrMore>
-      <oneOrMore>
-         <ref name="mRpt2"/>
-      </oneOrMore>
-      <oneOrMore>
-         <ref name="mSpace"/>
-      </oneOrMore>
-      <oneOrMore>
-         <ref name="multiRest"/>
-      </oneOrMore>
-      <oneOrMore>
-         <ref name="multiRpt"/>
-      </oneOrMore>
-   </define>
    <define name="model.measureLike">
       <choice>
          <ref name="measure"/>
@@ -9820,7 +9899,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="beam-constraint-When_not_copyof_beam_content">
+                  id="MEI2VF-beam-When_not_copyof_beam_content-constraint-41">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -9843,7 +9922,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(beam span) – Alternative element for explicitly encoding beams, particularly those which extend across bar lines. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="beamSpan-constraint-beamspan_start-_and_end-type_attributes_required">
+                  id="MEI2VF-beamSpan-beamspan_start-_and_end-type_attributes_required-constraint-42">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -9880,7 +9959,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">A variation in pitch (often micro-tonal) upwards or downwards during the course of a note.</a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="bend-constraint-bend_start-_and_end-type_attributes_required">
+                  id="MEI2VF-bend-bend_start-_and_end-type_attributes_required-constraint-43">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -9905,7 +9984,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(breath mark) – A indication of a point at which the performer on an instrument requiring breath (including the voice) may breathe. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="breath-constraint-breath_start-type_attributes_required">
+                  id="MEI2VF-breath-breath_start-type_attributes_required-constraint-44">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -9943,7 +10022,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">An indication placed over a note or rest to indicate that it should be held longer than its written value. May also occur over a bar line to indicate the end of a phrase or section. Sometimes called a 'hold' or 'pause'. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="fermata-constraint-fermata_start-type_attributes_required">
+                  id="MEI2VF-fermata-fermata_start-type_attributes_required-constraint-45">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -9993,7 +10072,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(glissando) – A continuous or sliding movement from one pitch to another, usually indicated by a straight or wavy line. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="gliss-constraint-gliss_start-_and_end-type_attributes_required">
+                  id="MEI2VF-gliss-gliss_start-_and_end-type_attributes_required-constraint-46">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10018,7 +10097,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indicates continuous dynamics expressed on the score as wedge-shaped graphics, e.g. &lt; and &gt;. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="hairpin-constraint-hairpin_start-_and_end-type_attributes_required">
+                  id="MEI2VF-hairpin-hairpin_start-_and_end-type_attributes_required-constraint-47">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10055,7 +10134,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(harp pedal) – Harp pedal diagram. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="harpPedal-constraint-harpPedal_start-type_attributes_required">
+                  id="MEI2VF-harpPedal-harpPedal_start-type_attributes_required-constraint-48">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10213,7 +10292,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">An indication that a passage should be performed one or more octaves above or below its written pitch. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="octave-constraint-octave_start-_and_end-type_attributes_required">
+                  id="MEI2VF-octave-octave_start-_and_end-type_attributes_required-constraint-49">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10276,7 +10355,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Piano pedal mark. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="pedal-constraint-pedal_start-type_attributes_required">
+                  id="MEI2VF-pedal-pedal_start-type_attributes_required-constraint-52">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10305,6 +10384,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.reh.log.attributes"/>
          <ref name="att.reh.vis.attributes"/>
          <ref name="att.reh.ges.attributes"/>
@@ -10317,7 +10397,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Indication of 1) a "unified melodic idea" or 2) performance technique. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="slur-constraint-slur_start-_and_end-type_attributes_required">
+                  id="MEI2VF-slur-slur_start-_and_end-type_attributes_required-constraint-53">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10343,7 +10423,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">An indication that two notes of the same pitch form a single note with their combined rhythmic values. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tie-constraint-tie_start-_and_end-type_attributes_required">
+                  id="MEI2VF-tie-tie_start-_and_end-type_attributes_required-constraint-54">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10376,7 +10456,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
             </choice>
          </zeroOrMore>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tuplet-constraint-When_not_copyof_tuplet_content">
+                  id="MEI2VF-tuplet-When_not_copyof_tuplet_content-constraint-55">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10399,7 +10479,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(tuplet span) – Alternative element for encoding tuplets, especially useful for tuplets that extend across bar lines. </a:documentation>
          <empty/>
          <pattern xmlns="http://purl.oclc.org/dsdl/schematron"
-                  id="tupletSpan-constraint-tupletSpan_start-_and_end-type_attributes_required">
+                  id="MEI2VF-tupletSpan-tupletSpan_start-_and_end-type_attributes_required-constraint-56">
             <sch:rule xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:rng="http://relaxng.org/ns/structure/1.0"
                       xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -10695,6 +10775,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.edit.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.trans.attributes"/>
          <empty/>
       </element>
@@ -10731,6 +10812,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.edit.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.trans.attributes"/>
          <empty/>
       </element>
@@ -10759,6 +10841,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.common.attributes"/>
          <ref name="att.extent.attributes"/>
          <ref name="att.handident.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <optional>
             <attribute name="degree">
@@ -10790,6 +10873,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.trans.attributes"/>
          <optional>
             <attribute name="rend">
@@ -10897,6 +10981,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.edit.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.typed.attributes"/>
          <empty/>
       </element>
@@ -10924,6 +11009,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.common.attributes"/>
          <ref name="att.authorized.attributes"/>
          <ref name="att.edit.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -10949,6 +11035,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          </zeroOrMore>
          <ref name="att.common.attributes"/>
          <ref name="att.edit.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.trans.attributes"/>
          <ref name="att.typed.attributes"/>
          <optional>
@@ -10981,6 +11068,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
             </choice>
          </zeroOrMore>
          <ref name="att.common.attributes"/>
+         <ref name="att.lang.attributes"/>
          <empty/>
       </element>
    </define>
@@ -11020,6 +11108,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.agentident.attributes"/>
          <ref name="att.common.attributes"/>
          <ref name="att.edit.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.reasonident.attributes"/>
          <empty/>
       </element>
@@ -11048,6 +11137,7 @@ Suggested values include: 1] plaineAndEasie; 2] humdrumKern; 3] parsons</a:docum
          <ref name="att.common.attributes"/>
          <ref name="att.edit.attributes"/>
          <ref name="att.handident.attributes"/>
+         <ref name="att.lang.attributes"/>
          <ref name="att.reasonident.attributes"/>
          <empty/>
       </element>
