@@ -14,8 +14,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     m2v.SystemInfo.prototype = {
 
-      // currently fixed
-      STAVE_HEIGHT : 40, // VF.Staff.spacing_between_lines_px * 4;
+      STAVE_HEIGHT : 40,
 
       init : function(cfg, printSpace) {
         var me = this;
@@ -56,7 +55,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method
        */
       setConnectorModels : function(staffGrp, range, isChild) {
         var me = this, symbol, barthru, first_n, last_n;
@@ -68,7 +67,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
         m2v.L('Converter.setConnectorModels() {2}', 'symbol: ' + symbol, ' range.first_n: ' + first_n, ' range.last_n: ' + last_n);
 
-        // # left connectors specified in the MEI file
+        // 1. left connectors specified in the MEI file:
         me.setModelForStaveRange(me.startConnectorInfos, {
           top_staff_n : first_n,
           bottom_staff_n : last_n,
@@ -77,7 +76,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           labelAbbr : $(staffGrp).attr('label.abbr')
         });
 
-        // # left auto line, only (if at all) attached to
+        // 2. left auto line, only (if at all) attached to
         // //staffGrp[not(ancestor::staffGrp)]
         if (!isChild && me.cfg.autoStaveConnectorLine) {
           me.setModelForStaveRange(me.startConnectorInfos, {
@@ -87,7 +86,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           }, 'autoline');
         }
 
-        // # inline connectors
+        // 3. inline connectors
         if (barthru === 'true') {
           me.setModelForStaveRange(me.inlineConnectorInfos, {
             top_staff_n : first_n,
@@ -106,7 +105,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       },
 
       /**
-       *
+       * @method
        */
       getClef : function(staff_n) {
         var me = this, staff_info;

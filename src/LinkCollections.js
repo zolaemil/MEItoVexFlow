@@ -1,7 +1,5 @@
 var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
-    // TODO handle cross-system hairpins
-
     /**
      * @class MEI2VF.LinkCollection
      * @private
@@ -99,8 +97,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           eventLink.setParams(atts);
 
           // find startid for eventLink. if tstamp is provided in the
-          // element,
-          // tstamp will be calculated.
+          // element, tstamp will be calculated.
           startid = atts.startid;
           if (startid) {
             eventLink.setFirstId(startid);
@@ -141,8 +138,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
               }
             }
             // else {
-            // // TODO no @endid, no @tstamp2 ==> eventLink.last_ref
-            // remains empty.
+            // // TODO no @endid, no @tstamp2 ==> eventLink.last_ref remains empty.
             // }
           }
           me.addModel(eventLink);
@@ -221,10 +217,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           l_note = notes_by_id[this.getLastId()] || {};
 
           if (f_note.system !== undefined && l_note.system !== undefined && f_note.system !== l_note.system) {
-            // TODO add support for cross-system hairpins
-
-            // me.createSingleHairpin(f_note, {}, this.params, vex_options);
-            // me.createSingleHairpin({}, l_note, this.params, vex_options);
           } else {
             me.createSingleHairpin(f_note, l_note, this.params, vex_options);
           }
@@ -238,7 +230,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         place = m2v.tables.positions[params.place];
         type = m2v.tables.hairpins[params.form];
 
-        // TODO handle hairpins without first or last vexNote
         if (f_note.vexNote && l_note.vexNote) {
           hairpin = new VF.StaveHairpin({
             first_note : f_note.vexNote,
@@ -288,15 +279,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         this.allModels.push(eventLink);
       },
 
-      // TODO: separate tie & slur specific functions in separate objects!?
       terminate_tie : function(endid, linkCond) {
         var cmpLinkCond, found, i, tie, allTies;
 
         allTies = this.getModels();
 
         cmpLinkCond = function(lc1, lc2) {
-          // return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct
-          // && lc1.system === lc2.system);
           return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct);
         };
 
@@ -327,8 +315,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           }
         }
         // if no tie object found that is uncomplete and with the same
-        // pitch,
-        // then create a tie that has only endid set.
+        // pitch, then create a tie that has only endid set.
         if (!found)
           this.addModel(new m2v.EventLink(null, endid));
       },
@@ -339,8 +326,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         var allModels = this.getModels();
 
         cmpLinkCond = function(lc1, lc2) {
-          // return lc1.nesting_level === lc2.nesting_level && lc1.system ===
-          // lc2.system;
           return lc1.nesting_level === lc2.nesting_level;
         };
 
