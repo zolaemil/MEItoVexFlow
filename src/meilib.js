@@ -339,16 +339,15 @@ MeiLib.XMLID = function(elem) {
  * to musical events such as notes, rests and chords).
  *
  * @param eventid {String} the xml:id of the event
- * @param context {Array} of
- * contextual objects {layer, meter}. Time signature is mandatory for the first
- * one, but optional for the rest. All layers belong to a single logical layer.
- * They are the layer elements from some consequtive measures.
+ * @param context {Array} of contextual objects {layer, meter}. Time signature
+ * is mandatory for the first one, but optional for the rest. All layers belong
+ * to a single logical layer. They are the layer elements from some consequtive
+ * measures.
  * @return {String} the MEI timestamp value (expressed in beats relative to the
- * meter of the
- * measure containing the event) of all events that happened before the given
- * event in the given context. If the event is not in the first measure (layer)
- * the timestamp value contains a 'measure part', that is for example 2m+2 if
- * the event is at the second beat in the 3rd measure.
+ * meter of the measure containing the event) of all events that happened before
+ * the given event in the given context. If the event is not in the first
+ * measure (layer) the timestamp value contains a 'measure part', that is for
+ * example 2m+2 if the event is at the second beat in the 3rd measure.
  */
 MeiLib.id2tstamp = function(eventid, context) {
   var meter;
@@ -375,8 +374,7 @@ MeiLib.id2tstamp = function(eventid, context) {
  *
  * @param dur {Number} reciprocal value of absolute duration (e.g. 4->quarter
  * note, 8->eighth note, etc.)
- * @param {Object} meter the time signature object { count,
- * unit }
+ * @param {Object} meter the time signature object { count, unit }
  * @return {Number}
  */
 MeiLib.dur2beats = function(dur, meter) {
@@ -527,7 +525,7 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
 
   return sumUpUntil_inNode(layer);
 }
-// TODO make name lower case?
+
 /**
  * @method SliceMEI
  * Returns a slice of the MEI. The slice is specified by the number of the
@@ -535,16 +533,15 @@ MeiLib.sumUpUntil = function(eventid, layer, meter) {
  *
  * About the <code>staves</code> parameter: it specifies a list of staff
  * numbers. If it is defined, only the listed staves will be kept in the
- * resulting slice. The following elements will be removed from: 1.
- * <b>staffDef</b>
- * elements (@staff value is matched against the specified list) 2. <b>staff</b>
- * elements (@n value is matched against the specified list) 3. any other child
- * element of measures that has
+ * resulting slice. The following elements will be removed from:
+ *
+ * 1. <b>staffDef</b> elements (@staff value is matched against the specified list)
+ * 2. <b>staff</b> elements (@n value is matched against the specified list)
+ * 3. any other child element of measures that has
  *
  * @staff specified AND it is not listed.
  *
- * Note that <b>staff</b> elements without
- * @n will be removed.
+ * Note that <b>staff</b> elements without @n will be removed.
  *
  * @param {Object} params like { start_n:NUMBER, end_n:NUMBER, noKey:BOOLEAN,
  *            noClef:BOOLEAN, noMeter:BOOLEAN, noConnectors, staves:[NUMBER] },
@@ -639,13 +636,12 @@ MeiLib.SliceMEI = function(MEI, params) {
   return slice;
 }
 /**
- * @class MeiLib.Alt
  * Represents an MEI <b>app</b> or <b>choice</b> element.
  *
+ * @class MeiLib.Alt
  * @constructor
  * @param {String} xmlID the xml:id attribute value of the <b>app</b> or
- * <b>choice</b>
- * element.
+ * <b>choice</b> element.
  * @param {String} parentID the xml:id attribute value of the direct parent
  * element of the <b>app</b> or <b>choice</b> element.
  */
@@ -683,19 +679,13 @@ MeiLib.Alt.prototype.getDefaultItem = function() {
  * Represents a <b>lem</b>, <b>rdg</b>, <b>sic</b> or <b>corr</b> element.
  *
  * @constructor
- * @param xmlID
- *            {String} the xml:id attribute value of the element.
- * @param tagname
- *            {String} 'lem' for <b>lem</b> and 'rdg for <b>rdg</b> elements.
- * @param source
- *            {String} space-separated list of the source IDs what the given
+ * @param xmlID {String} the xml:id attribute value of the element.
+ * @param tagname {String} 'lem' for <b>lem</b> and 'rdg for <b>rdg</b> elements.
+ * @param source {String} space-separated list of the source IDs what the given
  *            item belongs to.
- * @param resp
- *            {String} xmlID of the editor responsible for the given reading or
+ * @param resp {String} xmlID of the editor responsible for the given reading or
  *            correction.
- * @param n
- *            {String}
- * @n attribute value of the element.
+ * @param n {String} @n attribute value of the element.
  */
 MeiLib.Variant = function(elem, xmlID, tagname, source, resp, n) {
   this.elem = elem;
@@ -730,11 +720,9 @@ MeiLib.MeiDoc = function(meiXmlDoc) {
  * listed in the MEI header. 3. <code>ALTs</code> is the object that contains
  * information about the alternative encodings. It contains one entry per for
  * each <b>app</b> or <b>choice</b> element. It is indexed by the xml:id
- * attribute value
- * of the elements. 4. <code>altgroups</code> is the obejct that contains how
- * <b>app</b> and <b>choice</b> elements are grouped together to form a logical
- * unit of
- * alternative encoding.
+ * attribute value of the elements. 4. <code>altgroups</code> is the obejct that
+ * contains how <b>app</b> and <b>choice</b> elements are grouped together to
+ * form a logical unit of alternative encoding.
  *
  * @param {XMLDocument} meiXmlDoc an XML document containing the rich MEI
  */
@@ -886,8 +874,7 @@ MeiLib.MeiDoc.prototype.initAltgroups = function() {
  * second one is C, D or E.
  *
  * The extracted information about all the <b>app</b> and <b>choice</b> elements
- * are
- * stored in an array. Using this array the application can access information
+ * are stored in an array. Using this array the application can access information
  * such as what alternative encodings are present in the score, what source a
  * variant comes from, etc. This array is exposed by te <code>ALTs</code>
  * property.

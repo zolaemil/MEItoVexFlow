@@ -1,8 +1,5 @@
 var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
-    // TODO width calculation: take end modifiers into account (do this later: end
-    // modifiers are currently not part of mei2vf)
-
     /**
      * A single instance of a staff system, containing and processing information
      * about the measures contained

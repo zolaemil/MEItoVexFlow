@@ -21,8 +21,6 @@
 * the License.
 */
 
-// TODO how to distinguish between different type of <section>s
-
 var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     /**
@@ -104,7 +102,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          * between two hyphens in the lyrics lines
          */
         maxHyphenDistance : 75,
-        //sectionsOnNewLine : false, // TODO: add feature
         /**
          * @cfg {Object} lyricsFont The font used for rendering lyrics (and
          * hyphens)
@@ -165,7 +162,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         }
       },
 
-      // TODO add setters (and getters?) for single config items / groups
       /**
        * initializes the Converter
        * @method initConfig
@@ -178,14 +174,11 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.cfg = $.extend(true, {}, me.defaults, config);
         /**
          * an instance of MEI2VF.SystemInfo dealing with the system and staff
-         * info derived from
-         * the MEI data
+         * info derived from the MEI data
          * @property {MEI2VF.SystemInfo} systemInfo
          */
         me.systemInfo = new m2v.SystemInfo();
 
-        // TODO see if the values of this property should better be calculated
-        // in the viewer object
         /**
          * The print space coordinates calculated from the page config.
          * @property {Object} printSpace
@@ -197,8 +190,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.printSpace = {
           // substract four line distances (40px) from page_margin_top in order
           // to compensate VexFlow's default top spacing / allow specifying
-          // absolute
-          // values
+          // absolute values
           top : me.cfg.page_margin_top - 40,
           left : me.cfg.page_margin_left,
           right : me.cfg.page_width - me.cfg.page_margin_right,
@@ -208,7 +200,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
       },
 
-      // TODO instead of creating new objects each time on reset, call reset functions in the generated objects
       /**
        * Resets all data. Called by {@link #process}.
        * @method reset
@@ -219,7 +210,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         var me = this;
         me.systemInfo.init(me.cfg, me.printSpace);
         /**
-         * @property {} unresolvedTStamp2
+         * @property {MEI2VF.EventLink[][]} unresolvedTStamp2
          */
         me.unresolvedTStamp2 = [];
         /**
@@ -316,8 +307,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          */
         me.pendingSectionBreak = true;
         /**
-         * Contains information about the
-         * volta type of the current staff. Properties:
+         * Contains information about the volta type of the current staff. Properties:
          *
          * -  `start` {String} indicates the number to render to the volta. When
          * falsy, it is assumed that the volta does not start in the current
@@ -485,9 +475,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         return system;
       },
 
-      // TODO: add rule: if an ending is followed by another ending, add
-      // space on the right (or choose a VexFlow parameter accordingly),
-      // otherwise don't add space
       /**
        * @method processSections
        */
@@ -569,7 +556,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         this.pendingSystemBreak = true;
       },
 
-      // TODO extract function for measure_child (see the staffDef functions)!?
       /**
        * Processes a MEI measure element and calls functions to process a
        * selection of ancestors: .//staff, ./slur, ./tie, ./hairpin, .//tempo
@@ -636,10 +622,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
         var currentStaveVoices = new m2v.StaveVoices();
 
-        // TODO create all staff objects before processing the voices so a
-        // reference to any staff object in the current measure can be set to the
-        // note-like objects (this is necessary when the attribute staff=n is
-        // used, for example)
         $.each(staffElements, function() {
           me.processStaffEvents(staffs, this, measure_n, currentStaveVoices);
         });
@@ -707,8 +689,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           me.addStaffClef(staff, staff_n);
           clefOffsets[staff_n] = staff.getModifierXShift();
           maxClefOffset = Math.max(maxClefOffset, clefOffsets[staff_n]);
-          // console.log('clef offsets: ' +clefOffsets[staff_n] + ' ' +
-          // maxClefOffset);
           isFirst = false;
         });
 
@@ -718,22 +698,17 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         $.each(staffs, function(i, staff) {
           if (staff) {
             if (clefOffsets[i] !== maxClefOffset) {
-              // console.log('do keysig padding ' + (maxClefOffset -
-              // clefOffsets[i]));
               me.addStaffKeySig(staff, i, maxClefOffset - clefOffsets[i] + 10);
             } else {
               me.addStaffKeySig(staff, i);
             }
             keySigOffsets[i] = staff.getModifierXShift();
             maxKeySigOffset = Math.max(maxKeySigOffset, keySigOffsets[i]);
-            // console.log('keysig '+keySigOffsets[i] + ' ' +
-            // maxKeySigOffset);
           }
         });
 
         // third run: add time signatures; if the keySigOffset of a staff is
-        // lesser
-        // maxKeySigOffset, add padding to the left of the time signature.
+        // lesser maxKeySigOffset, add padding to the left of the time signature.
         $.each(staffs, function(i, staff) {
           if (staff) {
             if (keySigOffsets[i] !== maxKeySigOffset) {
@@ -937,8 +912,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       },
 
       /**
-       * processes a note like element by calling the adequate processing
+       * processes a note-like element by calling the adequate processing
        * function
+       *
        * @method processNoteLikeElement
        * @param {XMLElement} element the element to process
        * @param {Vex.Flow.Stave} staff the VexFlow staff object
@@ -1004,17 +980,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           } else {
             var otherStaff = me.allVexMeasureStaffs[me.allVexMeasureStaffs.length - 1][mei_staff_n];
             if (otherStaff) {
-              // TODO: the note is correctly assigned to the new staff
-              // here, but
-              // in the end it has the old staff assigned to it -> fix
-              // that!
-              // REASON PROBABLY: all notes get assigned to the old
-              // staff when
-              // the voices are drawn in StaveVoices.js
-              // ALSO: Vex.Flow.Voice seems to assign all voice
-              // tickables to only
-              // one staff
-              // n = note;
               note.setStave(otherStaff);
             } else {
               throw new m2v.RUNTIME_ERROR('Error', 'Note has staff attribute "' + mei_staff_n + '", but the staff does not exist.');
@@ -1077,8 +1042,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         }
       },
 
-      // TODO add support for features found in me.processNote (annot etc.)
-      // extract functions!?
       /**
        * @method processChord
        */
@@ -1089,8 +1052,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
         atts = m2v.Util.attsToObj(element);
         durAtt = atts.dur;
-        // var mei_tie = atts.tie;
-        // var mei_slur = atts.slur;
 
         xml_id = MeiLib.XMLID(element);
 
@@ -1142,8 +1103,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           if (atts.fermata) {
             me.fermatas.addFermataToNote(chord, atts.fermata);
           }
-
-          // TODO add support for chord/@tie and chord/@slur
 
           me.notes_by_id[xml_id] = {
             meiNote : element,
@@ -1299,15 +1258,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             duration : me.processAttsDuration(element, true) + 'r'
           });
           space.setStave(staff);
-          // xml_id = MeiLib.XMLID(element);
-          // me.notes_by_id[xml_id] = {
-          // meiNote : element,
-          // vexNote : space
-          // };
           return {
             vexNote : space
-            // ,
-            // id : xml_id
           };
         } catch (e) {
           throw new m2v.RUNTIME_ERROR('BadArguments', 'A problem occurred processing the <space>: ' + m2v.Util.attsToString(element));
@@ -1332,7 +1284,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         return elements;
       },
 
-      // num.visible -- currently not supported in VexFlow; would be easy to add there
       /**
        * Processes an MEI <b>tuplet</b>.
        * Supported attributes:
@@ -1404,21 +1355,16 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        */
       processAttrTie : function(mei_tie, xml_id, pname, oct) {
         var me = this, i, j;
-        // if (!mei_tie) {
-        // mei_tie = "";
-        // }
         for ( i = 0, j = mei_tie.length; i < j; ++i) {
           if (mei_tie[i] === 'i') {
             me.ties.start_tieslur(xml_id, {
               pname : pname,
               oct : oct
-              //,system : system
             });
           } else if (mei_tie[i] === 't') {
             me.ties.terminate_tie(xml_id, {
               pname : pname,
               oct : oct
-              //,system : system
             });
           }
         }
@@ -1436,12 +1382,10 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             if (this.letter === 'i') {
               me.slurs.start_tieslur(xml_id, {
                 nesting_level : this.nesting_level
-                //,system : system
               });
             } else if (this.letter === 't') {
               me.slurs.terminate_slur(xml_id, {
                 nesting_level : this.nesting_level
-                //,system : system
               });
             }
           });
@@ -1517,8 +1461,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         syl = me.processSyllable(element);
         if (syl) {
           annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
-          // TODO handle justification
-          // .setJustification(VF.Annotation.Justify.LEFT);
           note.addAnnotation(0, annot);
           if (syl.wordpos) {
             me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
@@ -1526,7 +1468,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         }
       },
 
-      // Add annotation (lyrics)
       // processSyllable : function(mei_note) {
       // var me = this, syl, full_syl = '', dash;
       // syl = $(mei_note).find('syl');
@@ -1582,9 +1523,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         throw new m2v.RUNTIME_ERROR('BadArguments', 'The MEI duration "' + mei_dur + '" is not supported.');
       },
 
-      // TODO: dots should work with the lastest VexFlow, so try to remove the noDots
-      // parameter there. Can the noDots condition be removed entirely or will there
-      // be dots rendered with space elements?
       /**
        * @method processAttsDuration
        */

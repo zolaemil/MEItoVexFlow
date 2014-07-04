@@ -1,6 +1,4 @@
 /**
- * ### ADD GENERAL NOTES ###
- *
  * @class MEI2VF
  * @singleton
  */

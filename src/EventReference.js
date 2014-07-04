@@ -24,11 +24,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
      * @class MEI2VF.EventReverence
      * Represents and event with its xmlid, but if the xmlid is not defined, it
      * can also hold the timestamp that can be resolved as soon as the context
-     * that
-     * holds the event is established. When the tstamp reference is being
+     * that holds the event is established. When the tstamp reference is being
      * resolved, the xml:id is calculated using the generic function tstamp2id(),
-     * then the
-     * xml:id stored, thus marking that the reference is resolved.
+     * then the xml:id stored, thus marking that the reference is resolved.
      * @private
      *
      * @constructor
@@ -58,8 +56,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           throw new m2v.RUNTIME_ERROR('MEI2VF:RERR:BADARG:EventRef001', 'EventReference: tstamp must be set in order to resolve reference.');
         }
         if (this.meicontext) {
-          // look up event corresponding to the given tstamp (strictly or
-          // losely)
+          // look up event corresponding to the given tstamp (strictly or losely)
           this.xmlid = MeiLib.tstamp2id(this.tstamp, this.meicontext.layer, this.meicontext.meter);
         } else {
           this.xmlid = null;

@@ -56,12 +56,10 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         this.addStaffVoice(new m2v.StaffVoice(voice, staff_n));
       },
 
-      // no more in use
       reset : function() {
         this.all_voices = [];
       },
 
-      // TODO store the voices staffwise instead of extracting information at this point!?
       preFormat : function() {
         var me = this, all, staff_n, i;
         all = me.all_voices;
@@ -93,7 +91,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           f.joinVoices(me.vexVoicesStaffWise[i], {align_rests: true});
         }
         f.formatToStave(me.vexVoices, staff);
-        // f.format(vexVoices, width);
       },
 
       draw : function(context, staves) {

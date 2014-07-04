@@ -1,6 +1,5 @@
 var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
-    // TODO add support for multiple layers in one staff
     /**
      * @class MEI2VF.Hyphenation
      * @private
@@ -11,7 +10,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
     m2v.Hyphenation = function(font, printSpaceRight, maxHyphenDistance) {
       var me = this;
       me.allSyllables = [];
-      // TODO move to main.js
       me.printSpaceRight = printSpaceRight;
       me.font = font;
       me.maxHyphenDistance = maxHyphenDistance;
@@ -46,8 +44,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         return this;
       },
 
-      // TODO add support for hyphens in lines where neither the first nor the
-      // second syllable occur
       draw : function() {
         var me = this, i, k, first, second, hyphenWidth;
 

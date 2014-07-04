@@ -28,7 +28,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          * the MEI document
          */
         me.n = config.n;
-        // TODO instead of passing the staff contents in the config object, use a method addToMeasure!?!
         /**
          * @cfg {Array} staffs an array of the staffs in the current
          * measure. Contains
@@ -56,8 +55,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.hairpinElements = config.hairpinElements;
         /**
          * @cfg {XMLElement[]} tempoElements the MEI tempo elements in the
-         * current
-         * measure
+         * current measure
          */
         me.tempoElements = config.tempoElements;
         /**
@@ -133,10 +131,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         throw new m2v.RUNTIME_ERROR('ERROR', 'getFirstDefinedStaff(): no staff found in the current measure.');
       },
 
-      // TODO handle timestamps! (is it necessary to handle tempo element
-      // as annotations?)
-      // TODO make magic numbers constants
-      // TODO move from here
       /**
        * Writes the data of the tempo elements in the current measure to the
        * corresponding Vex.Flow.Stave object
@@ -228,7 +222,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.repeatPadding = (staff.modifiers[0].barline == Vex.Flow.Barline.type.REPEAT_BEGIN && staff.modifiers.length > 2) ? 20 : 0;
       },
 
-      // TODO move label attachment somewhere else
       /**
        * Formats the staffs in the current measure: sets x coordinates and adds
        * staff labels
@@ -251,8 +244,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             staff.bounds.x += x;
             staff.setWidth(width);
             staff.modifiers[0].x += x;
-            // staff.end_x += x + offsetW;
-            // staff.glyph_end_x += x + offsetW;
           }
         }
         me.voices.format(me.getFirstDefinedStaff());
