@@ -1046,9 +1046,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @method processChord
        */
       processChord : function(element, staff, staff_n) {
-        var me = this, i, j, hasDots, $children, keys = [], duration, durations = [], durAtt, xml_id, chord, chord_opts, atts;
+        var me = this, i, j, hasDots, children, keys = [], duration, durations = [], durAtt, xml_id, chord, chord_opts, atts;
 
-        $children = $(element).children();
+        children = $(element).children();
 
         atts = m2v.Util.attsToObj(element);
         durAtt = atts.dur;
@@ -1061,16 +1061,16 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           if (durAtt) {
             duration = me.translateDuration(+durAtt);
           } else {
-            for ( i = 0, j = $children.length; i < j; i += 1) {
-              durations.push(+$children[i].getAttribute('dur'));
+            for ( i = 0, j = children.length; i < j; i += 1) {
+              durations.push(+children[i].getAttribute('dur'));
             }
             duration = me.translateDuration(Math.max.apply(Math, durations));
           }
 
-          for ( i = 0, j = $children.length; i < j; i += 1) {
-            keys.push(me.processAttsPitch($children[i]));
-            // dots.push(+$children[i].getAttribute('dots'));
-            if ($children[i].getAttribute('dots') === '1')
+          for ( i = 0, j = children.length; i < j; i += 1) {
+            keys.push(me.processAttsPitch(children[i]));
+            // dots.push(+children[i].getAttribute('dots'));
+            if (children[i].getAttribute('dots') === '1')
               hasDots = true;
           }
 
@@ -1089,7 +1089,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
           var allNoteIndices = [];
 
-          $children.each(function(i) {
+          children.each(function(i) {
             me.processNoteInChord(i, this, element, chord);
             allNoteIndices.push(i);
           });

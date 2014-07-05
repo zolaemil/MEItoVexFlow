@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "homepage": "http://tei-music-sig.github.io/MEItoVexFlow/",
   "authors": [
-    "irochicken raffazizzi zolaemil aerhard"
+    "ironchicken raffazizzi zolaemil aerhard"
   ],
   "description": "MEI to VexFlow bridge library",
   "main": "meitovexflow.js",
@@ -17,9 +17,7 @@
   "ignore": [
     "**/.*",
     "node_modules",
-    "bower_components",
-    "test",
-    "tests"
+    "bower_components"
   ],
   "dependencies": {
     "jquery": "~2.1.0",
