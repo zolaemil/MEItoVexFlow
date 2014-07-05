@@ -33,9 +33,9 @@ arguments:
 
  - `height` (Number) should be the height of the canvas in pixels. Defaults to 350 (optional)
 
- - `backend` (Vex.Flow.Renderer.Backends.CANVAS|Vex.Flow.Renderer.Backends.RAPHAEL) specifies the VexFlow backend to use. Defaults to Vex.Flow.Renderer.Backends.RAPHAEL (optional)
+ - `backend` (Vex.Flow.Renderer.Backends.CANVAS|Vex.Flow.Renderer.Backends.RAPHAEL) specifies the VexFlow backend to use. Defaults to Vex.Flow.Renderer.Backends.CANVAS (optional)
 
- - `options` (Object) may contain additional conversion and rendering parameters; see the comments on the default parameters in `src/Converter.js` for details (optional)
+ - `options` (Object) may contain additional conversion and rendering options; see the comments on the default options in `src/Converter.js` for details (optional)
 
 For sample function calls see the test runs in the 'tests' directory! 
 
