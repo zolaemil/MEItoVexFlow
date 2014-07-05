@@ -21,19 +21,23 @@ $ bower install
 
 ## Usage
 
-The library provides the function `render_notation` which takes four
+The library provides the function `render_notation` which takes up to six
 arguments:
 
- - `score` should be a markup fragment containing the MEI
+ - `xmlDoc` (XMLDocument) should be a markup fragment containing the MEI
 
- - `target` should be an HTML <canvas> element onto which the notation
+ - `target` (Element) should be an HTML <canvas> element onto which the notation
    will be drawn
 
- - `width` should be the width of the canvas (optional)
+ - `width` (Number) should be the width of the canvas in pixels. Defaults to 800 (optional)
 
- - `height` should be the height of the canvas (optional)
+ - `height` (Number) should be the height of the canvas in pixels. Defaults to 350 (optional)
 
-For sample function calls see the test cases in the 'tests' directory! 
+ - `backend` (Vex.Flow.Renderer.Backends.CANVAS|Vex.Flow.Renderer.Backends.RAPHAEL) specifies the VexFlow backend to use. Defaults to Vex.Flow.Renderer.Backends.RAPHAEL (optional)
+
+ - `options` (Object) may contain additional conversion and rendering parameters; see the comments on the default parameters in `src/Converter.js` for details (optional)
+
+For sample function calls see the test runs in the 'tests' directory! 
 
 ## MeiLib.js 
 
@@ -61,7 +65,7 @@ comments within the source file meilib.js
 
 Only a small subset of MEI has so far been implemented. Many
 conventional aspects of common practice notation have been ignored
-(such as repeat accidentals, stem directions). It's also important to
+(such as repeat accidentals). It's also important to
 remember that VexFlow is a moving target, it's in constant development
 and so this code could break at any time.
 
