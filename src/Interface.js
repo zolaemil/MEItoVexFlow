@@ -72,7 +72,7 @@ var MEI2VF = (function(m2v, MeiLib, VF, $, undefined) {
        */
       rendered_measures: null,
       /**
-       * Main rendering function. 
+       * Main rendering function.
        * @param {XMLDocument} xmlDoc The MEI XML Document
        * @param {Element} target An svg or canvas element
        * @param {Number} width The width of the print space in pixels. Defaults to 800 (optional)
