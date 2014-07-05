@@ -26,7 +26,7 @@ arguments:
 
  - `xmlDoc` (XMLDocument) should be a markup fragment containing the MEI
 
- - `target` (Element) should be an HTML <canvas> element onto which the notation
+ - `target` (Element) should be an HTML <canvas> or <svg> element onto which the notation
    will be drawn
 
  - `width` (Number) should be the width of the canvas in pixels. Defaults to 800 (optional)
