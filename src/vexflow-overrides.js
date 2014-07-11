@@ -496,12 +496,12 @@ Vex.Flow.Annotation = ( function() {
           spacing = stave.getSpacingBetweenLines();
         }
 
-        font_scale = this.font.size / Annotation.DEFAULT_FONT_SIZE;
+        font_scale = this.font.size / Annotation.DEFAULT_FONT_SIZE * 1.1;
         if (this.vert_justification == Annotation.VerticalJustify.BOTTOM) {
           y = stave.getYForBottomText(this.text_line, font_scale);
           if (has_stem) {
             var stem_base = (this.note.getStemDirection() === 1 ? stem_ext.baseY : stem_ext.topY);
-            y = Math.max(y, stem_base + (spacing * (this.text_line + 2) * font_scale));
+            y = Math.max(y, stem_base + ( spacing * (this.text_line + 1) * font_scale + ( spacing * (this.text_line) ) ) );
           }
         } else if (this.vert_justification == Annotation.VerticalJustify.CENTER) {
           var yt = this.note.getYForTopText(this.text_line) - 1;
