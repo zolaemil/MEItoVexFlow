@@ -82,7 +82,7 @@
 									<note xml:id="nb13" pname="a" oct="4" dur="8">
 										<syl>die</syl>
 										<verse n="verse_3">
-											<syl wordpos="t">third</syl>
+											<syl>third</syl>
 										</verse>
 									</note>
 								</layer>
@@ -142,7 +142,7 @@
 									<note xml:id="n27" pname="a" oct="4" dur="8"> 
 										<syl wordpos="i">ge</syl>
 										<verse n="verse_2">
-											<syl worpos="i">ver</syl>
+											<syl wordpos="i">ver</syl>
 										</verse>
 									</note>
 								</layer>
@@ -159,7 +159,7 @@
 									<note xml:id="n30" pname="e" accid="n" oct="5" dur="2">
 										<syl wordpos="t">jagt,</syl>
 										<verse n="verse_2">
-											<syl worpos="t">se</syl>
+											<syl wordpos="t">se</syl>
 										</verse>
 									</note>
 									<note xml:id="nc32" pname="a" oct="4" dur="8">

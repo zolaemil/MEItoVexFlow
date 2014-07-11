@@ -499,6 +499,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        */
       processSection : function(element) {
         var me = this, i, j, sectionChildren = $(element).children();
+        me.verses.initHyphenations( $(element).find('syl') );
         for ( i = 0, j = sectionChildren.length; i < j; i += 1) {
           me.processSectionChild(sectionChildren[i]);
         }

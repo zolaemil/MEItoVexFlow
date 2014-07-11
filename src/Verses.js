@@ -18,10 +18,40 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
     m2v.Verses.prototype = {
 
+      newHyphenation : function() {
+        return new m2v.Hyphenation(this.font, this.printSpaceRight, this.maxHyphenDistance);
+      },
+
+      addHyphenation : function(verse_n) {
+        var me = this;
+        if (!me.hyphenations[verse_n]) {
+          me.hyphenations[verse_n] = me.newHyphenation();
+        }
+        return me;
+      },
+
+      getHyphenation : function(verse_n) {
+        var me = this, hyphenation;
+        hyphenation = me.hyphenations[verse_n];
+        if (!hyphenation) {
+          hyphenation = me.newHyphenation();
+          me.hyphenations[verse_n] = hyphenation;
+        }
+        return hyphenation;
+      },
+
+      initHyphenations : function(elems) {
+        var me = this, verse_n;
+        $.each(elems, function(i) {
+          verse_n = $(elems[i]).parents('verse').attr('n') || '1';
+          me.addHyphenation(verse_n);
+        });
+      },
+
       drawHyphens : function(ctx) {
         var me = this, verse_n, i, hyph;
         for (verse_n in me.hyphenations) {
-          me.hyphenations[verse_n].setContext(ctx).draw();
+          me.getHyphenation(verse_n).setContext(ctx).draw();
         };
         return me;
       },
@@ -55,9 +85,6 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         }
         me.verses[verse_n].push(annot);
         if (wordpos) {
-          if (!me.hyphenations[verse_n]) {
-            me.hyphenations[verse_n] = new m2v.Hyphenation(me.font, me.printSpaceRight, me.maxHyphenDistance);
-          }
           me.hyphenations[verse_n].addSyllable(annot, wordpos, staff_n);
         }
         return me;
