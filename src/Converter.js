@@ -115,7 +115,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          */
         lyricsFont : {
           family : 'Times',
-          size : 15
+          size : 13,
         },
         /**
          * @cfg {Object} annotFont the font used for annotations (for example,
@@ -282,6 +282,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          * @property {MEI2VF.Hyphenation} hyphenation
          */
         me.hyphenation = new m2v.Hyphenation(me.cfg.lyricsFont, me.printSpace.right, me.cfg.maxHyphenDistance);
+        me.verses = new m2v.Verses(me.cfg.lyricsFont, me.printSpace.right, me.cfg.maxHyphenDistance);
         /**
          * contains all note-like objects in the current MEI document, accessible
          * by their xml:id
@@ -360,7 +361,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.ties.setContext(ctx).draw();
         me.slurs.setContext(ctx).draw();
         me.hairpins.setContext(ctx).draw();
-        me.hyphenation.setContext(ctx).draw();
+        me.verses.drawHyphens(ctx);
         return me;
       },
 
@@ -468,6 +469,10 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         }
 
         me.hyphenation.addLineBreaks(me.systemInfo.getAllStaffInfos(), {
+          system : system
+        });
+
+        me.verses.addLineBreaks(me.systemInfo.getAllStaffInfos(), {
           system : system
         });
 
@@ -638,6 +643,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           n : measure_n,
           staffs : staffs,
           voices : currentStaveVoices,
+          verses : me.verses,
           startConnectorCfg : (atSystemStart) ? {
             labelMode : me.cfg.labelMode,
             models : me.systemInfo.startConnectorInfos,
@@ -1457,15 +1463,24 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        * @method processSyllables
        */
       processSyllables : function(note, element, staff_n) {
-        var me = this, annot, syl;
-        syl = me.processSyllable(element);
-        if (syl) {
-          annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
-          note.addAnnotation(0, annot);
-          if (syl.wordpos) {
-            me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
+        var me = this, annot, syl, verse, text_line, verse_n, syls;
+        // syl = me.processSyllable(element);
+        syls = $(element).find('syl');
+        $.each(syls, function(i) {
+          syl = {
+            text : $(this).text(),
+            wordpos : $(this).attr('wordpos'),
+            verse_n : $(this).parents('verse').attr('n'),
+          };
+          if (syl) {
+            annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
+            note.addAnnotation(0, annot);
+            me.verses.addSyllable(annot, syl.wordpos, syl.verse_n, staff_n)
+            if (syl.wordpos) {
+              me.hyphenation.addSyllable(annot, syl.wordpos, staff_n);
+            }
           }
-        }
+        });
       },
 
       // processSyllable : function(mei_note) {
@@ -1489,7 +1504,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         if (syl) {
           return {
             text : $(syl).text(),
-            wordpos : $(syl).attr('wordpos')
+            wordpos : $(syl).attr('wordpos'),
+            verse_n : $(syl).parents('verse').attr('n'),
           };
         }
       },
