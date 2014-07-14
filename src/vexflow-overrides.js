@@ -410,8 +410,16 @@ Vex.Flow.Annotation = ( function() {
           weight : ""
         };
 
+        // Line spacing, relative to font size
+        this.line_spacing = 1.1; 
+
         // The default width is calculated from the text.
         this.setWidth(Vex.Flow.textWidth(text));
+      },
+
+      setLineSpacing : function(spacing) {
+        this.line_spacing = spacing;
+        return this;
       },
 
       // Return the modifier type. Used by the `ModifierContext` to calculate
@@ -496,7 +504,7 @@ Vex.Flow.Annotation = ( function() {
           spacing = stave.getSpacingBetweenLines();
         }
 
-        font_scale = this.font.size / Annotation.DEFAULT_FONT_SIZE * 1.1;
+        font_scale = this.font.size / Annotation.DEFAULT_FONT_SIZE * this.line_spacing;
         if (this.vert_justification == Annotation.VerticalJustify.BOTTOM) {
           y = stave.getYForBottomText(this.text_line, font_scale);
           if (has_stem) {

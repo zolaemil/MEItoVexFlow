@@ -116,6 +116,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         lyricsFont : {
           family : 'Times',
           size : 13,
+          spacing: 1.3,
         },
         /**
          * @cfg {Object} annotFont the font used for annotations (for example,
@@ -1474,7 +1475,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             verse_n : $(this).parents('verse').attr('n'),
           };
           if (syl) {
-            annot = me.createAnnot(syl.text, me.cfg.lyricsFont).setVerticalJustification(me.BOTTOM);
+            annot = me.createAnnot(syl.text, me.cfg.lyricsFont).
+              setVerticalJustification(me.BOTTOM).
+              setLineSpacing(me.cfg.lyricsFont.spacing);
             note.addAnnotation(0, annot);
             me.verses.addSyllable(annot, syl.wordpos, syl.verse_n, staff_n)
             if (syl.wordpos) {
