@@ -486,12 +486,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        */
       processSections : function(xmlDoc) {
         var me = this;
-        $(xmlDoc).find('section, ending').each(function() {
-          if (this.localName === 'ending') {
-            me.processEnding(this);
-          } else {
+        $(xmlDoc).find('section').each(function() {
             me.processSection(this);
-          }
         });
       },
 
@@ -547,6 +543,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             break;
           case 'sb' :
             me.setPendingSystemBreak(element);
+            break;
+          case 'ending' :
+            me.processEnding(element);
             break;
           default :
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.NotSupported', 'Element <' + element.localName + '> is not supported in <section>');
@@ -811,12 +810,15 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        */
       addStaffVolta : function(staff) {
         var volta = this.currentVoltaType;
-        if (volta.start)
-          staff.setVoltaType(Vex.Flow.Volta.type.BEGIN, volta.start + '.', 30, 0);
-        if (volta.end)
-          staff.setVoltaType(Vex.Flow.Volta.type.END, "", 30, 0);
-        if (!volta.start && !volta.end)
-          staff.setVoltaType(Vex.Flow.Volta.type.MID, "", 30, 0);
+        if (volta.start) {
+          staff.setVoltaType(Vex.Flow.Volta.type.BEGIN, volta.start + '.', 30);
+        } else if (volta.end) {
+          //TODO: fix type.BEGIN and type.END interference in vexflow, then remove else!
+          //[think through in which cases we actually need type.END]
+          staff.setVoltaType(Vex.Flow.Volta.type.END, "", 30);
+        } else if (!volta.start && !volta.end) {
+          staff.setVoltaType(Vex.Flow.Volta.type.MID, "", 30);
+        }
       },
 
       /**

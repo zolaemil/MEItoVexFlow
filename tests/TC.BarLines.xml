@@ -38,25 +38,35 @@
 								</layer>
 							</staff>
 						</measure>
-						<measure n="3" right="rptboth">
+						<ending n="1">
+							<measure n="3" right="rptboth">
+								<staff n="1">
+									<layer>
+									</layer>
+								</staff>
+							</measure>
+						</ending>
+						<ending n="2">
+							<measure n="4">
+								<staff n="1">
+									<layer>
+									</layer>
+								</staff>
+							</measure>
+						</ending>
+						<measure n="5" right="rptend">
 							<staff n="1">
 								<layer>
 								</layer>
 							</staff>
 						</measure>
-						<measure n="4" right="rptend">
+						<measure n="6" right="end">
 							<staff n="1">
 								<layer>
 								</layer>
 							</staff>
 						</measure>
-						<measure n="5" right="end">
-							<staff n="1">
-								<layer>
-								</layer>
-							</staff>
-						</measure>
-						<measure n="6" right="invis">
+						<measure n="7" right="invis">
 							<staff n="1">
 								<layer></layer>
 							</staff>
