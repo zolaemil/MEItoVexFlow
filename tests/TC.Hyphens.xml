@@ -60,18 +60,30 @@
 								<layer>
 									<note xml:id="nb08" pname="c" oct="5" dur="1" accid="s">
 										<syl wordpos="i">Hun</syl>
+										<verse n="verse_2">
+											<syl wordpos="i">Se</syl>
+										</verse>
 									</note>
 									<note xml:id="nb10" pname="a" oct="4" dur="8" accid="n">
 										<syl wordpos="t">de,</syl>
+										<verse n="verse_2">
+											<syl wordpos="t">cond</syl>
+										</verse>
 									</note>
 									<note xml:id="nb11" pname="a" oct="4" dur="8">
 										<syl>die</syl>
+										<verse n="verse_2">
+											<syl wordpos="i">ver</syl>
+										</verse>
 									</note>
 									<note xml:id="nb12" pname="a" oct="4" dur="8">
 										<syl>dir</syl>
 									</note>
 									<note xml:id="nb13" pname="a" oct="4" dur="8">
 										<syl>die</syl>
+										<verse n="verse_3">
+											<syl>third</syl>
+										</verse>
 									</note>
 								</layer>
 							</staff>
@@ -80,10 +92,21 @@
 							<staff n="1">
 								<layer>
 									<note xml:id="n14" pname="c" oct="5" dur="1" accid="s">
-										<syl wordpos="i">Hun</syl>
+										<verse n="1">
+											<syl wordpos="i">Hun</syl>
+										</verse>
+										<verse n="verse_2">
+											<syl wordpos="t">se</syl>
+										</verse>
+										<verse n="verse_3">
+											<syl wordpos="i">ver</syl>
+										</verse>
 									</note>
 									<note xml:id="n16" pname="a" oct="4" dur="8" accid="n">
 										<syl wordpos="t">de,</syl>
+										<verse n="verse_3">
+											<syl wordpos="t">se</syl>
+										</verse>
 									</note>
 									<note xml:id="n17" pname="a" oct="4" dur="8">
 										<syl>die</syl>
@@ -118,6 +141,9 @@
 									</note>
 									<note xml:id="n27" pname="a" oct="4" dur="8"> 
 										<syl wordpos="i">ge</syl>
+										<verse n="verse_2">
+											<syl wordpos="i">ver</syl>
+										</verse>
 									</note>
 								</layer>
 							</staff>
@@ -132,6 +158,9 @@
 									</note>
 									<note xml:id="n30" pname="e" accid="n" oct="5" dur="2">
 										<syl wordpos="t">jagt,</syl>
+										<verse n="verse_2">
+											<syl wordpos="t">se</syl>
+										</verse>
 									</note>
 									<note xml:id="nc32" pname="a" oct="4" dur="8">
 										<syl wordpos="i">de</syl>
@@ -192,6 +221,9 @@
 									</note>
 									<note xml:id="n033" pname="f" accid="s" oct="4" dur="4">
 										<syl wordpos="m">ge</syl>
+										<verse n="verse_2">
+											<syl wordpos="i">co</syl>
+										</verse>
 									</note>
 								</layer>
 							</staff>
@@ -201,6 +233,9 @@
 								<layer>
 									<note xml:id="asd" dur="1" pname="f" accid="s" oct="5">
 										<syl wordpos="m">wor</syl>
+										<verse n="verse_2">
+											<syl wordpos="m">mi</syl>
+										</verse>
 									</note>
 								</layer>
 							</staff>
