@@ -592,33 +592,28 @@ MeiLib.SliceMEI = function(MEI, params) {
   }
   var section = $(slice).find('section')[0];
   var inside_slice = false;
-  var found = false;
 
-  /*
-   * Iterate through each child of the section and remove everything outside
-   * the slice. Remove
+  /**
+   * Keep or remove child from section depending whether it's inside the section or not.
+   * If it's kept, remove unwanted staves
    */
-  var section_children = section.childNodes;
-  $(section_children).each(function() {
-    var child = this;
-
+  var keepOrRemove = function(elem, inside_slice, staffNSelector, params) {
     if (!inside_slice) {
-      if (child.localName === 'measure' && Number($(child).attr('n')) === params.start_n) {
+      if (elem.localName === 'measure' && Number($(elem).attr('n')) === params.start_n) {
         inside_slice = true;
-        found = true;
       } else {
-        section.removeChild(child);
+        elem.parentNode.removeChild(elem);
       }
     }
 
     if (inside_slice) {
       // remove unwanted staff
-      if (paramsStaves) {
-        $(child).find('[staff]').remove(':not(' + staffNSelector + ')');
-        var staves = $(child).find('staff');
+      if (params.staves) {
+        $(elem).find('[staff]').remove(':not(' + staffNSelector + ')');
+        var staves = $(elem).find('staff');
         $(staves).each(function() {
           var staff = this;
-          if ($.inArray(Number($(staff).attr('n')), paramsStaves) === -1) {
+          if ($.inArray(Number($(staff).attr('n')), params.staves) === -1) {
             var parent = this.parentNode;
             parent.removeChild(this);
           }
@@ -626,9 +621,31 @@ MeiLib.SliceMEI = function(MEI, params) {
       }
 
       // finish inside_slice state if it's the end of slice.
-      if (child.localName === 'measure' && Number($(child).attr('n')) === params.end_n) {
+      if (elem.localName === 'measure' && Number($(elem).attr('n')) === params.end_n) {
         inside_slice = false;
       }
+    }
+    return inside_slice;
+  }
+
+  /*
+   * Iterate through each child of the section and remove everything outside
+   * the slice. Remove
+   */
+  var section_children = section.childNodes;
+
+  $(section_children).each(function() {
+
+    if (this.localName === 'ending') {
+      var ending_children = this.childNodes;
+      $(ending_children).each(function() {
+        inside_slice = keepOrRemove(this, inside_slice, staffNSelector, params);
+      });
+      if ($(this).find('measure').length === 0) {
+        this.parentNode.removeChild(this);
+      }
+    } else {
+      inside_slice = keepOrRemove(this, inside_slice, staffNSelector, params);
     }
 
   });

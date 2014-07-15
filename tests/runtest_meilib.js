@@ -337,6 +337,33 @@ MeiLibTest = function(){
   assert($(staffDef).attr('key.sig.show'), "false", false);
   assert($(staffDef).attr('meter.rend'), "false", false);
   assert(staves.length, 4);
+
+  var sliceEndings1 = MeiLib.SliceMEI(score2slice, {start_n:12, end_n:13});
+  //TO ASSERT:
+  // 1. There are two measures
+  // 2. There is one ending, and
+  // 3. the ending contains measure 12
+  measures = $(sliceEndings1).find('measure');
+  endings =  $(sliceEndings1).find('ending');
+  assert(measures.length, 2, true, sliceEndings1);
+  assert(endings.length, 1, true, sliceEndings1);
+  assert($(endings[0]).find('measure[n="12"]').length, 1, true, sliceEndings1);
+
+  var sliceEndings2 = MeiLib.SliceMEI(score2slice, {start_n:8, end_n:11});
+  //TO ASSERT:
+  // 1. There are four measures
+  // 2. There are two endings
+  // 3. First ending contains measure 10
+  // 4. Second ending contains one measure
+  // 5. The measure contained by the second ending is measure 11
+  measures = $(sliceEndings2).find('measure');
+  endings =  $(sliceEndings2).find('ending');
+  assert(measures.length, 4, true, sliceEndings2);
+  assert(endings.length, 2, true, sliceEndings2);
+  assert($(endings[0]).find('measure[n="10"]').length, 1, true, sliceEndings2);
+  assert($(endings[1]).find('measure').length, 1, true, sliceEndings2);
+  assert($(endings[1]).find('measure[n="11"]').length, 1, true, sliceEndings2);
+
   
   end_test();
 

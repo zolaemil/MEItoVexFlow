@@ -142,6 +142,70 @@
 							<staff n="4">
 							</staff>
 						</mei:measure>
+						<mei:ending n="1">
+							<mei:measure n="10">
+								<staff n="1">
+									<layer>
+									</layer>
+								</staff>
+								<staff n="2">
+								</staff>
+								<staff n="3">
+								</staff>
+								<staff n="4">
+								</staff>
+							</mei:measure>
+						</mei:ending>
+						<mei:ending n="2">
+							<mei:measure n="11">
+								<staff n="1">
+									<layer>
+									</layer>
+								</staff>
+								<staff n="2">
+								</staff>
+								<staff n="3">
+								</staff>
+								<staff n="4">
+								</staff>
+							</mei:measure>
+							<mei:measure n="12">
+								<staff n="1">
+									<layer>
+									</layer>
+								</staff>
+								<staff n="2">
+								</staff>
+								<staff n="3">
+								</staff>
+								<staff n="4">
+								</staff>
+							</mei:measure>
+						</mei:ending>
+						<mei:measure n="13">
+							<staff n="1">
+								<layer>
+								</layer>
+							</staff>
+							<staff n="2">
+							</staff>
+							<staff n="3">
+							</staff>
+							<staff n="4">
+							</staff>
+						</mei:measure>
+						<mei:measure n="14">
+							<staff n="1">
+								<layer>
+								</layer>
+							</staff>
+							<staff n="2">
+							</staff>
+							<staff n="3">
+							</staff>
+							<staff n="4">
+							</staff>
+						</mei:measure>
 					</section>
 				</score>
 			</mdiv>
