@@ -222,11 +222,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.renderWith = result;
       },
 
-      updateDef : function(staffDef) {
+      updateDef : function(staffDef, scoreDef) {
         var me = this, newStaffDef;
         newStaffDef = m2v.Util.attsToObj(staffDef);
         me.updateRenderWith(newStaffDef);
         me.staffDefObj = newStaffDef;
+        me.scoreDefObj = scoreDef ? m2v.Util.attsToObj(scoreDef) : {};
         me.updateMeter();
         me.updateStaveLabels();
         me.updateSpacing();

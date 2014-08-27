@@ -260,7 +260,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         staff_n = +$(staffDef).attr('n');
         staff_info = me.currentStaffInfos[staff_n];
         if (staff_info) {
-          staff_info.updateDef(staffDef);
+          staff_info.updateDef(staffDef, me.scoreDefElement);
         } else {
           me.currentStaffInfos[staff_n] = new m2v.StaffInfo(staffDef, me.scoreDefElement, true, true, true);
         }

@@ -45,6 +45,21 @@
                                 </layer>
                             </staff>
                         </measure>
+                        <scoreDef meter.count="3" meter.unit="2">
+                            <staffGrp>
+                                <staffDef n="1" lines="5" clef.line="2" clef.shape="G"/>
+                            </staffGrp>
+                        </scoreDef>
+                        <measure n="3">
+                            <staff n="1">
+                                <layer n="1">
+                                    <note xml:id="e09" pname="c" oct="4" dur="2"/>
+                                    <note xml:id="e10" pname="d" oct="4" dur="2"/>
+                                    <note xml:id="e11" pname="b" oct="3" dur="4"/>
+                                    <note xml:id="e12" pname="c" oct="4" dur="4"/>
+                                </layer>
+                            </staff>
+                        </measure>
                         <sb/>
                     </section>
                 </score>
