@@ -1031,7 +1031,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             throw new m2v.RUNTIME_ERROR('MEI2VF.RERR.BadArguments', 'mei:note must have oct attribute');
 
           if (mei_tie)
-            me.processAttrTie(mei_tie, xml_id, pname, oct);
+            me.processAttrTie(mei_tie, xml_id, pname, oct, staff_n);
           if (mei_slur)
             me.processAttrSlur(mei_slur, xml_id);
 
@@ -1100,7 +1100,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           var allNoteIndices = [];
 
           children.each(function(i) {
-            me.processNoteInChord(i, this, element, chord);
+            me.processNoteInChord(i, this, element, chord, staff_n);
             allNoteIndices.push(i);
           });
 
@@ -1138,7 +1138,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       /**
        * @method processNoteInChord
        */
-      processNoteInChord : function(i, element, chordElement, chord) {
+      processNoteInChord : function(i, element, chordElement, chord, staff_n) {
         var me = this, atts, xml_id;
 
         atts = m2v.Util.attsToObj(element);
@@ -1146,7 +1146,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         xml_id = MeiLib.XMLID(element);
 
         if (atts.tie)
-          me.processAttrTie(atts.tie, xml_id, atts.pname, atts.oct);
+          me.processAttrTie(atts.tie, xml_id, atts.pname, atts.oct, staff_n);
         if (atts.slur)
           me.processAttrSlur(atts.slur, xml_id);
 
@@ -1363,18 +1363,20 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       /**
        * @method processAttrTie
        */
-      processAttrTie : function(mei_tie, xml_id, pname, oct) {
+      processAttrTie : function(mei_tie, xml_id, pname, oct, staff_n) {
         var me = this, i, j;
         for ( i = 0, j = mei_tie.length; i < j; ++i) {
           if (mei_tie[i] === 'i') {
             me.ties.start_tieslur(xml_id, {
               pname : pname,
-              oct : oct
+              oct : oct,
+              staff_n: staff_n,
             });
           } else if (mei_tie[i] === 't') {
             me.ties.terminate_tie(xml_id, {
               pname : pname,
-              oct : oct
+              oct : oct,
+              staff_n: staff_n,
             });
           }
         }

@@ -285,7 +285,8 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         allTies = this.getModels();
 
         cmpLinkCond = function(lc1, lc2) {
-          return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct);
+          return (lc1 && lc2 && lc1.pname === lc2.pname && lc1.oct === lc2.oct 
+            && lc1.staff_n === lc2.staff_n);
         };
 
         if (!linkCond.pname || !linkCond.oct)
