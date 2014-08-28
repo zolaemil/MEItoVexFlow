@@ -135,7 +135,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
          * @cfg {Number} exprFont.size the font size
          * @cfg {String} exprFont.weight the font weight
          */
-        annotFont : {
+        exprFont : {
           family : 'Times',
           size : 15,
           weight : 'italic',
