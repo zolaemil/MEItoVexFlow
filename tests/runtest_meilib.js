@@ -315,6 +315,11 @@ MeiLibTest = function(){
   assert($(staffDef).attr('clef.visible'), "false");
   assert($(staffDef).attr('key.sig.show'), "false");
   assert($(staffDef).attr('meter.rend'), "false");
+  var scoreDefChange = $(slice).find('scoreDef')[1];
+  var staffDefChange = $(scoreDefChange).find('staffDef')[0];
+  assert($(staffDefChange).attr('clef.visible'), "false", false);
+  assert($(staffDefChange).attr('key.sig.show'), "false", false);
+  assert($(staffDefChange).attr('meter.rend'), "false", false);
   assert(staves.length, 2);
   assert($(staves[0]).attr('n'), "1");
   assert($(staves[1]).attr('n'), "3");
