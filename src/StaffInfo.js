@@ -146,7 +146,28 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
 
       getKeySpec : function() {
         var me = this, keyname, key_accid, key_mode;
-        if (me.staffDefObj['key.pname'] !== undefined) {
+        var keys = {
+          '0': 'C',
+          '1f': 'F',
+          '2f': 'Bb',
+          '3f': 'Eb',
+          '4f': 'Ab',
+          '5f': 'Db',
+          '6f': 'Gb',
+          '7f': 'Cb',
+          '1s': 'G',
+          '2s': 'D',
+          '3s': 'A',
+          '4s': 'E',
+          '5s': 'B',
+          '6s': 'F#',
+          '7s': 'C#',
+        }
+        if (me.staffDefObj['key.sig'] !== undefined) {
+          keysig = me.staffDefObj['key.sig'].toLowerCase();
+          return keys[keysig];
+        }
+        else if (me.staffDefObj['key.pname'] !== undefined) {
           keyname = me.staffDefObj['key.pname'].toUpperCase();
           key_accid = me.staffDefObj['key.accid'];
           if (key_accid !== undefined) {
@@ -166,6 +187,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
             keyname += (key_mode === 'major') ? '' : 'm';
           return keyname;
         }
+        // Fallback key
         return 'C';
       },
 
