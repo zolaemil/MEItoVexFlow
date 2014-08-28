@@ -162,11 +162,13 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
        */
       processScoreDef : function(scoredef) {
         var me = this, i, j, children, systemLeftmar;
-        systemLeftmar = $(scoredef).attr('system.leftmar');
+        me.scoreDefElement = scoredef;
+        me.scoreDef = $(scoredef);
+        systemLeftmar = me.scoreDef.attr('system.leftmar');
         if ( typeof systemLeftmar === 'string') {
           me.setLeftMar(+systemLeftmar);
         }
-        children = $(scoredef).children();
+        children = me.scoreDef.children();
         for ( i = 0, j = children.length; i < j; i += 1) {
           me.processScoreDef_child(children[i]);
         }
@@ -258,9 +260,9 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         staff_n = +$(staffDef).attr('n');
         staff_info = me.currentStaffInfos[staff_n];
         if (staff_info) {
-          staff_info.updateDef(staffDef);
+          staff_info.updateDef(staffDef, me.scoreDefElement);
         } else {
-          me.currentStaffInfos[staff_n] = new m2v.StaffInfo(staffDef, true, true, true);
+          me.currentStaffInfos[staff_n] = new m2v.StaffInfo(staffDef, me.scoreDefElement, true, true, true);
         }
         return staff_n;
       }

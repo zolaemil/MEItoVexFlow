@@ -27,12 +27,14 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
      *
      * @constructor
      * @param staffdef
+     * @param scoredef
      * @param w_clef
      * @param w_keysig
      * @param w_timesig
      */
-    m2v.StaffInfo = function(staffdef, w_clef, w_keysig, w_timesig) {
+    m2v.StaffInfo = function(staffdef, scoredef, w_clef, w_keysig, w_timesig) {
       var me = this;
+      me.scoreDefObj = scoredef ? m2v.Util.attsToObj(scoredef) : {};
       me.renderWith = {
         clef : w_clef,
         keysig : w_keysig,
@@ -54,6 +56,11 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           me.meter = {
             count : +me.staffDefObj['meter.count'],
             unit : +me.staffDefObj['meter.unit']
+          };
+        } else if (me.scoreDefObj.hasOwnProperty('meter.count') && me.scoreDefObj.hasOwnProperty('meter.unit')) {
+          me.meter = {
+            count : +me.scoreDefObj['meter.count'],
+            unit : +me.scoreDefObj['meter.unit']
           };
         }
       },
@@ -177,10 +184,11 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
       getTimeSig : function() {
         var me = this, symbol, count, unit;
         symbol = me.staffDefObj['meter.sym'];
-        if (symbol)
+        if (symbol) {
           return (symbol === 'cut') ? 'C|' : 'C';
-        count = me.staffDefObj['meter.count'];
-        unit = me.staffDefObj['meter.unit'];
+        }
+        count = me.meter.count;
+        unit = me.meter.unit;
         return (count && unit) ? count + '/' + unit : undefined;
       },
 
@@ -214,11 +222,12 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         me.renderWith = result;
       },
 
-      updateDef : function(staffDef) {
+      updateDef : function(staffDef, scoreDef) {
         var me = this, newStaffDef;
         newStaffDef = m2v.Util.attsToObj(staffDef);
         me.updateRenderWith(newStaffDef);
         me.staffDefObj = newStaffDef;
+        me.scoreDefObj = scoreDef ? m2v.Util.attsToObj(scoreDef) : {};
         me.updateMeter();
         me.updateStaveLabels();
         me.updateSpacing();

@@ -582,9 +582,9 @@ MeiLib.SliceMEI = function(MEI, params) {
   if (paramsStaves)
     $(slice).find('staffDef').remove(':not(' + staffDefSelector + ')');
   if (params.noClef || params.noKey || params.noMeter) {
-    var staffDefs = $(slice).find('staffDef');
-    scoreDefs = $(slice).find('scoreDef');
-    setVisibles(scoreDefs, params);
+    scoreDef = $(slice).find('scoreDef')[0];
+    var staffDefs = $(scoreDef).find('staffDef');
+    setVisibles($(scoreDef), params);
     setVisibles(staffDefs, params);
   }
   if (params.noConnectors) {
