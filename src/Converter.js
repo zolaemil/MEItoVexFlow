@@ -119,16 +119,26 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
           spacing: 1.3,
         },
         /**
-         * @cfg {Object} annotFont the font used for annotations (for example,
-         * 'pizz.')
+         * @cfg {Object} annotFont the font used for annotations and directions
+         * (for example, 'pizz.')
          * @cfg {String} annotFont.family the font family
          * @cfg {Number} annotFont.size the font size
-         * @cfg {String} annotFont.weight the font weight
          */
         annotFont : {
           family : 'Times',
           size : 15,
-          weight : 'Italic'
+        },
+        /**
+         * @cfg {Object} exprFont the font used for expression marks (for example,
+         * 'staccato')
+         * @cfg {String} exprFont.family the font family
+         * @cfg {Number} exprFont.size the font size
+         * @cfg {String} exprFont.weight the font weight
+         */
+        exprFont : {
+          family : 'Times',
+          size : 15,
+          weight : 'italic',
         },
         /**
          * @cfg {Object} dynamFont the font used for dynamics
@@ -139,7 +149,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         dynamFont : {
           family : 'Times',
           size : 18,
-          weight : 'bold italic'
+          weight : 'bold italic',
         },
         /**
          * @cfg {Object} tempoFont The tempo font
@@ -150,7 +160,7 @@ var MEI2VF = ( function(m2v, MeiLib, VF, $, undefined) {
         tempoFont : {
           family : "Times",
           size : 17,
-          weight : "bold"
+          weight : "bold",
         },
         /**
          * @cfg {Object} staff The staff config object passed to each
